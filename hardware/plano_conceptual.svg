@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="460" fill="#ffffff"/>
+  <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#111">Plano conceptual - Turbidímetro (EJEMPLO FICTICIO)</text>
+
+  <!-- Sample chamber -->
+  <rect x="330" y="140" width="240" height="90" rx="10" fill="#eaf3ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="450" y="170" text-anchor="middle" font-size="14" fill="#1a365d">Cámara de muestra</text>
+  <text x="450" y="190" text-anchor="middle" font-size="12" fill="#1a365d">(tubo PVC opaco + agua)</text>
+  <text x="450" y="210" text-anchor="middle" font-size="11" fill="#2b6cb0">geometría 90° emisor/receptor</text>
+
+  <!-- LED emitter -->
+  <rect x="120" y="160" width="140" height="60" rx="8" fill="#fff5eb" stroke="#dd6b20" stroke-width="2"/>
+  <text x="190" y="185" text-anchor="middle" font-size="13" fill="#7b341e">LED IR 940nm</text>
+  <text x="190" y="203" text-anchor="middle" font-size="11" fill="#7b341e">(emisor)</text>
+
+  <!-- Photodiode receiver, placed at 90 degrees (below chamber) -->
+  <rect x="380" y="290" width="140" height="60" rx="8" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <text x="450" y="315" text-anchor="middle" font-size="13" fill="#22543d">Fotodiodo</text>
+  <text x="450" y="333" text-anchor="middle" font-size="11" fill="#22543d">(receptor, a 90°)</text>
+
+  <!-- ESP32 -->
+  <rect x="640" y="140" width="160" height="90" rx="10" fill="#faf5ff" stroke="#6b46c1" stroke-width="2"/>
+  <text x="720" y="170" text-anchor="middle" font-size="14" fill="#44337a">ESP32</text>
+  <text x="720" y="190" text-anchor="middle" font-size="11" fill="#44337a">ADC + firmware</text>
+  <text x="720" y="207" text-anchor="middle" font-size="11" fill="#44337a">(conversión a NTU)</text>
+
+  <!-- Output boxes -->
+  <rect x="620" y="360" width="120" height="55" rx="8" fill="#fffaf0" stroke="#b7791f" stroke-width="2"/>
+  <text x="680" y="385" text-anchor="middle" font-size="12" fill="#744210">Pantalla</text>
+  <text x="680" y="401" text-anchor="middle" font-size="11" fill="#744210">local (OLED)</text>
+
+  <rect x="760" y="360" width="120" height="55" rx="8" fill="#fff5f5" stroke="#c53030" stroke-width="2"/>
+  <text x="820" y="385" text-anchor="middle" font-size="12" fill="#742a2a">Envío de datos</text>
+  <text x="820" y="401" text-anchor="middle" font-size="11" fill="#742a2a">WiFi / App</text>
+
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4a5568"/>
+    </marker>
+  </defs>
+
+  <line x1="260" y1="190" x2="325" y2="185" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="450" y1="230" x2="450" y2="285" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="520" y1="315" x2="635" y2="215" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="700" y1="230" x2="685" y2="355" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="740" y1="230" x2="815" y2="355" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <text x="450" y="440" text-anchor="middle" font-size="11" fill="#a0aec0">Diagrama ilustrativo y ficticio — reemplazar por esquemático real (KiCad/Fritzing)</text>
+</svg>
