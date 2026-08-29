@@ -16,6 +16,16 @@ venv/
 .pio/
 .pioenvs/
 
+# KiCad
+*-backups/
+_autosave-*
+*.bak
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_prl
+fp-info-cache
+*.lck
+
 # Data / secrets
 *.env
 .env
