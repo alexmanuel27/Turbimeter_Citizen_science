@@ -19,12 +19,18 @@ Repositorio del proyecto de turbidímetro para ciencia ciudadana: diseño, firmw
   PCB (`esque.kicad_pcb`), modelo 3D (`esque.step`) y archivos de fabricación
   (`hardware/gerber/`).
 
+![PCB girando](img/pcb_rotacion.gif)
+
+*Render del PCB (`hardware/esque.step`) generado con `kicad-cli`.*
+
 ## Firmware
 
 [`firmware/firmware.ino`](firmware/firmware.ino) lee el sensor, calcula un
 valor aproximado en NTU y enciende un LED (verde/amarillo/rojo) según el
 nivel de turbidez. Incluye un asistente de calibración interactiva por
 Monitor Serial (ver comentarios al inicio del archivo).
+
+Explicación detallada del funcionamiento del código: [docs/firmware.md](docs/firmware.md).
 
 ## Estado
 
