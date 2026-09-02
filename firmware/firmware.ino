@@ -1,307 +1,305 @@
 /*
   ============================================================
-   SENSOR DE TURBIDEZ DFROBOT SEN0189 + ARDUINO NANO
-   VERSION 1: CALCULO EN NTU + CALIBRACION INTERACTIVA POR SERIAL
+   DFROBOT SEN0189 TURBIDITY SENSOR + ARDUINO NANO
+   VERSION 1: NTU CALCULATION + INTERACTIVE SERIAL CALIBRATION
   ============================================================
-  Descripcion:
-   Lee el sensor de turbidez, calcula un valor aproximado en NTU
-   usando una formula polinomica, y enciende un LED segun el
-   nivel detectado. Incluye un asistente de calibracion manual
-   que se maneja escribiendo letras en el Monitor Serial.
+  Description:
+   Reads the turbidity sensor, calculates an approximate NTU
+   value using a polynomial formula, and turns on an LED based
+   on the detected level. Includes a manual calibration wizard
+   controlled by typing letters into the Serial Monitor.
 
-  *** ADVERTENCIA ***
-   La formula NTU usada es una aproximacion muy usada por la
-   comunidad de Arduino, NO es una ecuacion oficial publicada
-   por DFRobot (ellos solo publican una grafica de referencia).
-   Por eso este codigo calibra los UMBRALES de los LEDs con tus
-   propias muestras reales, en vez de confiar ciegamente en la
-   formula.
+  *** WARNING ***
+   The NTU formula used here is a widely-used approximation from
+   the Arduino community, NOT an official equation published by
+   DFRobot (they only publish a reference graph). That's why this
+   code calibrates the LED THRESHOLDS using your own real water
+   samples instead of blindly trusting the formula.
 
-  Conexion del sensor: 
-   - Cable ROJO   -> 5V
-   - Cable NEGRO  -> GND
-   - Cable AZUL   -> Pin analogico A1 (señal)
+  Sensor wiring:
+   - RED wire   -> 5V
+   - BLACK wire -> GND
+   - BLUE wire  -> Analog pin A1 (signal)
 
-  LIBRERIAS NECESARIAS:
-   - Ninguna libreria externa para el sensor (solo analogRead).
-   - <EEPROM.h> se usa para guardar la calibracion de forma
-     permanente. Es una libreria NATIVA de Arduino, ya viene
-     instalada con el IDE, no hay que descargar nada.
+  REQUIRED LIBRARIES:
+   - No external library needed for the sensor (just analogRead).
+   - <EEPROM.h> is used to permanently store the calibration. It's
+     a NATIVE Arduino library, already bundled with the IDE, no
+     download needed.
 
   ============================================================
-                 GUIA DE CALIBRACION (Monitor Serial)
+                 CALIBRATION GUIDE (Serial Monitor)
   ============================================================
-   1. Abre el Monitor Serial (Ctrl+Shift+M) a 9600 baudios.
-   2. Escribe la letra  C  y presiona Enter -> inicia calibracion.
-   3. El programa te pedira sumergir el sensor en AGUA CLARA (pura).
-      Espera a que el valor se estabilice y escribe  F  + Enter
-      para fijar ese punto.
-   4. Luego te pedira AGUA CON TINTE AMARILLO (turbidez media).
-      Sumerge el sensor, espera que se estabilice y escribe
-      F  + Enter para fijar ese punto.
-   5. Luego te pedira AGUA CON CAFE DISUELTO O TINTA OSCURA
-      (turbidez alta). Sumerge el sensor, espera que se
-      estabilice y escribe  F  + Enter para fijar ese punto.
-   6. Finalmente escribe  X  + Enter para FINALIZAR la
-      calibracion. Los valores se calculan y se guardan en la
-      memoria EEPROM automaticamente.
+   1. Open the Serial Monitor (Ctrl+Shift+M) at 9600 baud.
+   2. Type the letter  C  and press Enter -> starts calibration.
+   3. The program will ask you to dip the sensor in CLEAR water
+      (pure water). Wait for the reading to stabilize and type
+      F  + Enter to fix that point.
+   4. Then it will ask for WATER WITH YELLOW DYE (medium turbidity).
+      Dip the sensor, wait for it to stabilize, and type
+      F  + Enter to fix that point.
+   5. Then it will ask for WATER WITH DISSOLVED COFFEE OR DARK INK
+      (high turbidity). Dip the sensor, wait for it to stabilize,
+      and type  F  + Enter to fix that point.
+   6. Finally type  X  + Enter to FINISH the calibration. The
+      values are calculated and automatically saved to EEPROM.
 
-   Sugerencia para la muestra "turbidez alta": disuelve un poco
-   de cafe instantaneo en agua, o usa tinta china diluida. Evita
-   sustancias toxicas o corrosivas, ya que el sensor quedara
-   sumergido varios segundos.
+   Suggestion for the "high turbidity" sample: dissolve a bit of
+   instant coffee in water, or use diluted india ink. Avoid toxic
+   or corrosive substances, since the sensor will stay submerged
+   for several seconds.
   ============================================================
 */
 
-#include <EEPROM.h> // Libreria nativa de Arduino para guardar datos permanentes
+#include <EEPROM.h> // Native Arduino library used to store data permanently
 
-// ------------------- CONFIGURACION DE PINES -------------------
+// ------------------- PIN CONFIGURATION -------------------
 
-const int PIN_SENSOR_TURBIDEZ = A1; // Cable azul (señal) del sensor
+const int TURBIDITY_SENSOR_PIN = A1; // Sensor's blue (signal) wire
 
-// >>> AQUI DEBES COLOCAR LOS PINES DIGITALES QUE VAYAS A USAR <<<
-const int PIN_LED_ROJO     = 8;   // <-- CAMBIAR: pin digital del LED ROJO
-const int PIN_LED_AMARILLO = 9;   // <-- CAMBIAR: pin digital del LED AMARILLO
-const int PIN_LED_VERDE    = 10;  // <-- CAMBIAR: pin digital del LED VERDE
+// >>> SET THE DIGITAL PINS YOU'RE ACTUALLY USING HERE <<<
+const int RED_LED_PIN    = 8;   // <-- CHANGE: RED LED digital pin
+const int YELLOW_LED_PIN = 9;   // <-- CHANGE: YELLOW LED digital pin
+const int GREEN_LED_PIN  = 10;  // <-- CHANGE: GREEN LED digital pin
 
-const int NUMERO_DE_MUESTRAS = 800; // Lecturas para promediar y reducir ruido
+const int NUMBER_OF_SAMPLES = 800; // Readings to average to reduce noise
 
-// ------------------- CONSTANTES DE LA FORMULA NTU -------------------
-const float VOLTAJE_REFERENCIA_ARDUINO = 5.00; // <-- AJUSTAR si tu 5V real es distinto
-float COEF_A = -1120.4; // <-- AJUSTAR solo si haces tu propia regresion con NTU reales
-float COEF_B = 5742.3;  // <-- AJUSTAR solo si haces tu propia regresion con NTU reales
-float COEF_C = -4352.9; // <-- AJUSTAR solo si haces tu propia regresion con NTU reales
+// ------------------- NTU FORMULA CONSTANTS -------------------
+const float ARDUINO_REFERENCE_VOLTAGE = 5.00; // <-- ADJUST if your real 5V differs
+float COEF_A = -1120.4; // <-- ADJUST only if you run your own regression with real NTU
+float COEF_B = 5742.3;  // <-- ADJUST only if you run your own regression with real NTU
+float COEF_C = -4352.9; // <-- ADJUST only if you run your own regression with real NTU
 
-// ------------------- DIRECCIONES DE MEMORIA EEPROM -------------------
-// Cada float ocupa 4 bytes, por eso las direcciones van de 4 en 4
-const int DIRECCION_NTU_CLARA   = 0;
-const int DIRECCION_NTU_MEDIA   = 4;
-const int DIRECCION_NTU_TURBIA  = 8;
-const int DIRECCION_CALIBRADO   = 12; // Bandera: 1 = ya se calibro antes
+// ------------------- EEPROM MEMORY ADDRESSES -------------------
+// Each float takes 4 bytes, so addresses are spaced 4 apart
+const int CLEAR_NTU_ADDRESS      = 0;
+const int MEDIUM_NTU_ADDRESS     = 4;
+const int TURBID_NTU_ADDRESS     = 8;
+const int CALIBRATED_FLAG_ADDRESS = 12; // Flag: 1 = already calibrated before
 
-// ------------------- VARIABLES DE CALIBRACION (EN NTU) -------------------
-// Estos valores se calculan al calibrar, o se cargan desde la EEPROM
-// si ya se habia calibrado antes. Sirven como umbrales para los LEDs.
-float ntuAguaClara  = 200.0;  // Valor por defecto hasta que se calibre
-float ntuAguaMedia  = 1000.0; // Valor por defecto hasta que se calibre
-float ntuAguaTurbia = 2500.0; // Valor por defecto hasta que se calibre
+// ------------------- CALIBRATION VARIABLES (IN NTU) -------------------
+// These values are calculated during calibration, or loaded from EEPROM
+// if it was already calibrated before. They act as thresholds for the LEDs.
+float clearWaterNtu  = 200.0;  // Default value until calibrated
+float mediumWaterNtu = 1000.0; // Default value until calibrated
+float turbidWaterNtu = 2500.0; // Default value until calibrated
 
-float UMBRAL_TURBIDEZ_ALTA;  // Se calcula automaticamente entre media y turbia
-float UMBRAL_TURBIDEZ_MEDIA; // Se calcula automaticamente entre clara y media
+float HIGH_TURBIDITY_THRESHOLD;   // Automatically calculated between medium and turbid
+float MEDIUM_TURBIDITY_THRESHOLD; // Automatically calculated between clear and medium
 
-// ------------------- VARIABLES DE ESTADO DE CALIBRACION -------------------
-bool enCalibracion = false;   // true mientras el asistente esta activo
-int  pasoCalibracion = 0;     // 0=inactivo, 1=agua clara, 2=agua media, 3=agua turbia
+// ------------------- CALIBRATION STATE VARIABLES -------------------
+bool calibrating = false;   // true while the wizard is active
+int  calibrationStep = 0;   // 0=inactive, 1=clear water, 2=medium water, 3=turbid water
 
 
 void setup() {
   Serial.begin(9600);
 
-  pinMode(PIN_LED_ROJO, OUTPUT);
-  pinMode(PIN_LED_AMARILLO, OUTPUT);
-  pinMode(PIN_LED_VERDE, OUTPUT);
-  apagarTodosLosLeds();
+  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(YELLOW_LED_PIN, OUTPUT);
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  turnOffAllLeds();
 
-  cargarCalibracionDesdeEEPROM();
-  recalcularUmbrales();
+  loadCalibrationFromEEPROM();
+  recalculateThresholds();
 
   Serial.println("============================================");
-  Serial.println(" Sensor de turbidez DFRobot - Modo NTU");
-  Serial.println(" Escribe 'C' + Enter para iniciar calibracion");
+  Serial.println(" DFRobot turbidity sensor - NTU mode");
+  Serial.println(" Type 'C' + Enter to start calibration");
   Serial.println("============================================");
 }
 
 
 void loop() {
 
-  // ---------- Revisar si el usuario escribio algo en el Monitor Serial ----------
+  // ---------- Check if the user typed something in the Serial Monitor ----------
   if (Serial.available() > 0) {
-    char teclaRecibida = Serial.read();
-    procesarTecla(teclaRecibida);
+    char receivedKey = Serial.read();
+    processKey(receivedKey);
   }
 
-  // ---------- PASO 1: LEER EL SENSOR VARIAS VECES ----------
-  long sumaLecturas = 0;
-  for (int i = 0; i < NUMERO_DE_MUESTRAS; i++) {
-    sumaLecturas += analogRead(PIN_SENSOR_TURBIDEZ);
+  // ---------- STEP 1: READ THE SENSOR MULTIPLE TIMES ----------
+  long readingSum = 0;
+  for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
+    readingSum += analogRead(TURBIDITY_SENSOR_PIN);
     delayMicroseconds(500);
   }
-  float promedioLectura = sumaLecturas / (float)NUMERO_DE_MUESTRAS;
+  float averageReading = readingSum / (float)NUMBER_OF_SAMPLES;
 
-  // ---------- PASO 2: CONVERTIR A VOLTAJE ----------
-  float voltaje = promedioLectura * (VOLTAJE_REFERENCIA_ARDUINO / 1023.0);
+  // ---------- STEP 2: CONVERT TO VOLTAGE ----------
+  float voltage = averageReading * (ARDUINO_REFERENCE_VOLTAGE / 1023.0);
 
-  // ---------- PASO 3: CONVERTIR A NTU ----------
-  float ntu = calcularNTU(voltaje);
+  // ---------- STEP 3: CONVERT TO NTU ----------
+  float ntu = calculateNTU(voltage);
 
-  // ---------- PASO 4: MOSTRAR LECTURA EN EL MONITOR SERIAL ----------
-  Serial.print("Voltaje: ");
-  Serial.print(voltaje, 3);
-  Serial.print(" V  |  NTU estimado: ");
+  // ---------- STEP 4: SHOW THE READING ON THE SERIAL MONITOR ----------
+  Serial.print("Voltage: ");
+  Serial.print(voltage, 3);
+  Serial.print(" V  |  Estimated NTU: ");
   Serial.print(ntu, 1);
 
-  if (enCalibracion) {
-    // Mientras se calibra, no se evaluan los LEDs, solo se muestra la lectura
-    Serial.print("   [CALIBRANDO - Paso ");
-    Serial.print(pasoCalibracion);
-    Serial.println(" de 3]");
+  if (calibrating) {
+    // While calibrating, LEDs are not evaluated, only the reading is shown
+    Serial.print("   [CALIBRATING - Step ");
+    Serial.print(calibrationStep);
+    Serial.println(" of 3]");
   } else {
-    // ---------- PASO 5: EVALUAR LOS 3 CONDICIONALES DE LOS LEDS ----------
-    Serial.print("  |  Estado: ");
-    evaluarLeds(ntu);
+    // ---------- STEP 5: EVALUATE THE 3 LED CONDITIONS ----------
+    Serial.print("  |  Status: ");
+    evaluateLeds(ntu);
   }
 
-  delay(500); // Actualizacion cada medio segundo
+  delay(500); // Update every half second
 }
 
 
 // ============================================================
-//                   FUNCIONES DE CALIBRACION
+//                   CALIBRATION FUNCTIONS
 // ============================================================
 
-void procesarTecla(char tecla) {
+void processKey(char key) {
 
-  if (tecla == 'C' || tecla == 'c') {
-    // ----- Iniciar calibracion -----
-    enCalibracion = true;
-    pasoCalibracion = 1;
+  if (key == 'C' || key == 'c') {
+    // ----- Start calibration -----
+    calibrating = true;
+    calibrationStep = 1;
     Serial.println();
-    Serial.println("### CALIBRACION INICIADA ###");
-    Serial.println("Paso 1/3: Sumerge el sensor en AGUA CLARA (pura).");
-    Serial.println("Cuando la lectura se estabilice, escribe 'F' + Enter.");
+    Serial.println("### CALIBRATION STARTED ###");
+    Serial.println("Step 1/3: Dip the sensor in CLEAR (pure) water.");
+    Serial.println("Once the reading stabilizes, type 'F' + Enter.");
   }
-  else if ((tecla == 'F' || tecla == 'f') && enCalibracion) {
-    // ----- Fijar el valor actual segun el paso -----
-    float voltajeActual = leerVoltajePromedio();
-    float ntuActual = calcularNTU(voltajeActual);
+  else if ((key == 'F' || key == 'f') && calibrating) {
+    // ----- Fix the current value for the current step -----
+    float currentVoltage = readAverageVoltage();
+    float currentNtu = calculateNTU(currentVoltage);
 
-    if (pasoCalibracion == 1) {
-      ntuAguaClara = ntuActual;
-      Serial.print("Valor fijado para AGUA CLARA: ");
-      Serial.print(ntuActual, 1);
+    if (calibrationStep == 1) {
+      clearWaterNtu = currentNtu;
+      Serial.print("Value fixed for CLEAR WATER: ");
+      Serial.print(currentNtu, 1);
       Serial.println(" NTU");
-      Serial.println("Paso 2/3: Sumerge el sensor en AGUA CON TINTE AMARILLO.");
-      Serial.println("Cuando la lectura se estabilice, escribe 'F' + Enter.");
-      pasoCalibracion = 2;
+      Serial.println("Step 2/3: Dip the sensor in WATER WITH YELLOW DYE.");
+      Serial.println("Once the reading stabilizes, type 'F' + Enter.");
+      calibrationStep = 2;
     }
-    else if (pasoCalibracion == 2) {
-      ntuAguaMedia = ntuActual;
-      Serial.print("Valor fijado para AGUA MEDIA (amarilla): ");
-      Serial.print(ntuActual, 1);
+    else if (calibrationStep == 2) {
+      mediumWaterNtu = currentNtu;
+      Serial.print("Value fixed for MEDIUM (yellow) WATER: ");
+      Serial.print(currentNtu, 1);
       Serial.println(" NTU");
-      Serial.println("Paso 3/3: Sumerge el sensor en AGUA CON CAFE/TINTA OSCURA.");
-      Serial.println("Cuando la lectura se estabilice, escribe 'F' + Enter.");
-      pasoCalibracion = 3;
+      Serial.println("Step 3/3: Dip the sensor in WATER WITH COFFEE/DARK INK.");
+      Serial.println("Once the reading stabilizes, type 'F' + Enter.");
+      calibrationStep = 3;
     }
-    else if (pasoCalibracion == 3) {
-      ntuAguaTurbia = ntuActual;
-      Serial.print("Valor fijado para AGUA TURBIA (oscura): ");
-      Serial.print(ntuActual, 1);
+    else if (calibrationStep == 3) {
+      turbidWaterNtu = currentNtu;
+      Serial.print("Value fixed for TURBID (dark) WATER: ");
+      Serial.print(currentNtu, 1);
       Serial.println(" NTU");
-      Serial.println("Los 3 puntos ya fueron fijados.");
-      Serial.println("Escribe 'X' + Enter para FINALIZAR y guardar la calibracion.");
-      pasoCalibracion = 4; // Esperando finalizacion
+      Serial.println("All 3 points have been fixed.");
+      Serial.println("Type 'X' + Enter to FINISH and save the calibration.");
+      calibrationStep = 4; // Waiting to finish
     }
     else {
-      Serial.println("Ya fijaste los 3 puntos. Escribe 'X' para finalizar.");
+      Serial.println("You already fixed the 3 points. Type 'X' to finish.");
     }
   }
-  else if ((tecla == 'X' || tecla == 'x') && enCalibracion) {
-    // ----- Finalizar calibracion -----
-    if (pasoCalibracion < 4) {
-      Serial.println("Aun no has fijado los 3 puntos con 'F'. No se puede finalizar todavia.");
+  else if ((key == 'X' || key == 'x') && calibrating) {
+    // ----- Finish calibration -----
+    if (calibrationStep < 4) {
+      Serial.println("You haven't fixed the 3 points with 'F' yet. Can't finish yet.");
     } else {
-      recalcularUmbrales();
-      guardarCalibracionEnEEPROM();
-      enCalibracion = false;
-      pasoCalibracion = 0;
-      Serial.println("### CALIBRACION FINALIZADA Y GUARDADA EN MEMORIA ###");
-      Serial.println("Volviendo al funcionamiento normal...");
+      recalculateThresholds();
+      saveCalibrationToEEPROM();
+      calibrating = false;
+      calibrationStep = 0;
+      Serial.println("### CALIBRATION FINISHED AND SAVED TO MEMORY ###");
+      Serial.println("Returning to normal operation...");
       Serial.println();
     }
   }
 }
 
-// Lee el sensor varias veces y devuelve el voltaje promedio (usado durante calibracion)
-float leerVoltajePromedio() {
-  long sumaLecturas = 0;
-  for (int i = 0; i < NUMERO_DE_MUESTRAS; i++) {
-    sumaLecturas += analogRead(PIN_SENSOR_TURBIDEZ);
+// Reads the sensor multiple times and returns the average voltage (used during calibration)
+float readAverageVoltage() {
+  long readingSum = 0;
+  for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
+    readingSum += analogRead(TURBIDITY_SENSOR_PIN);
     delayMicroseconds(500);
   }
-  float promedioLectura = sumaLecturas / (float)NUMERO_DE_MUESTRAS;
-  return promedioLectura * (VOLTAJE_REFERENCIA_ARDUINO / 1023.0);
+  float averageReading = readingSum / (float)NUMBER_OF_SAMPLES;
+  return averageReading * (ARDUINO_REFERENCE_VOLTAGE / 1023.0);
 }
 
-// Convierte un voltaje a NTU usando la formula polinomica
-float calcularNTU(float voltaje) {
+// Converts a voltage to NTU using the polynomial formula
+float calculateNTU(float voltage) {
   float ntu;
-  if (voltaje < 2.5) {
+  if (voltage < 2.5) {
     ntu = 3000;
   } else {
-    ntu = (COEF_A * voltaje * voltaje) + (COEF_B * voltaje) + COEF_C;
+    ntu = (COEF_A * voltage * voltage) + (COEF_B * voltage) + COEF_C;
   }
   if (ntu < 0) ntu = 0;
   return ntu;
 }
 
-// Calcula los umbrales de los LEDs como puntos intermedios entre las 3 muestras calibradas
-void recalcularUmbrales() {
-  UMBRAL_TURBIDEZ_MEDIA = (ntuAguaClara + ntuAguaMedia) / 2.0;
-  UMBRAL_TURBIDEZ_ALTA  = (ntuAguaMedia + ntuAguaTurbia) / 2.0;
+// Calculates the LED thresholds as midpoints between the 3 calibrated samples
+void recalculateThresholds() {
+  MEDIUM_TURBIDITY_THRESHOLD = (clearWaterNtu + mediumWaterNtu) / 2.0;
+  HIGH_TURBIDITY_THRESHOLD   = (mediumWaterNtu + turbidWaterNtu) / 2.0;
 }
 
-// Guarda los 3 valores calibrados de forma permanente en la EEPROM
-void guardarCalibracionEnEEPROM() {
-  EEPROM.put(DIRECCION_NTU_CLARA, ntuAguaClara);
-  EEPROM.put(DIRECCION_NTU_MEDIA, ntuAguaMedia);
-  EEPROM.put(DIRECCION_NTU_TURBIA, ntuAguaTurbia);
-  EEPROM.put(DIRECCION_CALIBRADO, (byte)1); // Marca que ya existe una calibracion guardada
+// Permanently saves the 3 calibrated values to EEPROM
+void saveCalibrationToEEPROM() {
+  EEPROM.put(CLEAR_NTU_ADDRESS, clearWaterNtu);
+  EEPROM.put(MEDIUM_NTU_ADDRESS, mediumWaterNtu);
+  EEPROM.put(TURBID_NTU_ADDRESS, turbidWaterNtu);
+  EEPROM.put(CALIBRATED_FLAG_ADDRESS, (byte)1); // Marks that a calibration is already saved
 }
 
-// Carga la calibracion guardada anteriormente (si existe) al encender el Arduino
-void cargarCalibracionDesdeEEPROM() {
-  byte banderaCalibrado;
-  EEPROM.get(DIRECCION_CALIBRADO, banderaCalibrado);
+// Loads a previously saved calibration (if any) when the Arduino powers on
+void loadCalibrationFromEEPROM() {
+  byte calibratedFlag;
+  EEPROM.get(CALIBRATED_FLAG_ADDRESS, calibratedFlag);
 
-  if (banderaCalibrado == 1) {
-    EEPROM.get(DIRECCION_NTU_CLARA, ntuAguaClara);
-    EEPROM.get(DIRECCION_NTU_MEDIA, ntuAguaMedia);
-    EEPROM.get(DIRECCION_NTU_TURBIA, ntuAguaTurbia);
-    Serial.println("Se cargo una calibracion guardada previamente.");
+  if (calibratedFlag == 1) {
+    EEPROM.get(CLEAR_NTU_ADDRESS, clearWaterNtu);
+    EEPROM.get(MEDIUM_NTU_ADDRESS, mediumWaterNtu);
+    EEPROM.get(TURBID_NTU_ADDRESS, turbidWaterNtu);
+    Serial.println("A previously saved calibration was loaded.");
   } else {
-    Serial.println("No hay calibracion guardada. Se usaran valores por defecto.");
+    Serial.println("No saved calibration found. Using default values.");
   }
 }
 
 // ============================================================
-//                     FUNCIONES DE LOS LEDS
+//                     LED FUNCTIONS
 // ============================================================
 
-void apagarTodosLosLeds() {
-  digitalWrite(PIN_LED_ROJO, LOW);
-  digitalWrite(PIN_LED_AMARILLO, LOW);
-  digitalWrite(PIN_LED_VERDE, LOW);
+void turnOffAllLeds() {
+  digitalWrite(RED_LED_PIN, LOW);
+  digitalWrite(YELLOW_LED_PIN, LOW);
+  digitalWrite(GREEN_LED_PIN, LOW);
 }
 
-// Evalua los 3 condicionales y enciende el LED correspondiente
-void evaluarLeds(float ntu) {
-  if (ntu > UMBRAL_TURBIDEZ_ALTA) {
-    digitalWrite(PIN_LED_ROJO, HIGH);
-    digitalWrite(PIN_LED_AMARILLO, LOW);
-    digitalWrite(PIN_LED_VERDE, LOW);
-    Serial.println("TURBIDEZ ALTA - LED ROJO");
+// Evaluates the 3 conditions and turns on the corresponding LED
+void evaluateLeds(float ntu) {
+  if (ntu > HIGH_TURBIDITY_THRESHOLD) {
+    digitalWrite(RED_LED_PIN, HIGH);
+    digitalWrite(YELLOW_LED_PIN, LOW);
+    digitalWrite(GREEN_LED_PIN, LOW);
+    Serial.println("HIGH TURBIDITY - RED LED");
   }
-  else if (ntu > UMBRAL_TURBIDEZ_MEDIA) {
-    digitalWrite(PIN_LED_ROJO, LOW);
-    digitalWrite(PIN_LED_AMARILLO, HIGH);
-    digitalWrite(PIN_LED_VERDE, LOW);
-    Serial.println("TURBIDEZ MEDIA - LED AMARILLO");
+  else if (ntu > MEDIUM_TURBIDITY_THRESHOLD) {
+    digitalWrite(RED_LED_PIN, LOW);
+    digitalWrite(YELLOW_LED_PIN, HIGH);
+    digitalWrite(GREEN_LED_PIN, LOW);
+    Serial.println("MEDIUM TURBIDITY - YELLOW LED");
   }
   else {
-    digitalWrite(PIN_LED_ROJO, LOW);
-    digitalWrite(PIN_LED_AMARILLO, LOW);
-    digitalWrite(PIN_LED_VERDE, HIGH);
-    Serial.println("TURBIDEZ BAJA - LED VERDE");
+    digitalWrite(RED_LED_PIN, LOW);
+    digitalWrite(YELLOW_LED_PIN, LOW);
+    digitalWrite(GREEN_LED_PIN, HIGH);
+    Serial.println("LOW TURBIDITY - GREEN LED");
   }
 }
