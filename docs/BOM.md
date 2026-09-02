@@ -15,6 +15,31 @@ cualquier tienda equivalente sirve igual.
 | <img src="https://www.sparkfun.com/media/catalog/product/cache/f3020b7489dcfc4d1d147cf4dad07b7f/0/0/00116-02-L.jpg" width="90"> | **Header de pines macho, paso 2.54mm** | J2, J3 | 1 tira (cortar a 3 y 4 pines) | Conector de 3 pines para el sensor y de 4 pines para el header adicional (ver esquemático) | [SparkFun - tira de 40 pines](https://www.sparkfun.com/break-away-headers-straight.html) |
 | <img src="https://www.sparkfun.com/media/catalog/product/cache/f3020b7489dcfc4d1d147cf4dad07b7f/J/u/JumperWire-Female-01-L.jpg" width="90"> | **Cables jumper hembra-hembra** | — | ~4 | Para conectar el cable del sensor al header de la PCB | [SparkFun - pack x10](https://www.sparkfun.com/jumper-wires-premium-6-f-f-pack-of-10.html) |
 
+## Diagramas de referencia
+
+**Pinout Arduino Nano** (oficial, Arduino):
+
+<img src="https://content.arduino.cc/assets/Pinout-NANO_latest.png" width="500">
+
+**Conexión del sensor DFRobot SEN0189** (oficial, DFRobot Wiki):
+
+<img src="https://raw.githubusercontent.com/DFRobot/DFRobotMediaWikiImage/master/Image/SEN0189_Probe_Connection.jpg" width="500">
+
+**Código de colores de resistores** (SparkFun Learn):
+
+<img src="https://cdn.sparkfun.com/assets/learn_tutorials/6/4/Resistors.png" width="450">
+
+**LED + resistor limitador de corriente** (SparkFun Learn):
+
+<img src="https://cdn.sparkfun.com/assets/6/e/8/3/c/51f93d85757b7f2049270817.png" width="350">
+
+## Datasheets
+
+| Componente | Archivo |
+|------------|---------|
+| Arduino Nano (A000005) | [docs/datasheets/arduino-nano.pdf](datasheets/arduino-nano.pdf) |
+| Sensor turbidez DFRobot SEN0189 | [docs/datasheets/dfrobot-sen0189.pdf](datasheets/dfrobot-sen0189.pdf) |
+
 ## Fabricación de la PCB
 
 Los archivos de fabricación ya están en el repo, listos para subir a

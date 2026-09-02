@@ -11,6 +11,10 @@ turbidez DFRobot SEN0189 + Arduino Nano.
 | Negro (GND) | GND |
 | Azul (señal analógica) | Pin A1 |
 
+<img src="https://raw.githubusercontent.com/DFRobot/DFRobotMediaWikiImage/master/Image/SEN0189_Probe_Connection.jpg" width="500">
+
+*Diagrama de conexión del sensor. Fuente: DFRobot Wiki (oficial).*
+
 Además, 3 LEDs indicadores (verde/amarillo/rojo) en pines digitales
 configurables (por defecto 10, 9 y 8) para mostrar el nivel de turbidez de
 forma visual, sin necesidad de mirar el Monitor Serial.
