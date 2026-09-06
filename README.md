@@ -82,8 +82,8 @@ spinning render of each part.
 
 ## Bill of materials (BOM)
 
-Full table and calibration notes in **[docs/BOM.md](docs/BOM.md)**.
-Components pulled directly from the real schematic
+Purchase list with prices and links in **[docs/BOM.md](docs/BOM.md)**.
+Components below pulled directly from the real schematic
 (`kicad-cli sch export bom`), not made up. ⚠️ This table (and the schematic
 it's from) still reflects the **legacy SEN0189 design** — the new discrete
 sensor's parts (IR LED, 2× BPW34 photodiode, TL072, ADS1115) are listed
