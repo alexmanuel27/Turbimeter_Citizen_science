@@ -1,5 +1,11 @@
 # Bill of materials (BOM)
 
+> ⚠️ **This table reflects the legacy SEN0189-based schematic.** The sensor
+> is being redesigned around discrete optics — see
+> [docs/optical-design.md](optical-design.md#new-components) for the new
+> parts (IR LED, 2× BPW34 photodiode, TL072, ADS1115) until the schematic
+> itself is updated to match.
+
 Components pulled directly from the real schematic (`hardware/esque.kicad_sch`,
 exported with `kicad-cli sch export bom`), with a photo and a reference
 purchase link for each one. The links are examples of well-known stores

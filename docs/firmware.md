@@ -1,7 +1,12 @@
-# Firmware explanation
+# Firmware explanation (legacy SEN0189 design)
 
-Analysis of [`firmware/firmware.ino`](../firmware/firmware.ino): DFRobot
-SEN0189 turbidity sensor + Arduino Nano.
+> ⚠️ **Legacy.** This describes the original DFRobot SEN0189-based sensor,
+> now superseded by a custom discrete 90° nephelometric design — see
+> [docs/optical-design.md](optical-design.md). Kept for reference; the code
+> itself lives in [`firmware/legacy_sen0189/firmware.ino`](../firmware/legacy_sen0189/firmware.ino).
+
+Analysis of [`firmware/legacy_sen0189/firmware.ino`](../firmware/legacy_sen0189/firmware.ino):
+DFRobot SEN0189 turbidity sensor + Arduino Nano.
 
 ## Hardware wiring
 

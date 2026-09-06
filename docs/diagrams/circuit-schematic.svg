@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 820" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1150" height="820" fill="#ffffff"/>
+  <text x="575" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">Discrete-sensor circuit (LED driver + 2x transimpedance amp + ADS1115)</text>
+
+  <!-- Arduino Nano -->
+  <rect x="40" y="110" width="150" height="380" rx="10" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <text x="115" y="135" text-anchor="middle" font-size="14" font-weight="bold" fill="#22543d">Arduino Nano</text>
+  <text x="55" y="170" font-size="12" fill="#22543d">5V</text>
+  <text x="55" y="200" font-size="12" fill="#22543d">GND</text>
+  <text x="55" y="260" font-size="12" fill="#22543d">D7 (LED drive)</text>
+  <text x="55" y="340" font-size="12" fill="#22543d">A4 / SDA</text>
+  <text x="55" y="370" font-size="12" fill="#22543d">A5 / SCL</text>
+  <text x="55" y="440" font-size="12" fill="#22543d">D8/D9/D10</text>
+  <text x="55" y="458" font-size="11" fill="#22543d">(status LEDs,</text>
+  <text x="55" y="473" font-size="11" fill="#22543d">unchanged)</text>
+
+  <!-- LED driver -->
+  <text x="230" y="230" text-anchor="middle" font-size="13" font-weight="bold" fill="#7b341e">LED driver</text>
+  <line x1="190" y1="260" x2="250" y2="260" stroke="#333" stroke-width="2"/>
+  <rect x="250" y="250" width="46" height="20" fill="#fff" stroke="#333" stroke-width="1.5"/>
+  <text x="273" y="264" text-anchor="middle" font-size="10">220&#8486;</text>
+  <line x1="296" y1="260" x2="325" y2="260" stroke="#333" stroke-width="2"/>
+  <polygon points="325,250 325,270 350,260" fill="#fff5eb" stroke="#dd6b20" stroke-width="2"/>
+  <line x1="350" y1="250" x2="350" y2="270" stroke="#dd6b20" stroke-width="2"/>
+  <text x="338" y="290" text-anchor="middle" font-size="11" fill="#7b341e">IR LED 850nm</text>
+  <line x1="350" y1="260" x2="390" y2="260" stroke="#333" stroke-width="2"/>
+  <line x1="390" y1="260" x2="390" y2="500" stroke="#333" stroke-width="2"/>
+  <line x1="190" y1="200" x2="390" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="390" y1="200" x2="390" y2="260" stroke="#333" stroke-width="2"/>
+  <text x="400" y="495" font-size="11" fill="#666">GND rail</text>
+
+  <!-- ===================== CHANNEL A (measurement) ===================== -->
+  <text x="450" y="100" font-size="13" font-weight="bold" fill="#22543d">Channel A &#8212; measurement photodiode (90&#176;)</text>
+
+  <line x1="190" y1="170" x2="450" y2="170" stroke="#333" stroke-width="2"/>
+  <text x="420" y="162" font-size="10" fill="#666">+5V (reverse bias)</text>
+  <polygon points="450,155 450,185 475,170" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <line x1="475" y1="155" x2="475" y2="185" stroke="#2f855a" stroke-width="2"/>
+  <text x="462" y="203" text-anchor="middle" font-size="10" fill="#22543d">BPW34 (A)</text>
+  <line x1="475" y1="170" x2="530" y2="170" stroke="#333" stroke-width="2"/>
+
+  <!-- op-amp A -->
+  <polygon points="530,140 530,200 590,170" fill="#faf5ff" stroke="#6b46c1" stroke-width="2"/>
+  <text x="540" y="155" font-size="10" fill="#44337a">+</text>
+  <text x="540" y="192" font-size="10" fill="#44337a">-</text>
+  <text x="560" y="222" text-anchor="middle" font-size="11" fill="#44337a">1/2 TL072</text>
+
+  <!-- + input to GND -->
+  <line x1="530" y1="150" x2="505" y2="150" stroke="#333" stroke-width="2"/>
+  <line x1="505" y1="150" x2="505" y2="115" stroke="#333" stroke-width="2"/>
+  <line x1="505" y1="115" x2="530" y2="115" stroke="#333" stroke-width="2"/>
+  <text x="495" y="130" text-anchor="middle" font-size="10" fill="#666">GND</text>
+
+  <!-- feedback loop below the op-amp -->
+  <line x1="590" y1="170" x2="620" y2="170" stroke="#333" stroke-width="2"/>
+  <circle cx="590" cy="170" r="3" fill="#333"/>
+  <line x1="620" y1="170" x2="620" y2="235" stroke="#333" stroke-width="2"/>
+  <line x1="620" y1="235" x2="530" y2="235" stroke="#333" stroke-width="2"/>
+  <line x1="530" y1="235" x2="530" y2="170" stroke="#333" stroke-width="2"/>
+  <rect x="545" y="225" width="60" height="20" fill="#fff" stroke="#333" stroke-width="1.5"/>
+  <text x="575" y="239" text-anchor="middle" font-size="10">Rf 1M&#8486;</text>
+  <text x="575" y="262" text-anchor="middle" font-size="9" fill="#888">(+ ~22pF in parallel, for stability)</text>
+
+  <text x="650" y="163" font-size="11" fill="#333">Vout A</text>
+  <line x1="620" y1="170" x2="700" y2="170" stroke="#333" stroke-width="2"/>
+
+  <!-- ===================== CHANNEL B (reference) ===================== -->
+  <text x="450" y="330" font-size="13" font-weight="bold" fill="#44337a">Channel B &#8212; reference photodiode</text>
+
+  <line x1="390" y1="360" x2="450" y2="360" stroke="#333" stroke-width="2"/>
+  <text x="420" y="352" font-size="10" fill="#666">+5V</text>
+  <polygon points="450,345 450,375 475,360" fill="#f0fff4" stroke="#2f855a" stroke-width="2"/>
+  <line x1="475" y1="345" x2="475" y2="375" stroke="#2f855a" stroke-width="2"/>
+  <text x="462" y="393" text-anchor="middle" font-size="10" fill="#22543d">BPW34 (B)</text>
+  <line x1="475" y1="360" x2="530" y2="360" stroke="#333" stroke-width="2"/>
+
+  <!-- op-amp B -->
+  <polygon points="530,330 530,390 590,360" fill="#faf5ff" stroke="#6b46c1" stroke-width="2"/>
+  <text x="540" y="345" font-size="10" fill="#44337a">+</text>
+  <text x="540" y="382" font-size="10" fill="#44337a">-</text>
+  <text x="560" y="412" text-anchor="middle" font-size="11" fill="#44337a">2/2 TL072</text>
+
+  <line x1="530" y1="340" x2="505" y2="340" stroke="#333" stroke-width="2"/>
+  <line x1="505" y1="340" x2="505" y2="305" stroke="#333" stroke-width="2"/>
+  <line x1="505" y1="305" x2="530" y2="305" stroke="#333" stroke-width="2"/>
+  <text x="495" y="295" text-anchor="middle" font-size="10" fill="#666">GND</text>
+
+  <line x1="590" y1="360" x2="620" y2="360" stroke="#333" stroke-width="2"/>
+  <circle cx="590" cy="360" r="3" fill="#333"/>
+  <line x1="620" y1="360" x2="620" y2="425" stroke="#333" stroke-width="2"/>
+  <line x1="620" y1="425" x2="530" y2="425" stroke="#333" stroke-width="2"/>
+  <line x1="530" y1="425" x2="530" y2="360" stroke="#333" stroke-width="2"/>
+  <rect x="545" y="415" width="60" height="20" fill="#fff" stroke="#333" stroke-width="1.5"/>
+  <text x="575" y="429" text-anchor="middle" font-size="10">Rf 1M&#8486;*</text>
+
+  <text x="650" y="353" font-size="11" fill="#333">Vout B</text>
+  <line x1="620" y1="360" x2="700" y2="360" stroke="#333" stroke-width="2"/>
+
+  <text x="450" y="460" font-size="10" fill="#888">* usually smaller than channel A's, since photodiode B sits much closer to the LED</text>
+
+  <!-- ADS1115 -->
+  <rect x="720" y="110" width="160" height="290" rx="10" fill="#fff5f5" stroke="#c53030" stroke-width="2"/>
+  <text x="800" y="135" text-anchor="middle" font-size="14" font-weight="bold" fill="#742a2a">ADS1115</text>
+  <text x="800" y="152" text-anchor="middle" font-size="10" fill="#742a2a">16-bit I2C ADC</text>
+  <text x="735" y="185" font-size="12" fill="#742a2a">AIN0 &#8592; Vout A</text>
+  <text x="735" y="215" font-size="12" fill="#742a2a">AIN1 &#8592; Vout B</text>
+  <text x="735" y="255" font-size="12" fill="#742a2a">VDD &#8592; 5V</text>
+  <text x="735" y="280" font-size="12" fill="#742a2a">GND</text>
+  <text x="735" y="310" font-size="12" fill="#742a2a">ADDR &#8594; GND</text>
+  <text x="735" y="328" font-size="10" fill="#742a2a">(sets I2C address 0x48)</text>
+  <text x="735" y="355" font-size="12" fill="#742a2a">SDA / SCL &#8594;</text>
+  <text x="735" y="372" font-size="12" fill="#742a2a">Nano A4/A5</text>
+
+  <line x1="700" y1="170" x2="720" y2="170" stroke="#333" stroke-width="2"/>
+  <line x1="700" y1="360" x2="720" y2="360" stroke="#333" stroke-width="2"/>
+
+  <!-- I2C lines back to Nano, routed below everything -->
+  <line x1="720" y1="345" x2="190" y2="340" stroke="#3182ce" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="720" y1="365" x2="190" y2="370" stroke="#3182ce" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="600" y="498" text-anchor="middle" font-size="10" fill="#3182ce">I2C bus (SDA/SCL) to Nano A4/A5</text>
+
+  <!-- Notes -->
+  <rect x="40" y="560" width="1070" height="230" rx="8" fill="#f9f9f9" stroke="#ccc" stroke-width="1"/>
+  <text x="60" y="588" font-size="13" font-weight="bold" fill="#333">Reading sequence (in firmware)</text>
+  <text x="60" y="612" font-size="12" fill="#333">1. LED off &#8594; read AIN0 &amp; AIN1 (averaged)  =  dark_A, dark_B  (cancels ambient IR)</text>
+  <text x="60" y="634" font-size="12" fill="#333">2. LED on  &#8594; read AIN0 &amp; AIN1 (averaged)  =  lit_A, lit_B</text>
+  <text x="60" y="656" font-size="12" fill="#333">3. signal_A = lit_A - dark_A   (scattered light, 90&#176;)      signal_B = lit_B - dark_B   (LED brightness reference)</text>
+  <text x="60" y="678" font-size="12" fill="#333">4. ratio = signal_A / signal_B   &#8592;  turbidity index, independent of LED brightness drift (temperature/aging)</text>
+  <text x="60" y="706" font-size="12" fill="#555">Rf (1M&#8486;) is a starting point, not final: tune per breadboard testing so Vout stays within the TL072's usable output range at your</text>
+  <text x="60" y="726" font-size="12" fill="#555">expected light levels (roughly 0.5-3.5V on a 5V single supply). Channel B usually needs a smaller Rf since it sits closer to the LED.</text>
+  <text x="60" y="754" font-size="12" fill="#555">Full BOM, part links and the calibration procedure: docs/optical-design.md</text>
+</svg>

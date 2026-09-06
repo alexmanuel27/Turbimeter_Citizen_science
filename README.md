@@ -4,7 +4,16 @@ Repository for the citizen-science turbidimeter project: 3D design, PCB, firmwar
 
 <img src="img/prototype.jpeg" width="600">
 
-*The real prototype: 3D-printed enclosure, PCB, and sensor holder dipped in a test sample.*
+*The first prototype (SEN0189-based, now superseded — see the redesign below): 3D-printed enclosure, PCB, and sensor holder dipped in a test sample.*
+
+> 🔧 **Sensor redesign in progress.** The DFRobot SEN0189 module turned out
+> to be too noisy/low-quality for reliable readings. It's being replaced
+> with a custom discrete 90° nephelometric sensor (real IR LED + photodiode
+> optics, like actual turbidimeters use). Full writeup:
+> **[docs/optical-design.md](docs/optical-design.md)**. The sections below
+> are being updated to match; anything still describing the SEN0189 is the
+> legacy design, kept for reference in
+> [`firmware/legacy_sen0189/`](firmware/legacy_sen0189/).
 
 ## Table of contents
 
@@ -33,11 +42,16 @@ Repository for the citizen-science turbidimeter project: 3D design, PCB, firmwar
 
 ## Hardware
 
-- **Sensor:** DFRobot SEN0189 (turbidity)
+- **Sensor:** custom discrete 90° nephelometric sensor (IR LED + 2×
+  photodiode + ADS1115) — see [docs/optical-design.md](docs/optical-design.md).
+  *Legacy: DFRobot SEN0189, kept in [`firmware/legacy_sen0189/`](firmware/legacy_sen0189/).*
 - **Controller:** Arduino Nano
 - Full KiCad project in `hardware/`: schematic (`esque.kicad_sch`),
   PCB (`esque.kicad_pcb`), 3D model (`esque.step`), and manufacturing
-  files (`hardware/gerber/`).
+  files (`hardware/gerber/`). ⚠️ This PCB was laid out for the legacy
+  SEN0189 sensor — it still needs a revision for the new optical bench (see
+  [docs/optical-design.md](docs/optical-design.md)); prototype the new
+  sensor on a breadboard first.
 
 ![Spinning PCB](img/pcb_rotation.gif)
 
@@ -64,18 +78,22 @@ spinning render of each part.
 | **CASE** — main body, houses the Arduino Nano | <img src="img/3d/case.gif" width="180"> | [CASE.stl](3D/CASE.stl) |
 | **LID** — case lid | <img src="img/3d/lid.gif" width="180"> | [LID.stl](3D/LID.stl) |
 | **NECK** — connects the case to the sensor holder | <img src="img/3d/neck.gif" width="180"> | [NECK.stl](3D/NECK.stl) |
-| **SENSOR-HOLDER** — mount for the DFRobot SEN0189 sensor | <img src="img/3d/sensor_holder.gif" width="180"> | [SENSOR-HOLDER.stl](3D/SENSOR-HOLDER.stl) |
+| **SENSOR-HOLDER** — mount for the *legacy* DFRobot SEN0189 sensor (⚠️ needs a redesign for the new 90° optical bench, see [docs/optical-design.md](docs/optical-design.md)) | <img src="img/3d/sensor_holder.gif" width="180"> | [SENSOR-HOLDER.stl](3D/SENSOR-HOLDER.stl) |
 
 ## Bill of materials (BOM)
 
 Full table and calibration notes in **[docs/BOM.md](docs/BOM.md)**.
 Components pulled directly from the real schematic
-(`kicad-cli sch export bom`), not made up:
+(`kicad-cli sch export bom`), not made up. ⚠️ This table (and the schematic
+it's from) still reflects the **legacy SEN0189 design** — the new discrete
+sensor's parts (IR LED, 2× BPW34 photodiode, TL072, ADS1115) are listed
+separately in [docs/optical-design.md](docs/optical-design.md#new-components)
+until the schematic itself is updated:
 
 | Photo | Component | Refs. | Qty | Buy |
 |------|------------|:---:|:---:|:---:|
 | <img src="https://store.arduino.cc/cdn/shop/files/A000005_03.front_934x700.jpg?v=1777476619" width="80"> | Arduino Nano | A1 | 1 | [Arduino Store](https://store.arduino.cc/products/arduino-nano) |
-| <img src="https://dfimg.dfrobot.com/enshop/image/data/SEN0189/SEN0189-sp-01_0x0.png.webp" width="80"> | DFRobot SEN0189 turbidity sensor | J2 | 1 | [DFRobot](https://www.dfrobot.com/product-1394.html) |
+| <img src="https://dfimg.dfrobot.com/enshop/image/data/SEN0189/SEN0189-sp-01_0x0.png.webp" width="80"> | *(legacy)* DFRobot SEN0189 turbidity sensor | J2 | 1 | [DFRobot](https://www.dfrobot.com/product-1394.html) |
 | <img src="https://www.sparkfun.com/media/catalog/product/cache/f3020b7489dcfc4d1d147cf4dad07b7f/1/2/12062-01.jpg" width="80"> | 5mm LED (red/yellow/green) | D1-D3 | 3 | [SparkFun](https://www.sparkfun.com/led-assorted-20-pack.html) |
 | <img src="https://www.sparkfun.com/media/catalog/product/1/4/14490-03.jpg" width="80"> | 330 Ω resistor, 1/4W | R1-R3, R5, R6 | 5 | [SparkFun](https://www.sparkfun.com/resistor-330-ohm-1-4-watt-pth-20-pack-thick-leads.html) |
 | <img src="https://www.sparkfun.com/media/catalog/product/cache/f3020b7489dcfc4d1d147cf4dad07b7f/0/0/00116-02-L.jpg" width="80"> | 2.54mm pin header | J2, J3 | 1 strip | [SparkFun](https://www.sparkfun.com/break-away-headers-straight.html) |
@@ -102,27 +120,36 @@ Components pulled directly from the real schematic
 | Component | File |
 |------------|---------|
 | Arduino Nano (A000005) | [docs/datasheets/arduino-nano.pdf](docs/datasheets/arduino-nano.pdf) |
-| DFRobot SEN0189 turbidity sensor | [docs/datasheets/dfrobot-sen0189.pdf](docs/datasheets/dfrobot-sen0189.pdf) |
+| *(legacy)* DFRobot SEN0189 turbidity sensor | [docs/datasheets/dfrobot-sen0189.pdf](docs/datasheets/dfrobot-sen0189.pdf) |
 
 ## Firmware
 
-[`firmware/firmware.ino`](firmware/firmware.ino) reads the DFRobot SEN0189
-turbidity sensor from an Arduino Nano, calculates an approximate NTU value,
-and turns on an LED (green/yellow/red) based on the detected turbidity
-level. It includes an interactive calibration wizard over the Serial
-Monitor.
+[`firmware/firmware.ino`](firmware/firmware.ino) drives the new discrete
+90° optical sensor from an Arduino Nano: it pulses an IR LED, reads two
+photodiode channels through an external ADS1115 ADC, computes a ratiometric
+**turbidity index**, and turns on an LED (green/yellow/red) based on the
+detected level. It includes the same interactive calibration wizard over
+the Serial Monitor as the legacy version. Full optical/electrical design:
+**[docs/optical-design.md](docs/optical-design.md)**.
+
+*(The old SEN0189-based firmware — analog read, fabricated NTU formula —
+is preserved in [`firmware/legacy_sen0189/firmware.ino`](firmware/legacy_sen0189/firmware.ino)
+and explained in [docs/firmware.md](docs/firmware.md).)*
 
 ### Hardware wiring
 
-| Sensor wire | Destination |
-|-------------------|---------|
-| Red (VCC) | 5V |
-| Black (GND) | GND |
-| Blue (analog signal) | Pin A1 |
+| From | To |
+|------|-----|
+| IR LED anode | Nano D7, through a 220Ω resistor |
+| IR LED cathode | GND |
+| Photodiode A (90°, measurement) | TL072 channel A → ADS1115 AIN0 |
+| Photodiode B (reference, near the LED) | TL072 channel B → ADS1115 AIN1 |
+| ADS1115 VDD / GND / ADDR | 5V / GND / GND (I2C address 0x48) |
+| ADS1115 SDA / SCL | Nano A4 / A5 |
 
-<img src="https://raw.githubusercontent.com/DFRobot/DFRobotMediaWikiImage/master/Image/SEN0189_Probe_Connection.jpg" width="500">
+<img src="docs/diagrams/optical-geometry.svg" width="500">
 
-*Sensor wiring diagram. Source: DFRobot Wiki (official).*
+*90° nephelometric geometry — full schematic in [docs/optical-design.md](docs/optical-design.md).*
 
 There are also 3 indicator LEDs (green/yellow/red) on configurable digital
 pins (10, 9, and 8 by default) to visually show the turbidity level without
@@ -130,28 +157,33 @@ needing to watch the Serial Monitor.
 
 ### General logic (`loop`)
 
-1. **Reading the sensor:** instead of taking a single analog reading (which
-   would be noisy), it averages **800** consecutive `analogRead(A1)` samples
-   with a small pause between each one (`delayMicroseconds(500)`). This
-   stabilizes the value before it's used.
-2. **Converting to voltage:** the average (0–1023, 10-bit ADC resolution) is
-   scaled to a real voltage using the Arduino's 5V reference:
-   `voltage = average * (5.0 / 1023.0)`.
-3. **Converting to NTU:** a second-degree polynomial formula
-   (`ntu = A*v² + B*v + C`) is applied, with coefficients taken from the
-   Arduino community (not an official DFRobot value — the manufacturer only
-   publishes a reference graph, not an equation). Below 2.5V, maximum
-   turbidity (3000 NTU) is assumed, since the sensor's curve is no longer
-   reliable in that range.
-4. **Output:** the voltage and NTU value are printed to the Serial Monitor,
-   and if not currently calibrating, the corresponding "level" is evaluated
+1. **LED off, read both channels:** averages several ADS1115 readings on
+   AIN0 (90° photodiode) and AIN1 (reference photodiode) to get a "dark"
+   baseline — this captures ambient IR light (sunlight, room lighting).
+2. **LED on, read both channels again:** same averaging, now with the LED
+   lit.
+3. **Subtract the dark baseline** from each channel's lit reading. This
+   cancels out ambient light, leaving only the signal actually caused by
+   the LED.
+4. **Divide**: `index = scatteredSignal / referenceSignal`. Dividing by the
+   reference channel (which tracks the LED's own brightness) cancels drift
+   from the LED aging or heating up — something the old single-channel
+   design couldn't do.
+5. **Output:** the two signals and the resulting index are printed to the
+   Serial Monitor, and if not currently calibrating, the index is evaluated
    to turn on the right LED.
+
+Unlike the legacy firmware, there's no fabricated NTU formula here — the
+`index` is an honest, physically meaningful ratio, just not yet an
+absolute/traceable NTU value (see
+[docs/optical-design.md#getting-to-absolute-ntu](docs/optical-design.md#getting-to-absolute-ntu)
+for that next step).
 
 ### Why there's a calibration wizard
 
-Since the NTU formula is just a generic approximation, the code doesn't
-trust it to decide when to turn on each LED. Instead, it lets you calibrate
-the **thresholds** using real water samples from the actual sensor:
+The `index` is a relative measurement, so the code doesn't guess when to
+turn on each LED — it calibrates the **thresholds** using real water
+samples from the actual sensor:
 
 1. Type `C` in the Serial Monitor to start.
 2. You're asked to dip the sensor in **clear water**, fixed with `F`.
@@ -162,7 +194,7 @@ the **thresholds** using real water samples from the actual sensor:
 5. You finish with `X`, which:
    - Calculates the thresholds as the midpoint between each pair of samples
      (`recalculateThresholds()`).
-   - Saves the 3 reference NTU values to the Arduino's **EEPROM**
+   - Saves the 3 reference index values to the Arduino's **EEPROM**
      (`saveCalibrationToEEPROM()`), so the calibration isn't lost when the
      device is powered off.
 
@@ -180,8 +212,8 @@ thresholds are calculated:
 
 Then:
 
-- NTU > `HIGH_TURBIDITY_THRESHOLD` → **red LED** (high turbidity)
-- NTU > `MEDIUM_TURBIDITY_THRESHOLD` → **yellow LED** (medium turbidity)
+- index > `HIGH_TURBIDITY_THRESHOLD` → **red LED** (high turbidity)
+- index > `MEDIUM_TURBIDITY_THRESHOLD` → **yellow LED** (medium turbidity)
 - otherwise → **green LED** (low turbidity)
 
 ### Full code
@@ -192,32 +224,49 @@ Then:
 ```cpp
 /*
   ============================================================
-   DFROBOT SEN0189 TURBIDITY SENSOR + ARDUINO NANO
-   VERSION 1: NTU CALCULATION + INTERACTIVE SERIAL CALIBRATION
+   DISCRETE 90 DEGREE NEPHELOMETRIC TURBIDITY SENSOR
+   ARDUINO NANO + IR LED + 2x BPW34 PHOTODIODE + TL072 + ADS1115
   ============================================================
   Description:
-   Reads the turbidity sensor, calculates an approximate NTU
-   value using a polynomial formula, and turns on an LED based
-   on the detected level. Includes a manual calibration wizard
-   controlled by typing letters into the Serial Monitor.
+   Replaces the DFRobot SEN0189 module with a custom optical
+   bench: an IR LED shines into the sample, a photodiode placed
+   at 90 DEGREES from the LED picks up SCATTERED light
+   (nephelometry, same principle as ISO 7027 turbidimeters),
+   and a second "reference" photodiode near the LED tracks the
+   LED's own brightness so drift (temperature, aging) cancels
+   out. Both photodiode signals are amplified by a transimpedance
+   op-amp (TL072) and read through an external 16-bit ADC
+   (ADS1115) instead of the Nano's own 10-bit ADC.
 
-  *** WARNING ***
-   The NTU formula used here is a widely-used approximation from
-   the Arduino community, NOT an official equation published by
-   DFRobot (they only publish a reference graph). That's why this
-   code calibrates the LED THRESHOLDS using your own real water
-   samples instead of blindly trusting the formula.
+   Full schematic, optical geometry, part numbers and purchase
+   links: docs/optical-design.md and docs/diagrams/*.svg
 
-  Sensor wiring:
-   - RED wire   -> 5V
-   - BLACK wire -> GND
-   - BLUE wire  -> Analog pin A1 (signal)
+  *** WHY THIS INSTEAD OF THE OLD SEN0189 FORMULA ***
+   The old firmware (see firmware/legacy_sen0189/) computed a
+   fake "NTU" from a straight-through (0 degree) analog reading
+   using a generic community formula with no physical basis, and
+   read it through the Nano's noisy 10-bit ADC. This version
+   reports an honest, uncalibrated TURBIDITY INDEX instead of a
+   fabricated NTU number - it is NOT yet an absolute NTU value.
+   Turning it into real NTU requires calibrating against a
+   reference instrument or formazin standards (see
+   docs/optical-design.md, section "Getting to absolute NTU").
+
+  Wiring summary (see docs/diagrams/circuit-schematic.svg):
+   - IR LED (850nm)  -> D7 through a 220ohm resistor -> GND
+   - Photodiode A (measurement, at 90 degrees) -> TL072 channel A
+     (transimpedance amp) -> ADS1115 AIN0
+   - Photodiode B (reference, near the LED)    -> TL072 channel B
+     (transimpedance amp) -> ADS1115 AIN1
+   - ADS1115: VDD->5V, GND->GND, ADDR->GND (I2C address 0x48),
+     SDA->Nano A4, SCL->Nano A5
 
   REQUIRED LIBRARIES:
-   - No external library needed for the sensor (just analogRead).
-   - <EEPROM.h> is used to permanently store the calibration. It's
-     a NATIVE Arduino library, already bundled with the IDE, no
-     download needed.
+   - None beyond what ships with the Arduino IDE. <Wire.h> is
+     used for I2C, talking to the ADS1115 directly via its
+     register interface (no Adafruit_ADS1X15 dependency), the
+     same "no external library" philosophy as the original
+     firmware. <EEPROM.h> is used to store the calibration.
 
   ============================================================
                  CALIBRATION GUIDE (Serial Monitor)
@@ -235,57 +284,57 @@ Then:
       and type  F  + Enter to fix that point.
    6. Finally type  X  + Enter to FINISH the calibration. The
       values are calculated and automatically saved to EEPROM.
-
-   Suggestion for the "high turbidity" sample: dissolve a bit of
-   instant coffee in water, or use diluted india ink. Avoid toxic
-   or corrosive substances, since the sensor will stay submerged
-   for several seconds.
   ============================================================
 */
 
-#include <EEPROM.h> // Native Arduino library used to store data permanently
+#include <Wire.h>
+#include <EEPROM.h>
 
 // ------------------- PIN CONFIGURATION -------------------
 
-const int TURBIDITY_SENSOR_PIN = A1; // Sensor's blue (signal) wire
+const int LED_DRIVE_PIN = 7; // Drives the IR LED (through a 220ohm resistor)
 
 // >>> SET THE DIGITAL PINS YOU'RE ACTUALLY USING HERE <<<
-const int RED_LED_PIN    = 8;   // <-- CHANGE: RED LED digital pin
-const int YELLOW_LED_PIN = 9;   // <-- CHANGE: YELLOW LED digital pin
-const int GREEN_LED_PIN  = 10;  // <-- CHANGE: GREEN LED digital pin
+const int RED_LED_PIN    = 8;   // <-- CHANGE: status RED LED digital pin
+const int YELLOW_LED_PIN = 9;   // <-- CHANGE: status YELLOW LED digital pin
+const int GREEN_LED_PIN  = 10;  // <-- CHANGE: status GREEN LED digital pin
 
-const int NUMBER_OF_SAMPLES = 800; // Readings to average to reduce noise
+const int SAMPLES_PER_READING = 8; // ADS1115 reads to average per state (dark/lit)
+const int LED_SETTLE_MS = 5;       // Wait after switching the LED before reading
 
-// ------------------- NTU FORMULA CONSTANTS -------------------
-const float ARDUINO_REFERENCE_VOLTAGE = 5.00; // <-- ADJUST if your real 5V differs
-float COEF_A = -1120.4; // <-- ADJUST only if you run your own regression with real NTU
-float COEF_B = 5742.3;  // <-- ADJUST only if you run your own regression with real NTU
-float COEF_C = -4352.9; // <-- ADJUST only if you run your own regression with real NTU
+// ------------------- ADS1115 (RAW I2C, NO LIBRARY) -------------------
+const uint8_t ADS1115_ADDRESS = 0x48;      // ADDR pin tied to GND
+const uint8_t ADS1115_REG_CONVERSION = 0x00;
+const uint8_t ADS1115_REG_CONFIG = 0x01;
+const int MEASUREMENT_CHANNEL = 0; // AIN0 <- photodiode A (90 degrees)
+const int REFERENCE_CHANNEL   = 1; // AIN1 <- photodiode B (near the LED)
+const float ADS1115_LSB_VOLTS = 4.096 / 32768.0; // Gain = +/-4.096V (config below)
 
 // ------------------- EEPROM MEMORY ADDRESSES -------------------
-// Each float takes 4 bytes, so addresses are spaced 4 apart
-const int CLEAR_NTU_ADDRESS      = 0;
-const int MEDIUM_NTU_ADDRESS     = 4;
-const int TURBID_NTU_ADDRESS     = 8;
+const int CLEAR_INDEX_ADDRESS     = 0;
+const int MEDIUM_INDEX_ADDRESS    = 4;
+const int TURBID_INDEX_ADDRESS    = 8;
 const int CALIBRATED_FLAG_ADDRESS = 12; // Flag: 1 = already calibrated before
 
-// ------------------- CALIBRATION VARIABLES (IN NTU) -------------------
-// These values are calculated during calibration, or loaded from EEPROM
-// if it was already calibrated before. They act as thresholds for the LEDs.
-float clearWaterNtu  = 200.0;  // Default value until calibrated
-float mediumWaterNtu = 1000.0; // Default value until calibrated
-float turbidWaterNtu = 2500.0; // Default value until calibrated
+// ------------------- CALIBRATION VARIABLES (TURBIDITY INDEX, NOT NTU) -------------------
+float clearWaterIndex  = 0.05;  // Default value until calibrated
+float mediumWaterIndex = 0.25;  // Default value until calibrated
+float turbidWaterIndex = 0.60;  // Default value until calibrated
 
-float HIGH_TURBIDITY_THRESHOLD;   // Automatically calculated between medium and turbid
-float MEDIUM_TURBIDITY_THRESHOLD; // Automatically calculated between clear and medium
+float HIGH_TURBIDITY_THRESHOLD;
+float MEDIUM_TURBIDITY_THRESHOLD;
 
 // ------------------- CALIBRATION STATE VARIABLES -------------------
-bool calibrating = false;   // true while the wizard is active
-int  calibrationStep = 0;   // 0=inactive, 1=clear water, 2=medium water, 3=turbid water
+bool calibrating = false;
+int  calibrationStep = 0; // 0=inactive, 1=clear water, 2=medium water, 3=turbid water
 
 
 void setup() {
   Serial.begin(9600);
+  Wire.begin();
+
+  pinMode(LED_DRIVE_PIN, OUTPUT);
+  digitalWrite(LED_DRIVE_PIN, LOW);
 
   pinMode(RED_LED_PIN, OUTPUT);
   pinMode(YELLOW_LED_PIN, OUTPUT);
@@ -296,7 +345,8 @@ void setup() {
   recalculateThresholds();
 
   Serial.println("============================================");
-  Serial.println(" DFRobot turbidity sensor - NTU mode");
+  Serial.println(" Discrete 90-degree turbidity sensor");
+  Serial.println(" Reporting a relative TURBIDITY INDEX (not NTU)");
   Serial.println(" Type 'C' + Enter to start calibration");
   Serial.println("============================================");
 }
@@ -304,46 +354,120 @@ void setup() {
 
 void loop() {
 
-  // ---------- Check if the user typed something in the Serial Monitor ----------
   if (Serial.available() > 0) {
     char receivedKey = Serial.read();
     processKey(receivedKey);
   }
 
-  // ---------- STEP 1: READ THE SENSOR MULTIPLE TIMES ----------
-  long readingSum = 0;
-  for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
-    readingSum += analogRead(TURBIDITY_SENSOR_PIN);
-    delayMicroseconds(500);
-  }
-  float averageReading = readingSum / (float)NUMBER_OF_SAMPLES;
+  float measurementSignal, referenceSignal;
+  float index = readTurbidityIndex(measurementSignal, referenceSignal);
 
-  // ---------- STEP 2: CONVERT TO VOLTAGE ----------
-  float voltage = averageReading * (ARDUINO_REFERENCE_VOLTAGE / 1023.0);
-
-  // ---------- STEP 3: CONVERT TO NTU ----------
-  float ntu = calculateNTU(voltage);
-
-  // ---------- STEP 4: SHOW THE READING ON THE SERIAL MONITOR ----------
-  Serial.print("Voltage: ");
-  Serial.print(voltage, 3);
-  Serial.print(" V  |  Estimated NTU: ");
-  Serial.print(ntu, 1);
+  Serial.print("Scatter: ");
+  Serial.print(measurementSignal, 4);
+  Serial.print(" V | Reference: ");
+  Serial.print(referenceSignal, 4);
+  Serial.print(" V | Index: ");
+  Serial.print(index, 4);
 
   if (calibrating) {
-    // While calibrating, LEDs are not evaluated, only the reading is shown
     Serial.print("   [CALIBRATING - Step ");
     Serial.print(calibrationStep);
     Serial.println(" of 3]");
   } else {
-    // ---------- STEP 5: EVALUATE THE 3 LED CONDITIONS ----------
     Serial.print("  |  Status: ");
-    evaluateLeds(ntu);
+    evaluateLeds(index);
   }
 
-  delay(500); // Update every half second
+  delay(300);
 }
 
+
+// ============================================================
+//              SENSOR READING (LED ON/OFF DIFFERENCING)
+// ============================================================
+
+// Reads both photodiode channels with the LED off, then with the LED on,
+// and returns the ambient-corrected ratio (scattered / reference).
+// Also returns the two corrected signals (in volts) via the reference args,
+// mainly for debugging/logging over Serial.
+float readTurbidityIndex(float &measurementSignalOut, float &referenceSignalOut) {
+  digitalWrite(LED_DRIVE_PIN, LOW);
+  delay(LED_SETTLE_MS);
+  float darkMeasurement = readAveragedChannel(MEASUREMENT_CHANNEL);
+  float darkReference   = readAveragedChannel(REFERENCE_CHANNEL);
+
+  digitalWrite(LED_DRIVE_PIN, HIGH);
+  delay(LED_SETTLE_MS);
+  float litMeasurement = readAveragedChannel(MEASUREMENT_CHANNEL);
+  float litReference   = readAveragedChannel(REFERENCE_CHANNEL);
+
+  digitalWrite(LED_DRIVE_PIN, LOW); // off between cycles
+
+  float measurementSignal = litMeasurement - darkMeasurement;
+  float referenceSignal   = litReference - darkReference;
+
+  measurementSignalOut = measurementSignal;
+  referenceSignalOut = referenceSignal;
+
+  // Guard against divide-by-zero / a disconnected or dead reference channel
+  if (referenceSignal < 0.001) {
+    return 0.0;
+  }
+  return measurementSignal / referenceSignal;
+}
+
+// Reads one ADS1115 channel multiple times and returns the average in volts
+float readAveragedChannel(int channel) {
+  long sum = 0;
+  for (int i = 0; i < SAMPLES_PER_READING; i++) {
+    sum += readADS1115Raw(channel);
+  }
+  float averageRaw = sum / (float)SAMPLES_PER_READING;
+  return averageRaw * ADS1115_LSB_VOLTS;
+}
+
+// Triggers a single-shot conversion on the given single-ended channel (0-3)
+// and returns the raw 16-bit signed result. Talks to the ADS1115 directly
+// over I2C, no external library needed.
+int16_t readADS1115Raw(int channel) {
+  // Config register bits:
+  //   OS=1 (start), MUX=100+channel (single-ended vs GND),
+  //   PGA=001 (+/-4.096V), MODE=1 (single-shot),
+  //   DR=100 (128SPS), COMP_QUE=11 (disable comparator)
+  uint16_t config = 0x8000;               // OS = 1 (start single conversion)
+  config |= (uint16_t)(0x04 + channel) << 12; // MUX
+  config |= 0x1 << 9;                     // PGA = +/-4.096V
+  config |= 0x1 << 8;                     // MODE = single-shot
+  config |= 0x4 << 5;                     // DR = 128SPS
+  config |= 0x3;                          // COMP_QUE = disabled
+
+  writeADS1115Register(ADS1115_REG_CONFIG, config);
+  delay(9); // ~1 conversion period at 128SPS, plus margin
+
+  return (int16_t)readADS1115Register(ADS1115_REG_CONVERSION);
+}
+
+void writeADS1115Register(uint8_t reg, uint16_t value) {
+  Wire.beginTransmission(ADS1115_ADDRESS);
+  Wire.write(reg);
+  Wire.write((uint8_t)(value >> 8));   // MSB
+  Wire.write((uint8_t)(value & 0xFF)); // LSB
+  Wire.endTransmission();
+}
+
+uint16_t readADS1115Register(uint8_t reg) {
+  Wire.beginTransmission(ADS1115_ADDRESS);
+  Wire.write(reg);
+  Wire.endTransmission();
+
+  Wire.requestFrom((int)ADS1115_ADDRESS, 2);
+  uint16_t value = 0;
+  if (Wire.available() >= 2) {
+    value = (uint16_t)Wire.read() << 8; // MSB
+    value |= Wire.read();               // LSB
+  }
+  return value;
+}
 
 // ============================================================
 //                   CALIBRATION FUNCTIONS
@@ -352,7 +476,6 @@ void loop() {
 void processKey(char key) {
 
   if (key == 'C' || key == 'c') {
-    // ----- Start calibration -----
     calibrating = true;
     calibrationStep = 1;
     Serial.println();
@@ -361,43 +484,38 @@ void processKey(char key) {
     Serial.println("Once the reading stabilizes, type 'F' + Enter.");
   }
   else if ((key == 'F' || key == 'f') && calibrating) {
-    // ----- Fix the current value for the current step -----
-    float currentVoltage = readAverageVoltage();
-    float currentNtu = calculateNTU(currentVoltage);
+    float measurementSignal, referenceSignal;
+    float currentIndex = readTurbidityIndex(measurementSignal, referenceSignal);
 
     if (calibrationStep == 1) {
-      clearWaterNtu = currentNtu;
+      clearWaterIndex = currentIndex;
       Serial.print("Value fixed for CLEAR WATER: ");
-      Serial.print(currentNtu, 1);
-      Serial.println(" NTU");
+      Serial.println(currentIndex, 4);
       Serial.println("Step 2/3: Dip the sensor in WATER WITH YELLOW DYE.");
       Serial.println("Once the reading stabilizes, type 'F' + Enter.");
       calibrationStep = 2;
     }
     else if (calibrationStep == 2) {
-      mediumWaterNtu = currentNtu;
+      mediumWaterIndex = currentIndex;
       Serial.print("Value fixed for MEDIUM (yellow) WATER: ");
-      Serial.print(currentNtu, 1);
-      Serial.println(" NTU");
+      Serial.println(currentIndex, 4);
       Serial.println("Step 3/3: Dip the sensor in WATER WITH COFFEE/DARK INK.");
       Serial.println("Once the reading stabilizes, type 'F' + Enter.");
       calibrationStep = 3;
     }
     else if (calibrationStep == 3) {
-      turbidWaterNtu = currentNtu;
+      turbidWaterIndex = currentIndex;
       Serial.print("Value fixed for TURBID (dark) WATER: ");
-      Serial.print(currentNtu, 1);
-      Serial.println(" NTU");
+      Serial.println(currentIndex, 4);
       Serial.println("All 3 points have been fixed.");
       Serial.println("Type 'X' + Enter to FINISH and save the calibration.");
-      calibrationStep = 4; // Waiting to finish
+      calibrationStep = 4;
     }
     else {
       Serial.println("You already fixed the 3 points. Type 'X' to finish.");
     }
   }
   else if ((key == 'X' || key == 'x') && calibrating) {
-    // ----- Finish calibration -----
     if (calibrationStep < 4) {
       Serial.println("You haven't fixed the 3 points with 'F' yet. Can't finish yet.");
     } else {
@@ -412,52 +530,27 @@ void processKey(char key) {
   }
 }
 
-// Reads the sensor multiple times and returns the average voltage (used during calibration)
-float readAverageVoltage() {
-  long readingSum = 0;
-  for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
-    readingSum += analogRead(TURBIDITY_SENSOR_PIN);
-    delayMicroseconds(500);
-  }
-  float averageReading = readingSum / (float)NUMBER_OF_SAMPLES;
-  return averageReading * (ARDUINO_REFERENCE_VOLTAGE / 1023.0);
-}
-
-// Converts a voltage to NTU using the polynomial formula
-float calculateNTU(float voltage) {
-  float ntu;
-  if (voltage < 2.5) {
-    ntu = 3000;
-  } else {
-    ntu = (COEF_A * voltage * voltage) + (COEF_B * voltage) + COEF_C;
-  }
-  if (ntu < 0) ntu = 0;
-  return ntu;
-}
-
 // Calculates the LED thresholds as midpoints between the 3 calibrated samples
 void recalculateThresholds() {
-  MEDIUM_TURBIDITY_THRESHOLD = (clearWaterNtu + mediumWaterNtu) / 2.0;
-  HIGH_TURBIDITY_THRESHOLD   = (mediumWaterNtu + turbidWaterNtu) / 2.0;
+  MEDIUM_TURBIDITY_THRESHOLD = (clearWaterIndex + mediumWaterIndex) / 2.0;
+  HIGH_TURBIDITY_THRESHOLD   = (mediumWaterIndex + turbidWaterIndex) / 2.0;
 }
 
-// Permanently saves the 3 calibrated values to EEPROM
 void saveCalibrationToEEPROM() {
-  EEPROM.put(CLEAR_NTU_ADDRESS, clearWaterNtu);
-  EEPROM.put(MEDIUM_NTU_ADDRESS, mediumWaterNtu);
-  EEPROM.put(TURBID_NTU_ADDRESS, turbidWaterNtu);
-  EEPROM.put(CALIBRATED_FLAG_ADDRESS, (byte)1); // Marks that a calibration is already saved
+  EEPROM.put(CLEAR_INDEX_ADDRESS, clearWaterIndex);
+  EEPROM.put(MEDIUM_INDEX_ADDRESS, mediumWaterIndex);
+  EEPROM.put(TURBID_INDEX_ADDRESS, turbidWaterIndex);
+  EEPROM.put(CALIBRATED_FLAG_ADDRESS, (byte)1);
 }
 
-// Loads a previously saved calibration (if any) when the Arduino powers on
 void loadCalibrationFromEEPROM() {
   byte calibratedFlag;
   EEPROM.get(CALIBRATED_FLAG_ADDRESS, calibratedFlag);
 
   if (calibratedFlag == 1) {
-    EEPROM.get(CLEAR_NTU_ADDRESS, clearWaterNtu);
-    EEPROM.get(MEDIUM_NTU_ADDRESS, mediumWaterNtu);
-    EEPROM.get(TURBID_NTU_ADDRESS, turbidWaterNtu);
+    EEPROM.get(CLEAR_INDEX_ADDRESS, clearWaterIndex);
+    EEPROM.get(MEDIUM_INDEX_ADDRESS, mediumWaterIndex);
+    EEPROM.get(TURBID_INDEX_ADDRESS, turbidWaterIndex);
     Serial.println("A previously saved calibration was loaded.");
   } else {
     Serial.println("No saved calibration found. Using default values.");
@@ -465,7 +558,7 @@ void loadCalibrationFromEEPROM() {
 }
 
 // ============================================================
-//                     LED FUNCTIONS
+//                     STATUS LED FUNCTIONS
 // ============================================================
 
 void turnOffAllLeds() {
@@ -474,15 +567,14 @@ void turnOffAllLeds() {
   digitalWrite(GREEN_LED_PIN, LOW);
 }
 
-// Evaluates the 3 conditions and turns on the corresponding LED
-void evaluateLeds(float ntu) {
-  if (ntu > HIGH_TURBIDITY_THRESHOLD) {
+void evaluateLeds(float index) {
+  if (index > HIGH_TURBIDITY_THRESHOLD) {
     digitalWrite(RED_LED_PIN, HIGH);
     digitalWrite(YELLOW_LED_PIN, LOW);
     digitalWrite(GREEN_LED_PIN, LOW);
     Serial.println("HIGH TURBIDITY - RED LED");
   }
-  else if (ntu > MEDIUM_TURBIDITY_THRESHOLD) {
+  else if (index > MEDIUM_TURBIDITY_THRESHOLD) {
     digitalWrite(RED_LED_PIN, LOW);
     digitalWrite(YELLOW_LED_PIN, HIGH);
     digitalWrite(GREEN_LED_PIN, LOW);
@@ -501,15 +593,19 @@ void evaluateLeds(float ntu) {
 
 ### Notes for anyone modifying the code
 
-- The LED pins (`RED_LED_PIN`/`YELLOW_LED_PIN`/`GREEN_LED_PIN`) are marked
-  in the code as `<-- CHANGE` because they depend on how each board is
-  wired.
-- `NUMBER_OF_SAMPLES = 800` is a trade-off between reading stability and
-  refresh speed (more samples = more precise but slower refresh, currently
-  about every 0.5s plus sampling time).
-- The `COEF_A/B/C` coefficients should only be touched if you run your own
-  regression with real NTU values (e.g. with a reference turbidimeter) —
-  something still pending for this project. Today, reliability comes from
-  the manually calibrated thresholds, not from the formula.
+- The status LED pins (`RED_LED_PIN`/`YELLOW_LED_PIN`/`GREEN_LED_PIN`) are
+  marked as `<-- CHANGE` because they depend on how each board is wired.
+- `SAMPLES_PER_READING = 8` averages 8 ADS1115 conversions per state
+  (dark/lit) per channel — at 128SPS that's a full reading cycle (dark +
+  lit, 2 channels each) in well under a second. Raise it for more noise
+  averaging at the cost of a slower refresh.
+- The 1MΩ feedback resistors on the TIA (see
+  [docs/optical-design.md](docs/optical-design.md)) are what actually sets
+  the sensitivity — if readings clip or look too flat, that's the first
+  thing to retune, not the firmware.
+- `readADS1115Raw()` talks to the ADS1115 over raw I2C registers instead of
+  a library, matching this project's "no external dependencies" approach.
+  If that's ever inconvenient, swapping in `Adafruit_ADS1X15` is a
+  drop-in alternative.
 
-*(This analysis is also available as a standalone document in [docs/firmware.md](docs/firmware.md).)*
+*(The legacy SEN0189 firmware is explained in [docs/firmware.md](docs/firmware.md). The new design's full writeup, BOM and path to absolute NTU: [docs/optical-design.md](docs/optical-design.md).)*
