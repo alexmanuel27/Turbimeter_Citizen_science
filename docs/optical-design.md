@@ -60,23 +60,48 @@ the resistor values are tuned for your actual LED/photodiode batch.
 
 ## New components
 
-| Photo | Component | Qty/unit | Buy |
-|------|------------|:---:|:---:|
-| <img src="https://m.media-amazon.com/images/I/71M9SrnG9-L._AC_SX679_PIbundle-100,TopRight,0,0_SH20_.jpg" width="80"> | IR LED, 850nm, 5mm | 1 | [Amazon (100-pack)](https://www.amazon.com/850nm-Infrared-nighe-verison-Camera/dp/B082NWVJHR) |
-| <img src="https://m.media-amazon.com/images/I/51KdPaevJ3L._AC_SX679_.jpg" width="80"> | BPW34 silicon PIN photodiode | 2 | [Amazon (5-pack)](https://www.amazon.com/Comimark-BPW34-Silicon-Photodiode-DIP-2/dp/B087NK42MY) / [DigiKey](https://www.digikey.com/en/products/detail/vishay-semiconductor-opto-division/BPW34/1681149) |
-| <img src="https://m.media-amazon.com/images/I/61yl5gXcnzL._SX522_.jpg" width="80"> | TL072 dual JFET op-amp (DIP-8) | 1 | [Amazon (2-pack)](https://www.amazon.com/Juried-Engineering-TL072CP-Operational-Breadboard-Friendly/dp/B08D6782QP) |
-| <img src="https://m.media-amazon.com/images/I/61hNh0biz0L._AC_SX679_.jpg" width="80"> | ADS1115 16-bit I2C ADC module | 1 | [Amazon (3-pack)](https://www.amazon.com/HiLetgo-Converter-Programmable-Amplifier-Development/dp/B07VPFLSMX) |
+Sourced from **amazon.it** (prices in EUR, as seen when this was checked —
+Amazon prices vary by region/time, treat these as reference, not quotes).
+Doesn't include the Arduino Nano or resistors, which the project already
+has on hand.
 
-Plus, from the existing [BOM](BOM.md): 1× 220Ω-330Ω resistor for the LED,
-and 2× 1MΩ resistors for the feedback (not yet in the resistor kit listed
-there — add a 1MΩ pack when ordering). The DFRobot SEN0189 line item is no
-longer needed.
+| Photo | Component | Needed/unit | Comes in packs of | Buy |
+|------|------------|:---:|:---:|:---:|
+| <img src="https://m.media-amazon.com/images/I/71QNRaEE6jS._AC_UL320_.jpg" width="80"> | IR LED, 850nm, 5mm | 1 | 100 — €14.99 | [Amazon.it](https://www.amazon.it/dp/B01BVGIZIU) |
+| <img src="https://m.media-amazon.com/images/I/51-pCxQf9DL._AC_UL320_.jpg" width="80"> | BPW34 silicon PIN photodiode | 2 | 5 — €8.99 | [Amazon.it](https://www.amazon.it/dp/B07HBQNMYW) |
+| <img src="https://m.media-amazon.com/images/I/71hlMEnRORL._AC_UL320_.jpg" width="80"> | TL072 dual JFET op-amp (DIP-8) | 1 | 12 — €14.99 | [Amazon.it](https://www.amazon.it/dp/B0CD76F382) |
+| <img src="https://m.media-amazon.com/images/I/71UhzEvjZCL._AC_UL320_.jpg" width="80"> | ADS1115 16-bit I2C ADC module | 1 | 3 — €12.89 | [Amazon.it](https://www.amazon.it/dp/B0G7CGFY8G) |
+| <img src="https://m.media-amazon.com/images/I/71k+M8nGnDL._AC_UL320_.jpg" width="80"> | 5mm status LED, assorted (red/yellow/green used) | 3 | 600 (5 colors) — €11.99 | [Amazon.it](https://www.amazon.it/dp/B08FJ6VC8M) |
+| <img src="https://m.media-amazon.com/images/I/71vSu1fW9+L._AC_UL320_.jpg" width="80"> | 2.54mm pin header (male/female mix) | ~7 pins | 50 pieces — €10.99 | [Amazon.it](https://www.amazon.it/dp/B0BZH89PSS) |
+| <img src="https://m.media-amazon.com/images/I/81yjq1pkiGL._AC_UL320_.jpg" width="80"> | Dupont jumper wires (M-M/M-F/F-F mix) | ~5 (F-F) | 120 (40 of each type) — €12.99 | [Amazon.it](https://www.amazon.it/dp/B01N40EK6M) |
 
-**Rough cost per unit** (buying small packs, not bulk): IR LED ~$0.10-0.70
-+ 2× BPW34 ~$2.40-3.60 + TL072 ~$0.20-1 + ADS1115 ~$3-4 ≈ **$6-10 total** —
-in the same ballpark as the SEN0554 upgrade we evaluated earlier, but with
-real 90° nephelometric geometry and LED-drift compensation instead of a
-closed-firmware black box.
+Still needed but already covered by the existing [BOM](BOM.md) / on hand
+per this order: Arduino Nano, and resistors (220-330Ω for the LED, 1MΩ×2
+for the TIA feedback — a generic assorted resistor kit covers both). The
+DFRobot SEN0189 line item is no longer needed at all.
+
+### Shopping list for 8 units
+
+How many packs to buy, and the actual total, assuming a batch of **8**
+turbidimeters (excluding Nano + resistors, per the above):
+
+| Component | Needed (×8) | Pack size | Packs to buy | Price/pack | Subtotal |
+|---|:---:|:---:|:---:|---:|---:|
+| IR LED 850nm | 8 | 100 | 1 | €14.99 | €14.99 |
+| BPW34 photodiode | 16 | 5 | 4 | €8.99 | €35.96 |
+| TL072 op-amp | 8 | 12 | 1 | €14.99 | €14.99 |
+| ADS1115 module | 8 | 3 | 3 | €12.89 | €38.67 |
+| Status LED (R/Y/G) | 24 | 600 | 1 | €11.99 | €11.99 |
+| Pin header 2.54mm | ~56 pins | 50 pcs | 1 | €10.99 | €10.99 |
+| Jumper wires F-F | ~40 | 120 (40 F-F) | 1 | €12.99 | €12.99 |
+| **Total** | | | | | **€140.58** |
+
+That's **~€17.60 per unit** in new components for a batch of 8 (plus
+whatever the 8 Arduino Nanos and resistors already on hand cost you). Most
+line items come with meaningful leftover stock (e.g. 100 IR LEDs and 600
+status LEDs for 8 units), which covers mistakes, breakage, and future
+batches — buying exactly 8 of everything individually would actually cost
+more per unit, not less.
 
 ## What the firmware reports now
 
