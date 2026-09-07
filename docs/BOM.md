@@ -25,3 +25,4 @@ region/time). Excludes the Arduino Nano and resistors — already on hand.
 | Pin header 2.54mm | ~56 pins | 1 | €10.99 |
 | Jumper wires F-F | ~40 | 1 | €12.99 |
 | **Total** | | | **€140.58** |
+@
