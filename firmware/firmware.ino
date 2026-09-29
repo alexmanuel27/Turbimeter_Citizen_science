@@ -1,4 +1,9 @@
 /*
+  EXPERIMENTAL PRE-USB OPTICAL-INDEX SKETCH, NOT FINAL NTU FIRMWARE.
+  This version still uses a TL072 and status LEDs. The current one-unit
+  design target uses MCP6002, no status LEDs, and an Android USB-C app.
+  See docs/optical-design.md before building or changing this sketch.
+
   ============================================================
    DISCRETE 90 DEGREE NEPHELOMETRIC TURBIDITY SENSOR
    ARDUINO NANO + IR LED + 2x BPW34 PHOTODIODE + TL072 + ADS1115
@@ -28,7 +33,7 @@
    reference instrument or formazin standards (see
    docs/optical-design.md, section "Getting to absolute NTU").
 
-  Wiring summary (see docs/diagrams/circuit-schematic.svg):
+  Wiring summary (see docs/diagrams/legacy-circuit-schematic.svg):
    - IR LED (850nm)  -> D7 through a 220ohm resistor -> GND
    - Photodiode A (measurement, at 90 degrees) -> TL072 channel A
      (transimpedance amp) -> ADS1115 AIN0

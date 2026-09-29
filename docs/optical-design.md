@@ -1,143 +1,71 @@
-# Optical redesign: discrete 90° nephelometric sensor
+# Optical design and validation plan
 
-This replaces the DFRobot SEN0189 module (straight-through, 0°, 10-bit ADC,
-no LED-drift compensation) with a custom optical bench built from discrete
-parts, following the same principle real turbidimeters use (ISO 7027
-nephelometry). The old SEN0189-based firmware is kept for reference in
-[`firmware/legacy_sen0189/`](../firmware/legacy_sen0189/).
+## Target and status
 
-## The principle
+Build one closed turbidimeter that an Android USB-C phone powers and reads.
+The app will show a quantitative turbidity value and upload it to the
+citizen-science website. The instrument has no battery, screen, or status
+LEDs. **The optical bench, firmware, app, and NTU calibration are not yet
+validated.** They must be ready before 18 October 2026; community deployment
+comes afterward.
 
-<img src="diagrams/optical-geometry.svg" width="700">
+The DFRobot SEN0189 sensor and its firmware are retained only as an earlier
+prototype. The current KiCad PCB and 3D files also predate this design. The
+[one-unit purchase list](shopping-list-prototype-usb-c.xlsx) is the source for
+current parts, supplier URLs, and VAT-inclusive prices.
 
-- An **IR LED** shines through the water sample.
-- A **photodiode placed at 90°** from the LED's beam picks up light
-  *scattered* by suspended particles — not light that passed straight
-  through. This is what "NTU" (Nephelometric Turbidity Unit) is defined
-  against, and it doesn't saturate/invert at high turbidity the way
-  straight-through transmittance does.
-- A second **reference photodiode**, near the LED and shielded from the
-  sample, tracks the LED's own brightness. Dividing the 90° signal by the
-  reference signal cancels drift from LED aging/temperature — something
-  none of the DFRobot sensors we evaluated do.
-- Both signals are read through an **ADS1115** (external 16-bit ADC)
-  instead of the Nano's built-in 10-bit ADC, for much better resolution and
-  noise performance.
+## Optical and electrical concept
 
-## Circuit
+<img src="diagrams/optical-geometry.svg" width="700" alt="90-degree optical geometry">
 
-<img src="diagrams/circuit-schematic.svg" width="800">
+An 850 nm IR LED illuminates the sample. One BPW34 photodiode measures light
+scattered at 90°; a second, shielded from the sample, monitors the LED. Read
+both photodiodes with the LED off and on, subtract the dark readings, and form
+a scattered/reference ratio. This ratio compensates for some changes in LED
+output, but **it is not an NTU value** by itself.
 
-Full wiring table:
+The intended signal chain is:
 
-| From | To |
-|------|-----|
-| IR LED anode | Nano D7, through a 220Ω resistor |
-| IR LED cathode | GND |
-| Photodiode A (90°) cathode | +5V |
-| Photodiode A anode | TL072 channel A inverting input |
-| TL072 channel A output | ADS1115 AIN0 |
-| Photodiode B (reference) cathode | +5V |
-| Photodiode B anode | TL072 channel B inverting input |
-| TL072 channel B output | ADS1115 AIN1 |
-| Feedback resistor (1MΩ, per channel) | Between each op-amp's inverting input and its output |
-| ADS1115 VDD | 5V |
-| ADS1115 GND, ADDR | GND (ADDR→GND sets I2C address 0x48) |
-| ADS1115 SDA / SCL | Nano A4 / A5 |
+| Stage | Planned part / connection |
+| --- | --- |
+| Illumination | 850 nm IR LED driven by Nano D7 through a current-limiting resistor |
+| Detection | Two BPW34 photodiodes: 90° scatter and shielded reference |
+| Amplification | MCP6002 dual amplifier at 5 V; start with 1 MΩ feedback resistors and tune using measured signal levels |
+| Conversion | ADS1115, with the two amplifier outputs on AIN0 and AIN1; I²C to Nano A4/A5 |
+| Phone interface | USB-C Nano, data-capable 2 m USB-C cable, Android USB host app |
 
-The 1MΩ feedback resistors are a starting point, not a final value — tune
-them on the breadboard so each op-amp's output lands roughly between 0.5V
-and 3.5V at your expected light levels (photodiode B, right next to the
-LED, usually needs a *smaller* resistor than photodiode A, since it
-receives far more light).
+Prototype the analog chain and verify input range, saturation, ambient-light
+rejection, and repeatability before revising the PCB. The old
+[`legacy-circuit-schematic.svg`](diagrams/legacy-circuit-schematic.svg) uses a
+TL072 and status LEDs; it is **not** a schematic for this build. Likewise,
+[`firmware/firmware.ino`](../firmware/firmware.ino) currently outputs a relative
+index and controls LEDs. It needs revision for the phone-connected instrument.
 
-**Recommendation: prototype this on a breadboard before touching the PCB.**
-The existing `hardware/esque.kicad_pcb` was laid out for the SEN0189 +
-status LEDs, not for this optical bench — it needs a new PCB revision
-(new footprints, the 90° mechanical layout, the sample chamber cutout).
-That's a separate next step once the breadboard version is validated and
-the resistor values are tuned for your actual LED/photodiode batch.
+## Enclosure and USB cable
 
-## New components
+Use the Goobay 66508 USB-C-to-USB-C data cable (2 m). Its specified outer
+diameter is **5.5 ± 0.15 mm**; the selected TinyTronics M12 gland clamps
+**3–6.5 mm** cable. Cut the device-side plug, pass the cable through the
+gland, and terminate USB power, USB 2.0 data, and the required USB-C CC
+connection to the board. Confirm continuity, Android USB host operation,
+strain relief, and sealing before closing the enclosure. Verify final lid
+dimensions before selecting an O-ring from the assortment (maximum 28 mm
+inner diameter).
 
-Sourced from **amazon.it** (prices in EUR, as seen when this was checked —
-Amazon prices vary by region/time, treat these as reference, not quotes).
-Doesn't include the Arduino Nano or resistors, which the project already
-has on hand.
+## From optical ratio to reliable NTU
 
-| Photo | Component | Needed/unit | Comes in packs of | Buy |
-|------|------------|:---:|:---:|:---:|
-| <img src="https://m.media-amazon.com/images/I/71QNRaEE6jS._AC_UL320_.jpg" width="80"> | IR LED, 850nm, 5mm | 1 | 100 — €14.99 | [Amazon.it](https://www.amazon.it/dp/B01BVGIZIU) |
-| <img src="https://m.media-amazon.com/images/I/51-pCxQf9DL._AC_UL320_.jpg" width="80"> | BPW34 silicon PIN photodiode | 2 | 5 — €8.99 | [Amazon.it](https://www.amazon.it/dp/B07HBQNMYW) |
-| <img src="https://m.media-amazon.com/images/I/71hlMEnRORL._AC_UL320_.jpg" width="80"> | TL072 dual JFET op-amp (DIP-8) | 1 | 12 — €14.99 | [Amazon.it](https://www.amazon.it/dp/B0CD76F382) |
-| <img src="https://m.media-amazon.com/images/I/71UhzEvjZCL._AC_UL320_.jpg" width="80"> | ADS1115 16-bit I2C ADC module | 1 | 3 — €12.89 | [Amazon.it](https://www.amazon.it/dp/B0G7CGFY8G) |
-| <img src="https://m.media-amazon.com/images/I/71k+M8nGnDL._AC_UL320_.jpg" width="80"> | 5mm status LED, assorted (red/yellow/green used) | 3 | 600 (5 colors) — €11.99 | [Amazon.it](https://www.amazon.it/dp/B08FJ6VC8M) |
-| <img src="https://m.media-amazon.com/images/I/71vSu1fW9+L._AC_UL320_.jpg" width="80"> | 2.54mm pin header (male/female mix) | ~7 pins | 50 pieces — €10.99 | [Amazon.it](https://www.amazon.it/dp/B0BZH89PSS) |
-| <img src="https://m.media-amazon.com/images/I/81yjq1pkiGL._AC_UL320_.jpg" width="80"> | Dupont jumper wires (M-M/M-F/F-F mix) | ~5 (F-F) | 120 (40 of each type) — €12.99 | [Amazon.it](https://www.amazon.it/dp/B01N40EK6M) |
+1. Fix the final optical geometry and record LED-off/LED-on readings from both
+   channels, including the clear-water background.
+2. Measure known turbidity standards spanning the intended range with the
+   same sample vessels and handling procedure. The Hanna HI98703-11 set is a
+   purchase candidate; check ULB stock, vessel compatibility, and quote.
+3. Fit a calibration curve only after inspecting the measured response.
+   Store its coefficients and calibration identity with the device/app data.
+4. Check independent samples and repeat measurements. Record the range,
+   error, repeatability, drift, and any region where the sensor saturates.
+5. Show/upload NTU only when the calibration is valid for that range; otherwise
+   label the reading as an uncalibrated optical ratio or out of range.
 
-Still needed but already covered by the existing [BOM](BOM.md) / on hand
-per this order: Arduino Nano, and resistors (220-330Ω for the LED, 1MΩ×2
-for the TIA feedback — a generic assorted resistor kit covers both). The
-DFRobot SEN0189 line item is no longer needed at all.
-
-### Shopping list for 8 units
-
-How many packs to buy, and the actual total, assuming a batch of **8**
-turbidimeters (excluding Nano + resistors, per the above):
-
-| Component | Needed (×8) | Pack size | Packs to buy | Price/pack | Subtotal |
-|---|:---:|:---:|:---:|---:|---:|
-| IR LED 850nm | 8 | 100 | 1 | €14.99 | €14.99 |
-| BPW34 photodiode | 16 | 5 | 4 | €8.99 | €35.96 |
-| TL072 op-amp | 8 | 12 | 1 | €14.99 | €14.99 |
-| ADS1115 module | 8 | 3 | 3 | €12.89 | €38.67 |
-| Status LED (R/Y/G) | 24 | 600 | 1 | €11.99 | €11.99 |
-| Pin header 2.54mm | ~56 pins | 50 pcs | 1 | €10.99 | €10.99 |
-| Jumper wires F-F | ~40 | 120 (40 F-F) | 1 | €12.99 | €12.99 |
-| **Total** | | | | | **€140.58** |
-
-That's **~€17.60 per unit** in new components for a batch of 8 (plus
-whatever the 8 Arduino Nanos and resistors already on hand cost you). Most
-line items come with meaningful leftover stock (e.g. 100 IR LEDs and 600
-status LEDs for 8 units), which covers mistakes, breakage, and future
-batches — buying exactly 8 of everything individually would actually cost
-more per unit, not less.
-
-## What the firmware reports now
-
-[`firmware/firmware.ino`](../firmware/firmware.ino) no longer computes a
-fabricated "NTU" from an unjustified formula. Instead it reports an honest
-**turbidity index** = (90° scattered signal) / (reference signal), both
-corrected for ambient light by reading each channel with the LED off and
-on and subtracting. This index is:
-
-- **Physically meaningful** (it's a real ratio of measured light, not a
-  guessed polynomial).
-- **Not yet an absolute NTU value** — same caveat as before, it needs
-  calibration against a real reference to become traceable NTU.
-- Used with the same 3-point calibration wizard as before (`C`, `F`, `X`
-  over Serial) to set relative low/medium/high thresholds for the status
-  LEDs.
-
-## Getting to absolute NTU
-
-Once this optical design is validated and you want real, traceable NTU
-numbers (see the earlier discussion in this project about what NTU means):
-
-1. Get **one** reference point source — either a real turbidimeter reading
-   (borrow/rent one, or ask a local water utility/university lab to run a
-   few of your water samples) or formazin standard solutions.
-2. Take several real-world samples spanning your range of interest (e.g.
-   clear tap water, slightly cloudy, very turbid) and record both the
-   reference NTU and this sensor's `index` for each.
-3. Fit a line (or simple curve) `NTU ≈ m × index + b` from those points —
-   the ratiometric signal from a proper 90° design is usually much more
-   linear than the SEN0189's raw voltage ever was, so a linear fit should
-   go a long way.
-4. Bake that fit into the firmware (replacing the raw `index` output) once
-   you've built enough units with the *same* LED/photodiode batch that the
-   fit reasonably transfers between them.
-
-This is real calibration work (see the earlier price/time comparison for
-formazin vs. a reference instrument) — worth doing once the optical design
-itself is confirmed to behave well, not before.
+The Android app and citizen-science upload interface are planned, not present
+in this repository yet. Their measurement record should include the reading,
+unit, calibration identity, timestamp, and quality status.

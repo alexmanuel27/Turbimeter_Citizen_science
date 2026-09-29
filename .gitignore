@@ -29,3 +29,6 @@ fp-info-cache
 # Data / secrets
 *.env
 .env
+
+# Local generated drafts; the approved purchase workbook lives in docs/
+/outputs/
