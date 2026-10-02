@@ -32,3 +32,8 @@ fp-info-cache
 
 # Local generated drafts; the approved purchase workbook lives in docs/
 /outputs/
+
+# Android build outputs
+.gradle/
+**/build/
+local.properties

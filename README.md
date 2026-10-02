@@ -36,6 +36,7 @@ O-ring assortment.
 | [`docs/optical-design.md`](docs/optical-design.md) | Current design and validation plan |
 | [`docs/BOM.md`](docs/BOM.md) | Procurement notes; workbook above is the purchase list |
 | [`firmware/firmware.ino`](firmware/firmware.ino) | Experimental optical-index sketch; still uses TL072 and status LEDs, so it is **not** the final USB-C/NTU firmware |
+| [`android-app/`](android-app/) | Android USB-CDC screen/controller prototype with a XIAO SAMD21 communication test |
 | [`firmware/legacy_sen0189/`](firmware/legacy_sen0189/) | Original DFRobot SEN0189 firmware, retained for reference |
 | [`hardware/`](hardware/) and [`3D/`](3D/) | Earlier PCB and enclosure files; mechanical/electrical revisions are pending |
 | [`docs/diagrams/legacy-circuit-schematic.svg`](docs/diagrams/legacy-circuit-schematic.svg) | Earlier TL072 circuit illustration, not a build schematic for this design |
