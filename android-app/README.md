@@ -45,7 +45,28 @@ calibration and valid measurement range have been verified. For this 850 nm
 near-infrared design, decide the reportable unit and range during validation.
 
 Saved readings remain private on the phone and can be shared manually as CSV.
-No network permission or endpoint is configured yet.
+The release app has no network permission or endpoint configured yet.
+
+## Emulator bench check
+
+The Android emulator has no USB host feature, so it cannot exercise the app's
+direct USB-C connection. For a **debug-only** two-way protocol check, keep the
+XIAO plugged into the Mac and run this from `android-app` (replace the port
+with the one shown by `arduino-cli board list`):
+
+```sh
+python3 tools/bridge_xiao.py /dev/cu.usbmodem101
+```
+
+In the debug app on the emulator, tap **Test XIAO via Mac bridge**.
+The app sends `MEASURE` through the Mac to the XIAO and displays its response;
+bridge responses cannot be saved as phone measurements. Stop the bridge with
+Ctrl-C after testing. This does not validate Android USB host behavior; that
+requires an Android USB-C phone connected directly to the XIAO.
+
+On 2 October 2026, this check returned `TURB1,ERROR,ADC_MISSING` from the
+XIAO and the app displayed **CHECK SENSOR**, with Save disabled. The ADS1115
+was not connected during this test.
 
 ## Check the parser without Android
 

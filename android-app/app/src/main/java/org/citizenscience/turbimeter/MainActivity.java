@@ -23,9 +23,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
@@ -81,7 +85,7 @@ public final class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33) registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED);
         else registerReceiver(usbReceiver, filter);
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST))
-            status.setText("This phone does not support USB host mode");
+            status.setText("USB host mode unavailable on this device");
     }
 
     private void buildScreen() {
@@ -170,7 +174,7 @@ public final class MainActivity extends Activity {
         shareButton = button("Share saved readings (CSV)", content, false, this::shareReadings);
         enabled(shareButton, getFileStreamPath(CSV_NAME).exists());
 
-        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             button("Preview example screen", content, false, () -> {
                 latest = null;
                 value.setText("12.30");
@@ -179,6 +183,8 @@ public final class MainActivity extends Activity {
                 detail.setText("Illustrative value. No sensor was measured; saving is disabled.");
                 enabled(saveButton, false);
             });
+            button("Test XIAO via Mac bridge", content, false, this::testMacBridge);
+        }
 
         TextView note = label("Readings stay on this phone until you choose to share them. Nothing is uploaded automatically.", 13);
         note.setTextColor(MUTED);
@@ -285,20 +291,9 @@ public final class MainActivity extends Activity {
             }
 
             @Override public void onLine(String line) {
-                MeasurementFrame frame = MeasurementFrame.parse(line);
-                String fault = MeasurementFrame.errorMessage(line);
-                if (frame == null && fault == null) return;
                 runOnUiThread(() -> {
                     if (generation != readerGeneration) return;
-                    if (fault != null) {
-                        latest = null;
-                        value.setText("—");
-                        unit.setText("No measurement");
-                        setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
-                        detail.setText(fault);
-                        enabled(saveButton, false);
-                    } else showFrame(frame);
-                    status.setText("Sensor connected");
+                    if (showLine(line)) status.setText("Sensor connected");
                 });
             }
 
@@ -343,6 +338,50 @@ public final class MainActivity extends Activity {
             detail.setText("Calibration " + frame.calibrationId + " · ready to save on this phone.");
         }
         enabled(saveButton, frame.kind != MeasurementFrame.Kind.DEMO);
+    }
+
+    private boolean showLine(String line) {
+        MeasurementFrame frame = MeasurementFrame.parse(line);
+        String fault = MeasurementFrame.errorMessage(line);
+        if (frame == null && fault == null) return false;
+        if (fault == null) showFrame(frame);
+        else {
+            latest = null;
+            value.setText("—");
+            unit.setText("No measurement");
+            setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
+            detail.setText(fault);
+            enabled(saveButton, false);
+        }
+        return true;
+    }
+
+    private void testMacBridge() {
+        latest = null;
+        enabled(saveButton, false);
+        status.setText("Testing XIAO via Mac bridge…");
+        detail.setText("Sending MEASURE from the emulator to the XIAO.");
+        new Thread(() -> {
+            try (Socket socket = new Socket()) {
+                socket.connect(new InetSocketAddress("10.0.2.2", 8765), 3000);
+                socket.setSoTimeout(5000);
+                socket.getOutputStream().write("MEASURE\n".getBytes(StandardCharsets.US_ASCII));
+                String line = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream(), StandardCharsets.US_ASCII)).readLine();
+                if (line == null) throw new IOException("No reply from XIAO");
+                runOnUiThread(() -> {
+                    if (!showLine(line)) detail.setText("Unexpected reply: " + line);
+                    latest = null; // Debug bridge data must not be saved as a phone measurement.
+                    enabled(saveButton, false);
+                    status.setText("XIAO replied via Mac bridge");
+                });
+            } catch (IOException error) {
+                runOnUiThread(() -> {
+                    status.setText("Mac bridge unavailable");
+                    detail.setText(error.getMessage());
+                });
+            }
+        }, "turbimeter-mac-bridge").start();
     }
 
     private void disconnect(String message) {
