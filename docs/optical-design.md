@@ -3,7 +3,7 @@
 ## Target and status
 
 Build one closed turbidimeter that an Android USB-C phone powers and reads.
-The app will show a quantitative turbidity value and upload it to the
+The app will show a quantitative turbidity value and optionally upload it to the
 citizen-science website. The instrument has no battery, screen, or status
 LEDs. **The optical bench, firmware, app, and NTU calibration are not yet
 validated.** They must be ready before 18 October 2026; community deployment
@@ -28,18 +28,19 @@ The intended signal chain is:
 
 | Stage | Planned part / connection |
 | --- | --- |
-| Illumination | 850 nm IR LED driven by Nano D7 through a current-limiting resistor |
+| Illumination | 850 nm IR LED controlled by XIAO SAMD21 D7 through a verified current-limited circuit |
 | Detection | Two BPW34 photodiodes: 90° scatter and shielded reference |
-| Amplification | MCP6002 dual amplifier at 5 V; start with 1 MΩ feedback resistors and tune using measured signal levels |
-| Conversion | ADS1115, with the two amplifier outputs on AIN0 and AIN1; I²C to Nano A4/A5 |
-| Phone interface | USB-C Nano, data-capable 2 m USB-C cable, Android USB host app |
+| Amplification | MCP6002 dual amplifier at 3.3 V; start with 1 MΩ feedback resistors and tune using measured signal levels |
+| Conversion | ADS1115 at 3.3 V, with the two amplifier outputs on AIN0 and AIN1; I²C to XIAO D4/D5 |
+| Phone interface | USB-C XIAO SAMD21, data-capable 2 m USB-C cable, Android USB host app |
 
 Prototype the analog chain and verify input range, saturation, ambient-light
 rejection, and repeatability before revising the PCB. The old
 [`legacy-circuit-schematic.svg`](diagrams/legacy-circuit-schematic.svg) uses a
 TL072 and status LEDs; it is **not** a schematic for this build. Likewise,
-[`firmware/firmware.ino`](../firmware/firmware.ino) currently outputs a relative
-index and controls LEDs. It needs revision for the phone-connected instrument.
+[`firmware/firmware.ino`](../firmware/firmware.ino) is the older sketch that
+outputs a relative index and controls LEDs. The current USB bench sketch is
+[`xiao_samd21_turbimeter.ino`](../firmware/xiao_samd21_turbimeter/xiao_samd21_turbimeter.ino).
 
 ## Enclosure and USB cable
 
@@ -66,6 +67,7 @@ inner diameter).
 5. Show/upload NTU only when the calibration is valid for that range; otherwise
    label the reading as an uncalibrated optical ratio or out of range.
 
-The Android app and citizen-science upload interface are planned, not present
-in this repository yet. Their measurement record should include the reading,
-unit, calibration identity, timestamp, and quality status.
+The Android app prototype is present, but the citizen-science API has not yet
+been specified. Upload must remain optional. A published measurement record
+should include the reading, unit, calibration identity, timestamp, and quality
+status.

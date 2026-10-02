@@ -8,9 +8,9 @@ ready by **18 October 2026**. Community deployment follows that date.
 
 - **Sensor:** 850 nm IR LED, BPW34 photodiode at 90° for scattered light, and
   a second BPW34 to monitor the LED. An MCP6002 dual amplifier and ADS1115
-  read the two channels; an Arduino Nano compatible board controls the LED.
+  read the two channels; a Seeed XIAO SAMD21 controls the LED.
 - **Readout:** the Android phone supplies power through USB-C, displays the
-  result, and uploads measurements to the citizen-science website. The
+  result, and will offer optional upload to the citizen-science website. The
   instrument has no battery, screen, or status LEDs.
 - **Enclosure:** closed body with a fixed 2 m USB-C data cable through one M12
   cable gland. The technician cuts the sensor-side plug, routes the cable,
@@ -35,6 +35,7 @@ O-ring assortment.
 | --- | --- |
 | [`docs/optical-design.md`](docs/optical-design.md) | Current design and validation plan |
 | [`docs/BOM.md`](docs/BOM.md) | Procurement notes; workbook above is the purchase list |
+| [`firmware/xiao_samd21_turbimeter/`](firmware/xiao_samd21_turbimeter/) | Current XIAO optical bench firmware; reports diagnostic counts and an uncalibrated ratio over USB |
 | [`firmware/firmware.ino`](firmware/firmware.ino) | Experimental optical-index sketch; still uses TL072 and status LEDs, so it is **not** the final USB-C/NTU firmware |
 | [`android-app/`](android-app/) | Android USB-CDC screen/controller prototype with a XIAO SAMD21 communication test |
 | [`firmware/legacy_sen0189/`](firmware/legacy_sen0189/) | Original DFRobot SEN0189 firmware, retained for reference |
@@ -52,8 +53,8 @@ discrete 90° optical design.
    values with the actual sample chamber.
 2. Revise the PCB and enclosure, choose a lid seal that fits the final groove,
    and verify USB-C power/data plus cable-gland sealing.
-3. Replace the experimental firmware's threshold/LED output with a stable
-   serial measurement protocol; build and test the Android display/upload app.
+3. Test the new XIAO firmware and Android app together on a USB-C phone; add
+   optional upload when the citizen-science API is specified.
 4. Calibrate against known turbidity standards, quantify repeatability and
    error across the intended range, and only then enable NTU reporting.
 

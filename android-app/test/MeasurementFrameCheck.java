@@ -14,6 +14,8 @@ public final class MeasurementFrameCheck {
         assert MeasurementFrame.parse("TURB1,RATIO,NaN") == null;
         assert MeasurementFrame.parse("TURB1,RATIO,-1") == null;
         assert MeasurementFrame.parse("garbage") == null;
+        assert MeasurementFrame.errorMessage("TURB1,ERROR,ADC_MISSING").contains("ADS1115");
+        assert MeasurementFrame.errorMessage("TURB1,ERROR,UNKNOWN") == null;
         LineFramer framer = new LineFramer();
         List<String> lines = new ArrayList<>();
         byte[] first = "TURB1,DE".getBytes(StandardCharsets.US_ASCII);

@@ -5,6 +5,9 @@
 > [docs/optical-design.md](optical-design.md). Kept for reference; the code
 > itself lives in [`firmware/legacy_sen0189/firmware.ino`](../firmware/legacy_sen0189/firmware.ino).
 
+The current XIAO SAMD21 sketch and upload instructions are in
+[`firmware/xiao_samd21_turbimeter/`](../firmware/xiao_samd21_turbimeter/).
+
 Analysis of [`firmware/legacy_sen0189/firmware.ino`](../firmware/legacy_sen0189/firmware.ino):
 DFRobot SEN0189 turbidity sensor + Arduino Nano.
 

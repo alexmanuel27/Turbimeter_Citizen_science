@@ -38,6 +38,22 @@ final class MeasurementFrame {
         return null;
     }
 
+    static String errorMessage(String line) {
+        switch (line.trim()) {
+            case "TURB1,ERROR,ADC_MISSING": return "ADS1115 not found at 0x48. Check its 3.3 V power and I²C wiring.";
+            case "TURB1,ERROR,ADC_IO": return "ADS1115 read failed. Check D4/D5 and the I²C connections.";
+            case "TURB1,ERROR,ADC_CONFIG": return "ADS1115 rejected its configuration. Check I²C power and wiring.";
+            case "TURB1,ERROR,ADC_READ": return "ADS1115 register read failed. Check the I²C connections.";
+            case "TURB1,ERROR,ADC_TIMEOUT": return "ADS1115 conversion timed out. Check its power and I²C wiring.";
+            case "TURB1,ERROR,SATURATED": return "Analog signal is near the ADC limit. Reduce gain or LED brightness.";
+            case "TURB1,ERROR,REFERENCE_LOW": return "Reference signal is too weak. Check the LED, photodiode, and signal polarity.";
+            case "TURB1,ERROR,SCATTER_NEGATIVE": return "Scatter signal is below its dark reading. Check optics and signal polarity.";
+            case "TURB1,ERROR,RATIO_RANGE": return "Optical ratio is out of range. Check both sensor channels.";
+            case "TURB1,ERROR,BAD_COMMAND": return "The sensor did not recognize the command.";
+            default: return null;
+        }
+    }
+
     String displayValue() {
         return String.format(Locale.US, kind == Kind.RESULT ? "%.2f" : "%.4f", value);
     }

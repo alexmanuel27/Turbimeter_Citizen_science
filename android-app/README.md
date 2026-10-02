@@ -14,8 +14,14 @@ are available.
 2. Open this `android-app` folder in Android Studio, install Android SDK 35 if
    prompted, and run the app on an Android phone with USB host support.
 3. Connect the XIAO with a **data-capable USB-C cable**. Tap **Connect sensor**,
-   grant USB permission, then tap **Measure**. The board sends a changing demo
+   grant USB permission, then tap **Measure now**. The board sends a changing demo
    ratio; the app labels it as test data and does not allow saving it.
+
+For the real optical bench, upload
+[`xiao_samd21_turbimeter.ino`](../firmware/xiao_samd21_turbimeter/xiao_samd21_turbimeter.ino)
+instead. It reads the ADS1115 and reports an uncalibrated ratio or a specific
+sensor error. Its [wiring and test steps](../firmware/xiao_samd21_turbimeter/README.md)
+must be checked before connecting the analog circuit.
 
 For the final sealed instrument, the cable cut and passed through the gland
 still needs a sound electrical termination at the board's USB-C connection.
@@ -31,6 +37,7 @@ response. USB packets may split a line; the app assembles lines before parsing.
 | `TURB1,DEMO,0.2500` | Synthetic value for testing USB and the screen |
 | `TURB1,RATIO,0.2500` | Real optical ratio, still uncalibrated |
 | `TURB1,RESULT,12.30,FNU,CAL-001,OK` | Future calibrated result with unit and calibration ID |
+| `TURB1,ERROR,ADC_MISSING` | Example hardware error shown by the app |
 
 The app rejects incomplete/nonfinite values and will enable **Save** for
 `RATIO` and `RESULT`, recording their quality status in the CSV. The measurement firmware must not emit `RESULT` until its

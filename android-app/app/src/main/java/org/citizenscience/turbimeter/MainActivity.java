@@ -7,11 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Insets;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -28,6 +33,12 @@ import java.time.Instant;
 public final class MainActivity extends Activity {
     private static final String USB_PERMISSION = "org.citizenscience.turbimeter.USB_PERMISSION";
     private static final String CSV_NAME = "measurements.csv";
+    private static final int INK = 0xff18343c;
+    private static final int MUTED = 0xff63777f;
+    private static final int TEAL = 0xff087f83;
+    private static final int PAPER = 0xfff3f7f7;
+    private static final int BORDER = 0xffdce7e7;
+    private static final int AMBER = 0xff8b5b14;
 
     private UsbManager usbManager;
     private UsbDevice pendingDevice;
@@ -40,6 +51,7 @@ public final class MainActivity extends Activity {
     private TextView value;
     private TextView unit;
     private TextView quality;
+    private TextView detail;
     private Button connectButton;
     private Button measureButton;
     private Button saveButton;
@@ -74,45 +86,103 @@ public final class MainActivity extends Activity {
 
     private void buildScreen() {
         ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.setBackgroundColor(PAPER);
+        if (Build.VERSION.SDK_INT >= 35) scroll.setOnApplyWindowInsetsListener((view, insets) -> {
+            Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+            view.setPadding(0, bars.top, 0, bars.bottom);
+            return insets;
+        });
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+        if (Build.VERSION.SDK_INT < 35) {
+            getWindow().setStatusBarColor(PAPER);
+            getWindow().setNavigationBarColor(PAPER);
+        }
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(24), dp(32), dp(24), dp(32));
+        content.setPadding(dp(22), dp(26), dp(22), dp(32));
         scroll.addView(content);
 
-        TextView title = label("Turbimeter", 28);
+        TextView eyebrow = label("CITIZEN SCIENCE  /  FIELD TOOL", 12);
+        eyebrow.setTextColor(TEAL);
+        eyebrow.setLetterSpacing(0.08f);
+        content.addView(eyebrow);
+        TextView title = label("Turbimeter", 32);
+        title.setTypeface(null, Typeface.BOLD);
         content.addView(title);
-        status = label("Connect the sensor to your Android phone", 16);
-        content.addView(status, spaced());
-        value = label("—", 52);
-        content.addView(value, spaced());
-        unit = label("No measurement", 20);
-        content.addView(unit);
-        quality = label("The app will identify demo and uncalibrated readings.", 15);
-        content.addView(quality, spaced());
+        TextView subtitle = label("Your phone is the display for the USB-C sensor.", 14);
+        subtitle.setTextColor(MUTED);
+        content.addView(subtitle, spaced(4));
 
-        connectButton = button("Connect sensor", content, () -> {
+        LinearLayout connection = card(content);
+        TextView connectionHeading = label("SENSOR", 12);
+        connectionHeading.setTextColor(TEAL);
+        connectionHeading.setLetterSpacing(0.08f);
+        connection.addView(connectionHeading);
+        status = label("Sensor disconnected", 18);
+        status.setTypeface(null, Typeface.BOLD);
+        connection.addView(status, spaced(8));
+        TextView connectionHint = label("XIAO SAMD21 · USB-C data cable", 14);
+        connectionHint.setTextColor(MUTED);
+        connection.addView(connectionHint, spaced(3));
+        connectButton = button("Connect sensor", connection, false, () -> {
             if (reader == null) connect();
             else disconnect("Disconnected");
         });
-        measureButton = button("Measure", content, () -> {
+
+        LinearLayout reading = card(content);
+        TextView readingHeading = label("CURRENT READING", 12);
+        readingHeading.setTextColor(TEAL);
+        readingHeading.setLetterSpacing(0.08f);
+        reading.addView(readingHeading);
+        value = label("—", 64);
+        value.setTypeface(null, Typeface.BOLD);
+        reading.addView(value, spaced(10));
+        unit = label("No measurement", 20);
+        unit.setTextColor(MUTED);
+        reading.addView(unit);
+        quality = label("WAITING FOR SENSOR", 12);
+        quality.setTypeface(null, Typeface.BOLD);
+        quality.setLetterSpacing(0.06f);
+        quality.setPadding(dp(12), dp(8), dp(12), dp(8));
+        reading.addView(quality, spaced(20));
+        setQuality("WAITING FOR SENSOR", 0xffe9f0f1, MUTED);
+        detail = label("Connect the sensor, then request a reading.", 14);
+        detail.setTextColor(MUTED);
+        reading.addView(detail, spaced(12));
+
+        measureButton = button("Measure now", content, true, () -> {
             if (reader != null) {
                 latest = null;
-                saveButton.setEnabled(false);
+                enabled(saveButton, false);
                 value.setText("—");
                 unit.setText("Waiting for sensor");
-                quality.setText("Requesting a new reading");
+                setQuality("MEASURING", 0xffe7f4f1, TEAL);
+                detail.setText("Requesting a new reading from the sensor.");
                 status.setText("Measuring…");
                 reader.measure();
             }
         });
-        measureButton.setEnabled(false);
-        saveButton = button("Save reading on phone", content, this::saveReading);
-        saveButton.setEnabled(false);
-        shareButton = button("Share saved readings", content, this::shareReadings);
-        shareButton.setEnabled(getFileStreamPath(CSV_NAME).exists());
+        enabled(measureButton, false);
+        saveButton = button("Save reading on phone", content, false, this::saveReading);
+        enabled(saveButton, false);
+        shareButton = button("Share saved readings (CSV)", content, false, this::shareReadings);
+        enabled(shareButton, getFileStreamPath(CSV_NAME).exists());
 
-        TextView note = label("Real readings can be saved. Demo data cannot. Nothing is uploaded automatically.", 14);
-        content.addView(note, spaced());
+        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+            button("Preview example screen", content, false, () -> {
+                latest = null;
+                value.setText("12.30");
+                unit.setText("FNU · example only");
+                setQuality("SCREEN PREVIEW", 0xfffff2da, AMBER);
+                detail.setText("Illustrative value. No sensor was measured; saving is disabled.");
+                enabled(saveButton, false);
+            });
+
+        TextView note = label("Readings stay on this phone until you choose to share them. Nothing is uploaded automatically.", 13);
+        note.setTextColor(MUTED);
+        content.addView(note, spaced(20));
         setContentView(scroll);
     }
 
@@ -120,21 +190,56 @@ public final class MainActivity extends Activity {
         TextView view = new TextView(this);
         view.setText(text);
         view.setTextSize(size);
+        view.setTextColor(INK);
         return view;
     }
 
-    private Button button(String text, LinearLayout parent, Runnable action) {
+    private LinearLayout card(LinearLayout parent) {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(dp(20), dp(20), dp(20), dp(20));
+        card.setBackground(background(0xffffffff, BORDER, 18));
+        parent.addView(card, spaced(20));
+        return card;
+    }
+
+    private GradientDrawable background(int fill, int stroke, int radius) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setColor(fill);
+        shape.setCornerRadius(dp(radius));
+        if (stroke != 0) shape.setStroke(dp(1), stroke);
+        return shape;
+    }
+
+    private void setQuality(String text, int fill, int color) {
+        quality.setText(text);
+        quality.setTextColor(color);
+        quality.setBackground(background(fill, 0, 8));
+    }
+
+    private Button button(String text, LinearLayout parent, boolean primary, Runnable action) {
         Button button = new Button(this);
         button.setText(text);
+        button.setAllCaps(false);
+        button.setTextSize(16);
+        button.setTypeface(null, Typeface.BOLD);
+        button.setTextColor(primary ? 0xffffffff : TEAL);
+        button.setBackgroundTintList(ColorStateList.valueOf(primary ? TEAL : 0xffe7f4f1));
+        button.setMinimumHeight(dp(54));
         button.setOnClickListener(view -> action.run());
-        parent.addView(button, spaced());
+        parent.addView(button, spaced(12));
         return button;
     }
 
-    private LinearLayout.LayoutParams spaced() {
+    private void enabled(Button button, boolean value) {
+        button.setEnabled(value);
+        button.setAlpha(value ? 1f : 0.45f);
+    }
+
+    private LinearLayout.LayoutParams spaced(int margin) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.topMargin = dp(16);
+        params.topMargin = dp(margin);
         return params;
     }
 
@@ -175,25 +280,25 @@ public final class MainActivity extends Activity {
                 runOnUiThread(() -> {
                     if (generation != readerGeneration) return;
                     status.setText("Sensor connected");
-                    measureButton.setEnabled(true);
+                    enabled(measureButton, true);
                 });
             }
 
             @Override public void onLine(String line) {
                 MeasurementFrame frame = MeasurementFrame.parse(line);
-                if (frame == null) return;
+                String fault = MeasurementFrame.errorMessage(line);
+                if (frame == null && fault == null) return;
                 runOnUiThread(() -> {
                     if (generation != readerGeneration) return;
-                    latest = frame;
-                    value.setText(frame.displayValue());
-                    unit.setText(frame.unit);
-                    if (frame.kind == MeasurementFrame.Kind.DEMO)
-                        quality.setText("Demo signal — not a water measurement");
-                    else if (frame.kind == MeasurementFrame.Kind.RATIO)
-                        quality.setText("Optical ratio — not calibrated turbidity");
-                    else quality.setText("Calibrated · " + frame.calibrationId);
-                    saveButton.setEnabled(frame.kind != MeasurementFrame.Kind.DEMO);
-                    status.setText("Measurement received");
+                    if (fault != null) {
+                        latest = null;
+                        value.setText("—");
+                        unit.setText("No measurement");
+                        setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
+                        detail.setText(fault);
+                        enabled(saveButton, false);
+                    } else showFrame(frame);
+                    status.setText("Sensor connected");
                 });
             }
 
@@ -202,6 +307,7 @@ public final class MainActivity extends Activity {
                     if (generation != readerGeneration) return;
                     lastError = message;
                     status.setText(message);
+                    detail.setText("Check the USB connection and try again.");
                 });
             }
 
@@ -211,15 +317,32 @@ public final class MainActivity extends Activity {
                     reader = null;
                     activeDevice = null;
                     connectButton.setText("Connect sensor");
-                    measureButton.setEnabled(false);
+                    enabled(measureButton, false);
                     status.setText(lastError == null ? "Sensor disconnected" : lastError);
                 });
             }
         });
         status.setText("Connecting…");
         connectButton.setText("Disconnect");
-        measureButton.setEnabled(false);
+        enabled(measureButton, false);
         reader.start();
+    }
+
+    private void showFrame(MeasurementFrame frame) {
+        latest = frame;
+        value.setText(frame.displayValue());
+        unit.setText(frame.kind == MeasurementFrame.Kind.RESULT ? frame.unit : "Optical ratio");
+        if (frame.kind == MeasurementFrame.Kind.DEMO) {
+            setQuality("DEMO SIGNAL", 0xfffff2da, AMBER);
+            detail.setText("USB communication works. This is synthetic data, not a water measurement.");
+        } else if (frame.kind == MeasurementFrame.Kind.RATIO) {
+            setQuality("UNCALIBRATED", 0xfffff2da, AMBER);
+            detail.setText("A real optical reading. Calibration is needed before reporting turbidity.");
+        } else {
+            setQuality("CALIBRATED", 0xffe7f4f1, TEAL);
+            detail.setText("Calibration " + frame.calibrationId + " · ready to save on this phone.");
+        }
+        enabled(saveButton, frame.kind != MeasurementFrame.Kind.DEMO);
     }
 
     private void disconnect(String message) {
@@ -229,7 +352,7 @@ public final class MainActivity extends Activity {
         activeDevice = null;
         pendingDevice = null;
         connectButton.setText("Connect sensor");
-        measureButton.setEnabled(false);
+        enabled(measureButton, false);
         status.setText(message);
     }
 
@@ -243,8 +366,8 @@ public final class MainActivity extends Activity {
             if (file.length() == 0) output.write("timestamp_utc,value,unit,quality,calibration_id\n"
                     .getBytes(StandardCharsets.UTF_8));
             output.write(row.getBytes(StandardCharsets.UTF_8));
-            saveButton.setEnabled(false);
-            shareButton.setEnabled(true);
+            enabled(saveButton, false);
+            enabled(shareButton, true);
             Toast.makeText(this, "Reading saved", Toast.LENGTH_SHORT).show();
         } catch (IOException error) {
             status.setText("Could not save the reading");
