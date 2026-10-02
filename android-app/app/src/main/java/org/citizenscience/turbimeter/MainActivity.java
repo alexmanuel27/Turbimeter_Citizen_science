@@ -1,6 +1,8 @@
 package org.citizenscience.turbimeter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,30 +15,33 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Gravity;
 import android.view.WindowInsets;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
+import java.util.List;
 
 public final class MainActivity extends Activity {
     private static final String USB_PERMISSION = "org.citizenscience.turbimeter.USB_PERMISSION";
     private static final String CSV_NAME = "measurements.csv";
+    private static final String PREFS_NAME = "contributor";
     private static final int INK = 0xff18343c;
     private static final int MUTED = 0xff63777f;
     private static final int TEAL = 0xff087f83;
@@ -58,8 +63,18 @@ public final class MainActivity extends Activity {
     private TextView detail;
     private Button connectButton;
     private Button measureButton;
-    private Button saveButton;
+    private Button uploadButton;
     private Button shareButton;
+    private ScrollView homePage;
+    private ScrollView historyPage;
+    private ScrollView signaturePage;
+    private ScrollView privacyPage;
+    private LinearLayout historyList;
+    private EditText contributorName;
+    private EditText contributorOrganization;
+    private TextView pageTitle;
+    private View drawerScrim;
+    private View drawer;
 
     private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
@@ -76,6 +91,7 @@ public final class MainActivity extends Activity {
         }
     };
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag") // Flags are unavailable before API 33.
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
@@ -89,10 +105,9 @@ public final class MainActivity extends Activity {
     }
 
     private void buildScreen() {
-        ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        scroll.setBackgroundColor(PAPER);
-        if (Build.VERSION.SDK_INT >= 35) scroll.setOnApplyWindowInsetsListener((view, insets) -> {
+        FrameLayout root = new FrameLayout(this);
+        root.setBackgroundColor(PAPER);
+        if (Build.VERSION.SDK_INT >= 35) root.setOnApplyWindowInsetsListener((view, insets) -> {
             Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
             view.setPadding(0, bars.top, 0, bars.bottom);
             return insets;
@@ -103,11 +118,89 @@ public final class MainActivity extends Activity {
             getWindow().setStatusBarColor(PAPER);
             getWindow().setNavigationBarColor(PAPER);
         }
+        LinearLayout shell = new LinearLayout(this);
+        shell.setOrientation(LinearLayout.VERTICAL);
+        root.addView(shell, new FrameLayout.LayoutParams(-1, -1));
+
+        LinearLayout toolbar = new LinearLayout(this);
+        toolbar.setGravity(Gravity.CENTER_VERTICAL);
+        toolbar.setPadding(dp(12), dp(8), dp(18), dp(8));
+        toolbar.setBackgroundColor(0xffffffff);
+        shell.addView(toolbar, new LinearLayout.LayoutParams(-1, dp(64)));
+        Button menu = new Button(this);
+        menu.setText("☰");
+        menu.setContentDescription("Open navigation menu");
+        menu.setTextSize(24);
+        menu.setAllCaps(false);
+        menu.setTextColor(INK);
+        menu.setBackgroundTintList(ColorStateList.valueOf(0xffffffff));
+        menu.setOnClickListener(view -> showDrawer(true));
+        toolbar.addView(menu, new LinearLayout.LayoutParams(dp(56), dp(50)));
+        pageTitle = label("Home", 20);
+        pageTitle.setTypeface(null, Typeface.BOLD);
+        toolbar.addView(pageTitle, new LinearLayout.LayoutParams(0, -2, 1));
+        ImageView smallLogo = new ImageView(this);
+        smallLogo.setImageResource(R.drawable.ares_logo);
+        smallLogo.setContentDescription("ARES Cuban Water Lab logo");
+        toolbar.addView(smallLogo, new LinearLayout.LayoutParams(dp(42), dp(42)));
+
+        FrameLayout pages = new FrameLayout(this);
+        shell.addView(pages, new LinearLayout.LayoutParams(-1, 0, 1));
+        homePage = buildHome();
+        historyPage = buildHistory();
+        signaturePage = buildSignature();
+        privacyPage = buildPrivacy();
+        pages.addView(homePage, new FrameLayout.LayoutParams(-1, -1));
+        pages.addView(historyPage, new FrameLayout.LayoutParams(-1, -1));
+        pages.addView(signaturePage, new FrameLayout.LayoutParams(-1, -1));
+        pages.addView(privacyPage, new FrameLayout.LayoutParams(-1, -1));
+
+        drawerScrim = new View(this);
+        drawerScrim.setBackgroundColor(0x88000000);
+        drawerScrim.setOnClickListener(view -> showDrawer(false));
+        root.addView(drawerScrim, new FrameLayout.LayoutParams(-1, -1));
+        LinearLayout menuPanel = new LinearLayout(this);
+        menuPanel.setOrientation(LinearLayout.VERTICAL);
+        menuPanel.setPadding(dp(22), dp(28), dp(22), dp(20));
+        menuPanel.setBackgroundColor(0xffffffff);
+        FrameLayout.LayoutParams panelParams = new FrameLayout.LayoutParams(dp(280), -1, Gravity.START);
+        root.addView(menuPanel, panelParams);
+        drawer = menuPanel;
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.ares_logo);
+        logo.setContentDescription("ARES Cuban Water Lab logo");
+        menuPanel.addView(logo, new LinearLayout.LayoutParams(dp(98), dp(98)));
+        TextView menuTitle = label("Turbimeter", 24);
+        menuTitle.setTypeface(null, Typeface.BOLD);
+        menuPanel.addView(menuTitle, spaced(12));
+        TextView menuSubtitle = label("Citizen science field tool", 14);
+        menuSubtitle.setTextColor(MUTED);
+        menuPanel.addView(menuSubtitle);
+        button("Home", menuPanel, false, () -> selectPage(0));
+        button("History", menuPanel, false, () -> selectPage(1));
+        button("Signature", menuPanel, false, () -> selectPage(2));
+        button("Privacy", menuPanel, false, () -> selectPage(3));
+        showDrawer(false);
+        selectPage(0);
+        setContentView(root);
+    }
+
+    private ScrollView page(LinearLayout content) {
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.addView(content);
+        return scroll;
+    }
+
+    private LinearLayout pageContent() {
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(22), dp(26), dp(22), dp(32));
-        scroll.addView(content);
+        return content;
+    }
 
+    private ScrollView buildHome() {
+        LinearLayout content = pageContent();
         TextView eyebrow = label("CITIZEN SCIENCE  /  FIELD TOOL", 12);
         eyebrow.setTextColor(TEAL);
         eyebrow.setLetterSpacing(0.08f);
@@ -159,7 +252,7 @@ public final class MainActivity extends Activity {
         measureButton = button("Measure now", content, true, () -> {
             if (reader != null) {
                 latest = null;
-                enabled(saveButton, false);
+                enabled(uploadButton, false);
                 value.setText("—");
                 unit.setText("Waiting for sensor");
                 setQuality("MEASURING", 0xffe7f4f1, TEAL);
@@ -169,10 +262,8 @@ public final class MainActivity extends Activity {
             }
         });
         enabled(measureButton, false);
-        saveButton = button("Save reading on phone", content, false, this::saveReading);
-        enabled(saveButton, false);
-        shareButton = button("Share saved readings (CSV)", content, false, this::shareReadings);
-        enabled(shareButton, getFileStreamPath(CSV_NAME).exists());
+        uploadButton = button("Upload reading", content, false, this::uploadReading);
+        enabled(uploadButton, false);
 
         if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             button("Preview example screen", content, false, () -> {
@@ -181,15 +272,87 @@ public final class MainActivity extends Activity {
                 unit.setText("FNU · example only");
                 setQuality("SCREEN PREVIEW", 0xfffff2da, AMBER);
                 detail.setText("Illustrative value. No sensor was measured; saving is disabled.");
-                enabled(saveButton, false);
+                enabled(uploadButton, false);
             });
-            button("Test XIAO via Mac bridge", content, false, this::testMacBridge);
         }
 
-        TextView note = label("Readings stay on this phone until you choose to share them. Nothing is uploaded automatically.", 13);
+        TextView note = label("Real readings are saved in History on this phone. Nothing is uploaded automatically.", 13);
         note.setTextColor(MUTED);
         content.addView(note, spaced(20));
-        setContentView(scroll);
+        return page(content);
+    }
+
+    private ScrollView buildHistory() {
+        LinearLayout content = pageContent();
+        TextView title = label("History", 30);
+        title.setTypeface(null, Typeface.BOLD);
+        content.addView(title);
+        TextView subtitle = label("Real readings saved on this phone. Uncalibrated values are marked clearly.", 14);
+        subtitle.setTextColor(MUTED);
+        content.addView(subtitle, spaced(6));
+        shareButton = button("Share readings (CSV)", content, false, this::shareReadings);
+        enabled(shareButton, getFileStreamPath(CSV_NAME).exists());
+        historyList = new LinearLayout(this);
+        historyList.setOrientation(LinearLayout.VERTICAL);
+        content.addView(historyList);
+        return page(content);
+    }
+
+    private ScrollView buildSignature() {
+        LinearLayout content = pageContent();
+        TextView title = label("Signature", 30);
+        title.setTypeface(null, Typeface.BOLD);
+        content.addView(title);
+        TextView subtitle = label("Your self-declared identity will accompany future uploads. It is not a cryptographic signature.", 14);
+        subtitle.setTextColor(MUTED);
+        content.addView(subtitle, spaced(6));
+        LinearLayout card = card(content);
+        card.addView(label("Contributor name", 14));
+        contributorName = new EditText(this);
+        contributorName.setSingleLine(true);
+        contributorName.setHint("Your name");
+        contributorName.setText(getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("name", ""));
+        card.addView(contributorName, spaced(4));
+        card.addView(label("Institution or group (optional)", 14), spaced(16));
+        contributorOrganization = new EditText(this);
+        contributorOrganization.setSingleLine(true);
+        contributorOrganization.setHint("e.g. community group");
+        contributorOrganization.setText(getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("organization", ""));
+        card.addView(contributorOrganization, spaced(4));
+        button("Save signature", card, true, this::saveSignature);
+        return page(content);
+    }
+
+    private ScrollView buildPrivacy() {
+        LinearLayout content = pageContent();
+        TextView title = label("Privacy", 30);
+        title.setTypeface(null, Typeface.BOLD);
+        content.addView(title);
+        TextView policy = label("Turbimeter uses USB only to communicate with your sensor. It saves real readings and the name and group you enter in Signature on this phone. No account, analytics, advertising, location access, or automatic upload is used in this version.\n\nReadings remain here until you delete them or uninstall the app. Sharing a CSV is your choice; the app you choose to share with handles that copy.\n\nFor privacy questions, contact the project through GitHub Issues.", 15);
+        policy.setTextColor(MUTED);
+        content.addView(policy, spaced(14));
+        button("Contact the project", content, false, () -> {
+            Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://github.com/alexmanuel27/Turbimeter_Citizen_science/issues"));
+            startActivity(browser);
+        });
+        button("Delete all local data", content, false, this::confirmDeleteData);
+        return page(content);
+    }
+
+    private void selectPage(int index) {
+        homePage.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+        historyPage.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
+        signaturePage.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
+        privacyPage.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
+        pageTitle.setText(index == 0 ? "Home" : index == 1 ? "History" : index == 2 ? "Signature" : "Privacy");
+        if (index == 1) refreshHistory();
+        showDrawer(false);
+    }
+
+    private void showDrawer(boolean visible) {
+        drawerScrim.setVisibility(visible ? View.VISIBLE : View.GONE);
+        drawer.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     private TextView label(String text, int size) {
@@ -332,56 +495,35 @@ public final class MainActivity extends Activity {
             detail.setText("USB communication works. This is synthetic data, not a water measurement.");
         } else if (frame.kind == MeasurementFrame.Kind.RATIO) {
             setQuality("UNCALIBRATED", 0xfffff2da, AMBER);
-            detail.setText("A real optical reading. Calibration is needed before reporting turbidity.");
+            detail.setText("Real optical reading saved in History. Calibration is needed before upload.");
         } else {
             setQuality("CALIBRATED", 0xffe7f4f1, TEAL);
-            detail.setText("Calibration " + frame.calibrationId + " · ready to save on this phone.");
+            detail.setText("Calibration " + frame.calibrationId + " · saved in History.");
         }
-        enabled(saveButton, frame.kind != MeasurementFrame.Kind.DEMO);
+        enabled(uploadButton, frame.kind != MeasurementFrame.Kind.DEMO);
     }
 
     private boolean showLine(String line) {
         MeasurementFrame frame = MeasurementFrame.parse(line);
         String fault = MeasurementFrame.errorMessage(line);
         if (frame == null && fault == null) return false;
-        if (fault == null) showFrame(frame);
+        if (fault == null) {
+            showFrame(frame);
+            if (frame.kind != MeasurementFrame.Kind.DEMO && !saveReading(frame)) {
+                detail.setText("Reading received, but could not be saved in History.");
+                enabled(uploadButton, false);
+                return false;
+            }
+        }
         else {
             latest = null;
             value.setText("—");
             unit.setText("No measurement");
             setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
             detail.setText(fault);
-            enabled(saveButton, false);
+            enabled(uploadButton, false);
         }
         return true;
-    }
-
-    private void testMacBridge() {
-        latest = null;
-        enabled(saveButton, false);
-        status.setText("Testing XIAO via Mac bridge…");
-        detail.setText("Sending MEASURE from the emulator to the XIAO.");
-        new Thread(() -> {
-            try (Socket socket = new Socket()) {
-                socket.connect(new InetSocketAddress("10.0.2.2", 8765), 3000);
-                socket.setSoTimeout(5000);
-                socket.getOutputStream().write("MEASURE\n".getBytes(StandardCharsets.US_ASCII));
-                String line = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream(), StandardCharsets.US_ASCII)).readLine();
-                if (line == null) throw new IOException("No reply from XIAO");
-                runOnUiThread(() -> {
-                    if (!showLine(line)) detail.setText("Unexpected reply: " + line);
-                    latest = null; // Debug bridge data must not be saved as a phone measurement.
-                    enabled(saveButton, false);
-                    status.setText("XIAO replied via Mac bridge");
-                });
-            } catch (IOException error) {
-                runOnUiThread(() -> {
-                    status.setText("Mac bridge unavailable");
-                    detail.setText(error.getMessage());
-                });
-            }
-        }, "turbimeter-mac-bridge").start();
     }
 
     private void disconnect(String message) {
@@ -395,22 +537,127 @@ public final class MainActivity extends Activity {
         status.setText(message);
     }
 
-    private void saveReading() {
-        if (latest == null || latest.kind == MeasurementFrame.Kind.DEMO) return;
+    private boolean saveReading(MeasurementFrame frame) {
         File file = getFileStreamPath(CSV_NAME);
-        String qualityCode = latest.kind == MeasurementFrame.Kind.RESULT ? "OK" : "UNCALIBRATED";
-        String row = Instant.now() + "," + Double.toString(latest.value) + ","
-                + latest.unit + "," + qualityCode + "," + latest.calibrationId + "\n";
+        String qualityCode = frame.kind == MeasurementFrame.Kind.RESULT ? "OK" : "UNCALIBRATED";
+        String row = Instant.now() + "," + Double.toString(frame.value) + ","
+                + frame.unit + "," + qualityCode + "," + frame.calibrationId + "\n";
         try (FileOutputStream output = openFileOutput(CSV_NAME, MODE_APPEND)) {
             if (file.length() == 0) output.write("timestamp_utc,value,unit,quality,calibration_id\n"
                     .getBytes(StandardCharsets.UTF_8));
             output.write(row.getBytes(StandardCharsets.UTF_8));
-            enabled(saveButton, false);
             enabled(shareButton, true);
-            Toast.makeText(this, "Reading saved", Toast.LENGTH_SHORT).show();
+            return true;
         } catch (IOException error) {
             status.setText("Could not save the reading");
+            return false;
         }
+    }
+
+    private void refreshHistory() {
+        historyList.removeAllViews();
+        File file = getFileStreamPath(CSV_NAME);
+        if (!file.exists()) {
+            TextView empty = label("No real readings yet. Connect the sensor and tap Measure now.", 15);
+            empty.setTextColor(MUTED);
+            historyList.addView(empty, spaced(24));
+            return;
+        }
+        try {
+            List<String> rows = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+            int shown = 0;
+            for (int i = rows.size() - 1; i > 0 && shown < 50; i--) {
+                String[] fields = rows.get(i).split(",", -1);
+                if (fields.length != 5) continue;
+                LinearLayout item = card(historyList);
+                TextView amount = label(fields[1] + " " + fields[2], 24);
+                amount.setTypeface(null, Typeface.BOLD);
+                item.addView(amount);
+                TextView meta = label(fields[0] + " UTC · " + fields[3], 13);
+                meta.setTextColor(MUTED);
+                item.addView(meta, spaced(6));
+                if (!fields[4].isEmpty()) item.addView(label("Calibration: " + fields[4], 13), spaced(4));
+                shown++;
+            }
+            if (shown == 0) historyList.addView(label("No real readings yet.", 15), spaced(24));
+            else if (rows.size() - 1 > shown) {
+                TextView note = label("Showing the 50 newest readings. Share CSV for the complete record.", 13);
+                note.setTextColor(MUTED);
+                historyList.addView(note, spaced(16));
+            }
+        } catch (IOException error) {
+            historyList.addView(label("Could not open reading history.", 15), spaced(24));
+        }
+    }
+
+    private void saveSignature() {
+        String name = contributorName.getText().toString().trim();
+        if (name.isEmpty()) {
+            contributorName.setError("Enter your name");
+            return;
+        }
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                .putString("name", name)
+                .putString("organization", contributorOrganization.getText().toString().trim())
+                .apply();
+        Toast.makeText(this, "Signature saved on this phone", Toast.LENGTH_SHORT).show();
+    }
+
+    private void confirmDeleteData() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete local data?")
+                .setMessage("This permanently removes saved readings and your Signature from this phone.")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    File file = getFileStreamPath(CSV_NAME);
+                    if (file.exists() && !deleteFile(CSV_NAME)) {
+                        Toast.makeText(this, "Could not delete readings", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (!getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().commit()) {
+                        Toast.makeText(this, "Could not delete Signature", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    contributorName.setText("");
+                    contributorOrganization.setText("");
+                    latest = null;
+                    value.setText("—");
+                    unit.setText("No measurement");
+                    setQuality("WAITING FOR SENSOR", 0xffe9f0f1, MUTED);
+                    detail.setText("Connect the sensor, then request a reading.");
+                    enabled(uploadButton, false);
+                    enabled(shareButton, false);
+                    refreshHistory();
+                    Toast.makeText(this, "Local data deleted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void uploadReading() {
+        if (latest == null) return;
+        if (latest.kind != MeasurementFrame.Kind.RESULT) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Calibration required")
+                    .setMessage("This optical ratio is saved in History, but it is not yet a quantitative turbidity result.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+        String name = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("name", "");
+        if (name.isEmpty()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Add your signature")
+                    .setMessage("Enter your name in Signature before uploading a reading.")
+                    .setPositiveButton("Open Signature", (dialog, which) -> selectPage(2))
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Upload not available yet")
+                .setMessage("The citizen-science API has not been defined. This reading is safe in History. When upload is connected, each submission will include your signature, its upload time, and a fresh phone location with your permission.")
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     private void shareReadings() {
