@@ -18,9 +18,9 @@ The current version works offline. It does not request location or upload readin
 
 This app is for the compatible citizen-science instrument. Measurement reliability depends on the sensor hardware and its calibration; do not use uncalibrated readings to make water safety decisions.
 
-## Screenshot plan
+## Screenshots
 
-Capture at least two genuine screenshots from the release app on an Android phone. Show Home and History without illustrative values.
+Genuine app screens are in `assets/screenshots/`: Home, History, and Privacy. They were captured on the Android API 35 emulator at 1080 × 1920 without a sensor or illustrative readings. Replace them with phone screenshots from the field instrument when those are available.
 
 ## Graphic alt text
 

@@ -94,8 +94,6 @@ public final class MainActivity extends Activity {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         if (Build.VERSION.SDK_INT >= 33) registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED);
         else registerReceiver(usbReceiver, filter);
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST))
-            status.setText("USB host mode unavailable on this device");
     }
 
     private void buildScreen() {
@@ -281,6 +279,11 @@ public final class MainActivity extends Activity {
         TextView policy = label("WaterLab Turbidimeter uses USB only to communicate with your sensor. It saves real readings on this phone. It has no account, analytics, advertising, location access, or data upload.\n\nReadings remain here until you delete them or uninstall the app. Sharing a CSV is your choice; the app you choose to share with handles that copy. If you used an earlier version, deleting local data also removes any saved contributor details.\n\nPrivacy contact: cubanwaterlab@gmail.com", 15);
         policy.setTextColor(MUTED);
         content.addView(policy, spaced(14));
+        button("Full privacy policy", content, false, () -> {
+            Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://alexmanuelrivera.com/Turbimeter_Citizen_science/privacy-policy.html"));
+            startActivity(browser);
+        });
         button("Contact the project", content, false, () -> {
             Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(
                     "https://github.com/alexmanuel27/Turbimeter_Citizen_science/issues"));
@@ -366,6 +369,10 @@ public final class MainActivity extends Activity {
     }
 
     private void connect() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST)) {
+            status.setText("USB host mode unavailable on this device");
+            return;
+        }
         UsbDevice device = null;
         for (UsbDevice candidate : usbManager.getDeviceList().values()) {
             if (UsbCdcReader.supports(candidate)) {

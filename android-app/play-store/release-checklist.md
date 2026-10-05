@@ -9,16 +9,17 @@ Play Console draft package ID: `com.Turbidimeter.main`. Earlier direct-install p
 - No internet or location permission in the release app; debug bridge removed.
 - No upload button, contributor form, or illustrative screen preview. The app reads the sensor and keeps local history.
 - In-app Privacy page and local-data deletion control.
-- Store listing draft and correctly sized icon and feature graphic in `assets/`.
+- Store listing text, correctly sized icon and feature graphic, and genuine emulator screenshots in `assets/`.
+- Public privacy policy: https://alexmanuelrivera.com/Turbimeter_Citizen_science/privacy-policy.html
+- Play Console contact: cubanwaterlab@gmail.com. Ads, app access, adult audience, Data safety, government, finance, and health declarations are saved.
+- Signed Play AAB: `outputs/WaterLab-Turbidimeter-0.4-play.aab` at the repository root. The private upload key is stored outside the repository in `~/.local/share/waterlab-turbidimeter-play/upload-key.p12`; its password is stored in macOS Keychain.
 
-## Still required before a Play submission
+## Remaining for the closed test
 
-1. Use the verified Play Console account. Confirm the publisher name and public contact email.
-2. Publish `docs/privacy-policy.html` at a public URL, then enter that URL in Play Console. Check that the in-app policy matches the release build.
-3. Create and safely store a private upload key outside the repository. Sign the AAB and enroll in Play App Signing. Never commit the keystore or passwords.
-4. Enter the store listing text, icon, feature graphic, and at least two genuine phone screenshots. State that a compatible external USB-C sensor is required and that readings stay local.
-5. Complete the Data safety form, content rating, target audience, ads declaration, and other Play Console app-content forms. Readings stay on-device; manual CSV sharing is user-initiated. Recheck this declaration against the final artifact.
-6. Test the signed release on a phone with the actual sensor. Verify USB permission, measurement, History, CSV share, privacy page, deletion, and app restart. A calibrated result must be validated against reference standards before the listing claims quantitative turbidity.
-7. Run Google's required closed test with at least 12 opted-in testers for 14 continuous days, then request production access.
+1. Accept IARC's terms in Play Console and complete the age-rating questionnaire.
+2. Upload the icon, feature graphic, and at least two screenshots, then save the store listing. The listing text is saved as a draft.
+3. Upload the signed AAB to a closed-test track and enroll in Play App Signing.
+4. Add tester accounts, distribute the opt-in link, and have at least 12 testers opt in for 14 continuous days before requesting production access.
+5. Test the release on a phone with the actual sensor. Verify USB permission, measurement, History, CSV share, privacy page, deletion, and app restart. A calibrated result must be validated against reference standards before the listing claims quantitative turbidity.
 
 Online API upload and location capture are not implemented in this version. They must not be claimed in the Play listing or Data safety form.
