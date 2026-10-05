@@ -23,3 +23,5 @@ Play Console draft package ID: `com.Turbidimeter.main`. Earlier direct-install p
 5. Test the release on a phone with the actual sensor. Verify USB permission, measurement, History, CSV share, privacy page, deletion, and app restart. A calibrated result must be validated against reference standards before the listing claims quantitative turbidity.
 
 Online API upload and location capture are not implemented in this version. They must not be claimed in the Play listing or Data safety form.
+
+`testers-template.csv` documents the Play import format. Fill the local `testers.csv` in this directory: replace each placeholder with one tester's Google account email address, one address per line, with no header or commas. Play Console rejects UTF-8 files with a byte-order mark. `testers.csv` is ignored by Git so personal email addresses are not published in the public repository.
