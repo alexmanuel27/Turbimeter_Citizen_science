@@ -6,7 +6,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@drawable/ares_logo"
-        android:label="Turbimeter"
+        android:label="WaterLab Turbidimeter"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
             android:name=".MainActivity"

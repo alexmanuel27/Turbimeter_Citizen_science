@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.Gravity;
 import android.view.WindowInsets;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,7 +38,7 @@ import java.time.Instant;
 import java.util.List;
 
 public final class MainActivity extends Activity {
-    private static final String USB_PERMISSION = "org.citizenscience.turbimeter.USB_PERMISSION";
+    private static final String USB_PERMISSION = "com.Turbidimeter.main.USB_PERMISSION";
     private static final String CSV_NAME = "measurements.csv";
     private static final String PREFS_NAME = "contributor";
     private static final int INK = 0xff18343c;
@@ -53,7 +52,6 @@ public final class MainActivity extends Activity {
     private UsbDevice pendingDevice;
     private UsbDevice activeDevice;
     private UsbCdcReader reader;
-    private MeasurementFrame latest;
     private int readerGeneration;
     private String lastError;
     private TextView status;
@@ -63,15 +61,11 @@ public final class MainActivity extends Activity {
     private TextView detail;
     private Button connectButton;
     private Button measureButton;
-    private Button uploadButton;
     private Button shareButton;
     private ScrollView homePage;
     private ScrollView historyPage;
-    private ScrollView signaturePage;
     private ScrollView privacyPage;
     private LinearLayout historyList;
-    private EditText contributorName;
-    private EditText contributorOrganization;
     private TextView pageTitle;
     private View drawerScrim;
     private View drawer;
@@ -148,11 +142,9 @@ public final class MainActivity extends Activity {
         shell.addView(pages, new LinearLayout.LayoutParams(-1, 0, 1));
         homePage = buildHome();
         historyPage = buildHistory();
-        signaturePage = buildSignature();
         privacyPage = buildPrivacy();
         pages.addView(homePage, new FrameLayout.LayoutParams(-1, -1));
         pages.addView(historyPage, new FrameLayout.LayoutParams(-1, -1));
-        pages.addView(signaturePage, new FrameLayout.LayoutParams(-1, -1));
         pages.addView(privacyPage, new FrameLayout.LayoutParams(-1, -1));
 
         drawerScrim = new View(this);
@@ -178,8 +170,7 @@ public final class MainActivity extends Activity {
         menuPanel.addView(menuSubtitle);
         button("Home", menuPanel, false, () -> selectPage(0));
         button("History", menuPanel, false, () -> selectPage(1));
-        button("Signature", menuPanel, false, () -> selectPage(2));
-        button("Privacy", menuPanel, false, () -> selectPage(3));
+        button("Privacy", menuPanel, false, () -> selectPage(2));
         showDrawer(false);
         selectPage(0);
         setContentView(root);
@@ -251,8 +242,6 @@ public final class MainActivity extends Activity {
 
         measureButton = button("Measure now", content, true, () -> {
             if (reader != null) {
-                latest = null;
-                enabled(uploadButton, false);
                 value.setText("—");
                 unit.setText("Waiting for sensor");
                 setQuality("MEASURING", 0xffe7f4f1, TEAL);
@@ -262,21 +251,7 @@ public final class MainActivity extends Activity {
             }
         });
         enabled(measureButton, false);
-        uploadButton = button("Upload reading", content, false, this::uploadReading);
-        enabled(uploadButton, false);
-
-        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            button("Preview example screen", content, false, () -> {
-                latest = null;
-                value.setText("12.30");
-                unit.setText("FNU · example only");
-                setQuality("SCREEN PREVIEW", 0xfffff2da, AMBER);
-                detail.setText("Illustrative value. No sensor was measured; saving is disabled.");
-                enabled(uploadButton, false);
-            });
-        }
-
-        TextView note = label("Real readings are saved in History on this phone. Nothing is uploaded automatically.", 13);
+        TextView note = label("Sensor readings are saved in History on this phone. Uncalibrated ratios are not turbidity values.", 13);
         note.setTextColor(MUTED);
         content.addView(note, spaced(20));
         return page(content);
@@ -298,37 +273,12 @@ public final class MainActivity extends Activity {
         return page(content);
     }
 
-    private ScrollView buildSignature() {
-        LinearLayout content = pageContent();
-        TextView title = label("Signature", 30);
-        title.setTypeface(null, Typeface.BOLD);
-        content.addView(title);
-        TextView subtitle = label("Your self-declared identity will accompany future uploads. It is not a cryptographic signature.", 14);
-        subtitle.setTextColor(MUTED);
-        content.addView(subtitle, spaced(6));
-        LinearLayout card = card(content);
-        card.addView(label("Contributor name", 14));
-        contributorName = new EditText(this);
-        contributorName.setSingleLine(true);
-        contributorName.setHint("Your name");
-        contributorName.setText(getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("name", ""));
-        card.addView(contributorName, spaced(4));
-        card.addView(label("Institution or group (optional)", 14), spaced(16));
-        contributorOrganization = new EditText(this);
-        contributorOrganization.setSingleLine(true);
-        contributorOrganization.setHint("e.g. community group");
-        contributorOrganization.setText(getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("organization", ""));
-        card.addView(contributorOrganization, spaced(4));
-        button("Save signature", card, true, this::saveSignature);
-        return page(content);
-    }
-
     private ScrollView buildPrivacy() {
         LinearLayout content = pageContent();
         TextView title = label("Privacy", 30);
         title.setTypeface(null, Typeface.BOLD);
         content.addView(title);
-        TextView policy = label("Turbimeter uses USB only to communicate with your sensor. It saves real readings and the name and group you enter in Signature on this phone. No account, analytics, advertising, location access, or automatic upload is used in this version.\n\nReadings remain here until you delete them or uninstall the app. Sharing a CSV is your choice; the app you choose to share with handles that copy.\n\nFor privacy questions, contact the project through GitHub Issues.", 15);
+        TextView policy = label("WaterLab Turbidimeter uses USB only to communicate with your sensor. It saves real readings on this phone. It has no account, analytics, advertising, location access, or data upload.\n\nReadings remain here until you delete them or uninstall the app. Sharing a CSV is your choice; the app you choose to share with handles that copy. If you used an earlier version, deleting local data also removes any saved contributor details.\n\nPrivacy contact: cubanwaterlab@gmail.com", 15);
         policy.setTextColor(MUTED);
         content.addView(policy, spaced(14));
         button("Contact the project", content, false, () -> {
@@ -343,9 +293,8 @@ public final class MainActivity extends Activity {
     private void selectPage(int index) {
         homePage.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
         historyPage.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
-        signaturePage.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
-        privacyPage.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
-        pageTitle.setText(index == 0 ? "Home" : index == 1 ? "History" : index == 2 ? "Signature" : "Privacy");
+        privacyPage.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
+        pageTitle.setText(index == 0 ? "Home" : index == 1 ? "History" : "Privacy");
         if (index == 1) refreshHistory();
         showDrawer(false);
     }
@@ -487,7 +436,6 @@ public final class MainActivity extends Activity {
     }
 
     private void showFrame(MeasurementFrame frame) {
-        latest = frame;
         value.setText(frame.displayValue());
         unit.setText(frame.kind == MeasurementFrame.Kind.RESULT ? frame.unit : "Optical ratio");
         if (frame.kind == MeasurementFrame.Kind.DEMO) {
@@ -495,12 +443,11 @@ public final class MainActivity extends Activity {
             detail.setText("USB communication works. This is synthetic data, not a water measurement.");
         } else if (frame.kind == MeasurementFrame.Kind.RATIO) {
             setQuality("UNCALIBRATED", 0xfffff2da, AMBER);
-            detail.setText("Real optical reading saved in History. Calibration is needed before upload.");
+            detail.setText("Optical ratio saved in History. Calibration is needed for a turbidity value.");
         } else {
             setQuality("CALIBRATED", 0xffe7f4f1, TEAL);
             detail.setText("Calibration " + frame.calibrationId + " · saved in History.");
         }
-        enabled(uploadButton, frame.kind != MeasurementFrame.Kind.DEMO);
     }
 
     private boolean showLine(String line) {
@@ -511,17 +458,14 @@ public final class MainActivity extends Activity {
             showFrame(frame);
             if (frame.kind != MeasurementFrame.Kind.DEMO && !saveReading(frame)) {
                 detail.setText("Reading received, but could not be saved in History.");
-                enabled(uploadButton, false);
                 return false;
             }
         }
         else {
-            latest = null;
             value.setText("—");
             unit.setText("No measurement");
             setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
             detail.setText(fault);
-            enabled(uploadButton, false);
         }
         return true;
     }
@@ -590,23 +534,10 @@ public final class MainActivity extends Activity {
         }
     }
 
-    private void saveSignature() {
-        String name = contributorName.getText().toString().trim();
-        if (name.isEmpty()) {
-            contributorName.setError("Enter your name");
-            return;
-        }
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
-                .putString("name", name)
-                .putString("organization", contributorOrganization.getText().toString().trim())
-                .apply();
-        Toast.makeText(this, "Signature saved on this phone", Toast.LENGTH_SHORT).show();
-    }
-
     private void confirmDeleteData() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete local data?")
-                .setMessage("This permanently removes saved readings and your Signature from this phone.")
+                .setMessage("This permanently removes saved readings and any contributor details from earlier versions of this app.")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     File file = getFileStreamPath(CSV_NAME);
                     if (file.exists() && !deleteFile(CSV_NAME)) {
@@ -614,49 +545,18 @@ public final class MainActivity extends Activity {
                         return;
                     }
                     if (!getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().commit()) {
-                        Toast.makeText(this, "Could not delete Signature", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Could not delete previous contributor details", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    contributorName.setText("");
-                    contributorOrganization.setText("");
-                    latest = null;
                     value.setText("—");
                     unit.setText("No measurement");
                     setQuality("WAITING FOR SENSOR", 0xffe9f0f1, MUTED);
                     detail.setText("Connect the sensor, then request a reading.");
-                    enabled(uploadButton, false);
                     enabled(shareButton, false);
                     refreshHistory();
                     Toast.makeText(this, "Local data deleted", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void uploadReading() {
-        if (latest == null) return;
-        if (latest.kind != MeasurementFrame.Kind.RESULT) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Calibration required")
-                    .setMessage("This optical ratio is saved in History, but it is not yet a quantitative turbidity result.")
-                    .setPositiveButton("OK", null)
-                    .show();
-            return;
-        }
-        String name = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("name", "");
-        if (name.isEmpty()) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Add your signature")
-                    .setMessage("Enter your name in Signature before uploading a reading.")
-                    .setPositiveButton("Open Signature", (dialog, which) -> selectPage(2))
-                    .setNegativeButton("Cancel", null)
-                    .show();
-            return;
-        }
-        new AlertDialog.Builder(this)
-                .setTitle("Upload not available yet")
-                .setMessage("The citizen-science API has not been defined. This reading is safe in History. When upload is connected, each submission will include your signature, its upload time, and a fresh phone location with your permission.")
-                .setPositiveButton("OK", null)
                 .show();
     }
 
