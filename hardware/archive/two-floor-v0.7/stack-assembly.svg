@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760">
+<title>Two-floor provisional assembly — Ing. Alex M. Rivera</title>
+<desc>Side-view assembly concept, not a fit-verified 3D model. Sensor base and combined XIAO plus upright ADS1115 upper PCB. Female SMD sockets on base, male through-hole headers beneath upper board. All electronics face up. Cut cable solders to base and a short USB-C pigtail plugs into XIAO.</desc>
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse"><path d="M0 0 L7 3.5 L0 7" fill="#425571"/></marker></defs>
+<rect width="1100" height="760" fill="white"/>
+<g font-family="Arial, sans-serif" fill="#17283e">
+<text x="45" y="42" font-size="27" font-weight="bold">Turbidimeter · two-floor assembly concept</text>
+<text x="45" y="72" font-size="17" fill="#52647b">Electronics upwards · same cuvette opening · actual module/connector/cable fit still required</text>
+<!-- Upper board and two modules -->
+<rect x="565" y="160" width="25" height="180" fill="#f5e2b5" stroke="#a67c28" stroke-width="2"/>
+<rect x="592" y="195" width="24" height="25" fill="#7d69a1"/>
+<rect x="592" y="250" width="24" height="30" fill="#7d69a1"/>
+<path d="M577 340 V360" stroke="#b08227" stroke-width="5"/>
+<text x="545" y="225" font-size="18" text-anchor="end">ADS1115 upright ↑</text>
+<text x="545" y="252" font-size="15" text-anchor="end">on the same upper PCB</text>
+<rect x="255" y="305" width="205" height="18" fill="#a7c7e7" stroke="#3575a7" stroke-width="2"/>
+<rect x="237" y="302" width="38" height="24" rx="3" fill="#65748b"/>
+<path d="M285 323 V360 M430 323 V360" stroke="#b08227" stroke-width="5"/>
+<text x="292" y="296" font-size="18">XIAO SAMD21 ↑</text>
+<rect x="105" y="360" width="570" height="16" fill="#48a897" stroke="#166a5d" stroke-width="2"/>
+<text x="280" y="350" font-size="17">2 · Controller + ADC</text>
+<!-- Male below upper, female SMD above base -->
+<g fill="#303c4d"><rect x="350" y="376" width="50" height="24"/><rect x="585" y="376" width="50" height="24"/></g>
+<g stroke="#b08227" stroke-width="5"><path d="M362 350 V480 M388 350 V480 M597 350 V480 M623 350 V480"/></g>
+<g fill="#65748b"><rect x="345" y="450" width="60" height="50" rx="3"/><rect x="580" y="450" width="60" height="50" rx="3"/></g>
+<!-- Lower electronics and base -->
+<rect x="160" y="404" width="85" height="96" rx="6" fill="#f5e2b5" stroke="#a67c28" stroke-width="2"/>
+<text x="175" y="441" font-size="17">Optics ↑</text>
+<text x="172" y="467" font-size="14">sideways</text>
+<text x="177" y="486" font-size="14">in holder</text>
+<rect x="455" y="463" width="95" height="37" rx="3" fill="#e8e3ef" stroke="#7d69a1" stroke-width="2"/>
+<text x="463" y="488" font-size="15">MCP6002 ↑</text>
+<rect x="105" y="500" width="570" height="16" fill="#48a897" stroke="#166a5d" stroke-width="2"/>
+<text x="105" y="542" font-size="17">1 · Sensor / cable entry</text>
+<!-- Height callout -->
+<path d="M70 160 H97 M70 516 H97 M80 166 V510" stroke="#425571" stroke-width="1.4" marker-start="url(#arrow)" marker-end="url(#arrow)" fill="none"/>
+<text transform="translate(58 425) rotate(-90)" font-size="18" font-weight="bold">35.6 mm nominal estimate</text>
+<!-- Short USB pigtail concept on upper face -->
+<path d="M137 358 V284 Q137 272 153 272 H208 Q222 272 222 290 V314 H237" stroke="#4879b1" stroke-width="5" fill="none"/>
+<circle cx="137" cy="358" r="5" fill="#4879b1"/>
+<text x="116" y="252" font-size="15">J5 → USB-C male</text>
+<!-- Information -->
+<text x="710" y="155" font-size="20" font-weight="bold">Preferred height: 35 mm</text>
+<text x="710" y="185" font-size="17">Fit is not yet demonstrated.</text>
+<text x="710" y="219" font-size="16">1.6 mm base + 14 mm top-to-top</text>
+<text x="710" y="245" font-size="16">+ ~20 mm upright assembly = 35.6 mm.</text>
+<text x="710" y="271" font-size="16">Allow ~36–38 mm pending dry fit;</text>
+<text x="710" y="297" font-size="16">lid clearance and bends are extra.</text>
+<text x="710" y="348" font-size="18" font-weight="bold">J1 analog · J4 USB</text>
+<text x="710" y="378" font-size="16">Male THT on upper underside.</text>
+<text x="710" y="404" font-size="16">Female SMD on base top.</text>
+<text x="710" y="430" font-size="16">Select reach for a 12.4 mm clear gap.</text>
+<text x="710" y="465" font-size="16">Trim J4 tails ≤1 mm; insulate.</text>
+<text x="710" y="491" font-size="16">ADS bottom edge ≥2 mm above PCB.</text>
+<text x="710" y="517" font-size="16">Support both boards and module.</text>
+<rect x="45" y="577" width="1010" height="91" rx="8" fill="#f1f5f9"/>
+<text x="65" y="604" font-size="17" font-weight="bold">USB path: phone → cut cable → base J2 → J4 → upper J5 → short USB-C plug → XIAO</text>
+<text x="65" y="633" font-size="16">Keep VBUS, GND, D−, D+, active CC and braid. Resistor-free male pigtail; use XIAO onboard CC termination.</text>
+<text x="65" y="655" font-size="16">Cable entry relief on base only · 44 mm cylinder for module overhang · cuvette opening retained on both floors.</text>
+<text x="45" y="701" font-size="16">Provisional module dimensions · check cable strain relief, socket orientation and optical bodies before routing/fabrication.</text>
+<text x="45" y="738" font-size="17" font-weight="bold">Design: Ing. Alex M. Rivera</text>
+<text x="1055" y="738" font-size="15" text-anchor="end" fill="#52647b">Rev. 0.7 · 11 October 2026</text>
+</g></svg>

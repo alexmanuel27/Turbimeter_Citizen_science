@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "Turbimeter")(type "KiCad")(uri "${KIPRJMOD}/Turbimeter.pretty")(options "")(descr "Turbimeter carrier footprints"))
+)

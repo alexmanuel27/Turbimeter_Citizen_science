@@ -1,0 +1,8 @@
+#VRML V2.0 utf8
+# Design: Ing. Alex M. Rivera. Provisional formed / long-reach leads; select and measure actual hardware.
+Transform { translation 0.0 0.0 0.2559055118110236 children [ Shape { appearance Appearance { material Material { diffuseColor .75 .75 .78 } } geometry Box { size 0.15748031496062992 0.15748031496062992 1.6141732283464565 } } ] }
+Transform { translation 0.0 0.13779527559055116 1.062992125984252 children [ Shape { appearance Appearance { material Material { diffuseColor .75 .75 .78 } } geometry Box { size 0.15748031496062992 0.4330708661417323 0.15748031496062992 } } ] }
+Transform { translation 0.047244094488188976 0.2755905511811023 1.062992125984252 children [ Shape { appearance Appearance { material Material { diffuseColor .75 .75 .78 } } geometry Box { size 0.25196850393700787 0.15748031496062992 0.15748031496062992 } } ] }
+Transform { translation 2.0 0.0 0.2559055118110236 children [ Shape { appearance Appearance { material Material { diffuseColor .75 .75 .78 } } geometry Box { size 0.15748031496062992 0.15748031496062992 1.6141732283464565 } } ] }
+Transform { translation 2.0 0.13779527559055116 1.062992125984252 children [ Shape { appearance Appearance { material Material { diffuseColor .75 .75 .78 } } geometry Box { size 0.15748031496062992 0.4330708661417323 0.15748031496062992 } } ] }
+Transform { translation 1.9527559055118109 0.2755905511811023 1.062992125984252 children [ Shape { appearance Appearance { material Material { diffuseColor .75 .75 .78 } } geometry Box { size 0.25196850393700787 0.15748031496062992 0.15748031496062992 } } ] }

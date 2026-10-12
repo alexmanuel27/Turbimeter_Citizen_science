@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="780" viewBox="0 0 1100 780">
+<title>Provisional three-floor electronics assembly — Ing. Alex M. Rivera</title>
+<desc>Schematic side view. All electronic components face upwards. Female SMD sockets are on lower top faces; male through-hole headers project beneath the upper boards. Estimated overall height 45–48 mm, preferred height 35 mm is not yet achieved.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#425571"/></marker></defs>
+<rect width="1100" height="780" fill="#f7f9fc"/>
+<g font-family="Arial, sans-serif" fill="#17283e">
+<text x="48" y="49" font-size="27" font-weight="bold">Turbidimeter · three-floor assembly</text>
+<text x="48" y="80" font-size="16" fill="#52647b">Provisional vertical budget · schematic side view, not a mechanical fit proof</text>
+<!-- top module and floor -->
+<rect x="260" y="145" width="205" height="184" rx="6" fill="#dcecfb" stroke="#3575a7" stroke-width="2"/>
+<text x="282" y="215" font-size="22" font-weight="bold">ADS1115</text>
+<text x="282" y="245" font-size="16">upright breakout</text>
+<text x="282" y="275" font-size="15">~19 mm assembly</text>
+<path d="M280 329 L280 345 L300 345 L300 355 M445 329 L445 345 L425 345 L425 355" fill="none" stroke="#b08227" stroke-width="7"/>
+<rect x="95" y="355" width="595" height="18" fill="#48a897" stroke="#166a5d" stroke-width="2"/>
+<text x="104" y="348" font-size="16">3 · ADC carrier</text>
+<rect x="570" y="374" width="52" height="26" fill="#303c4d"/>
+<path d="M581 399 V423 M610 399 V423" stroke="#b08227" stroke-width="5"/>
+<rect x="565" y="416" width="62" height="49" rx="3" fill="#65748b"/>
+<text x="715" y="384" font-size="17" font-weight="bold">J2 + J3 · 2.54 mm</text>
+<text x="715" y="410" font-size="15">Male THT on ADC underside</text>
+<text x="715" y="434" font-size="15">Female SMD on controller top</text>
+<!-- controller -->
+<rect x="270" y="402" width="190" height="46" rx="5" fill="#e0dcef" stroke="#7d69a1" stroke-width="2"/>
+<text x="286" y="431" font-size="19">XIAO SAMD21 ↑</text>
+<path d="M286 448 V465 M444 448 V465" stroke="#b08227" stroke-width="5"/>
+<rect x="95" y="465" width="595" height="18" fill="#48a897" stroke="#166a5d" stroke-width="2"/>
+<text x="104" y="458" font-size="16">2 · Controller</text>
+<rect x="570" y="484" width="52" height="26" fill="#303c4d"/>
+<path d="M581 509 V576 M610 509 V576" stroke="#b08227" stroke-width="5"/>
+<rect x="565" y="568" width="62" height="51" rx="3" fill="#65748b"/>
+<text x="715" y="509" font-size="17" font-weight="bold">J1 · 2.00 mm</text>
+<text x="715" y="535" font-size="15">Male THT on controller underside</text>
+<text x="715" y="559" font-size="15">Female SMD on sensor top</text>
+<text x="715" y="583" font-size="15">Select sufficient mating reach</text>
+<!-- optics and sensor -->
+<rect x="135" y="505" width="95" height="114" rx="8" fill="#f5e2b5" stroke="#a67c28" stroke-width="2"/>
+<text x="150" y="548" font-size="16">Optics ↑</text>
+<text x="145" y="575" font-size="14">holder sets</text>
+<text x="155" y="595" font-size="14">the axis</text>
+<rect x="310" y="575" width="130" height="44" rx="3" fill="#e8e3ef" stroke="#7d69a1" stroke-width="2"/>
+<text x="326" y="602" font-size="17">MCP6002 ↑</text>
+<rect x="95" y="620" width="595" height="18" fill="#48a897" stroke="#166a5d" stroke-width="2"/>
+<text x="104" y="662" font-size="16">1 · Sensor / analog front end</text>
+<!-- elevations -->
+<g stroke="#425571" fill="none" stroke-width="1.4">
+<path d="M70 145 H88 M70 638 H88 M78 151 V632" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<path d="M535 355 V465 M535 465 V620" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+</g>
+<text transform="translate(59 450) rotate(-90)" font-size="18" font-weight="bold">~45–48 mm estimated total</text>
+<text x="523" y="410" font-size="14" text-anchor="end">10 mm</text>
+<text x="523" y="549" font-size="14" text-anchor="end">14 mm</text>
+<text x="715" y="165" font-size="18" font-weight="bold">Height preference: 35 mm</text>
+<text x="715" y="194" font-size="16">Not achieved by this provisional stack.</text>
+<text x="715" y="225" font-size="15">Three 1.6 mm carrier boards.</text>
+<text x="715" y="250" font-size="15">Nominal total: 1.6 + 14 + 10 + 19</text>
+<text x="715" y="275" font-size="15">= 44.6 mm before enclosure clearance.</text>
+<text x="48" y="709" font-size="16">Preserved cuvette opening on all floors · no copper routing · confirm real modules, headers and USB cable fit.</text>
+<text x="48" y="742" font-size="16" font-weight="bold">Design: Ing. Alex M. Rivera</text>
+<text x="1050" y="742" font-size="14" text-anchor="end" fill="#52647b">Rev. 0.6 · 11 October 2026</text>
+</g></svg>

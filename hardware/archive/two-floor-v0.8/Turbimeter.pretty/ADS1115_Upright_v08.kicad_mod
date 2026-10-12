@@ -1,0 +1,214 @@
+(footprint "ADS1115_Upright_v08"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Design: Ing. Alex M. Rivera. Upright ADS1115 visual model with right-angle 1x10 P2.54 header. Supplied body is a provisional variant; confirm actual module pinout and fit. Through-hole TOP; B.Cu fabrication and soldering only.")
+	(tags "ADS1115 upright right-angle provisional")
+	(property "Reference" "REF**"
+		(at 11.45 -2.2175 90)
+		(layer "F.SilkS")
+		(uuid "bdff60f8-eb61-4b0b-8bc5-5484d28fdec3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "ADS1115_Upright_v08"
+		(at 11.43 -5.1 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ab8c2203-ffda-4935-830c-ebd08c1ef989")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8c386a24-eaf3-4b2b-a26e-6198713da75b")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "26e085e6-69ce-48ff-b005-3fae83da2e23")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -3.05 -3.75)
+		(end 25.95 1.1)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "5394dca0-3ddf-4f84-875b-e7ec5f4bedf8")
+	)
+	(fp_rect
+		(start -2.62 -5.5)
+		(end 25.53 -7.1)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "816b332e-5a92-4e97-885e-38c1a80de008")
+	)
+	(fp_rect
+		(start -2.62 -5.5)
+		(end 25.53 -7.1)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "7b4dabb5-b0ee-4233-ac5a-0c83a3ef6f42")
+	)
+	(fp_text user "UPRIGHT / VERIFY"
+		(at 11.43 -2.5 0)
+		(layer "F.Fab")
+		(uuid "bd596b7b-8573-4080-8984-e1b1ffbfe82f")
+		(effects
+			(font
+				(size 0.7 0.7)
+				(thickness 0.1)
+			)
+		)
+	)
+	(fp_text user "Ing. Alex M. Rivera"
+		(at 11.43 -6.5 0)
+		(layer "F.Fab")
+		(uuid "d56fd5f0-de5a-4160-94c7-14aad77e1b6f")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.1)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3ab718a6-ea47-486c-8874-5ab0f858974b")
+	)
+	(pad "2" thru_hole circle
+		(at 2.54 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "13bd5dc4-a95b-4f47-8791-0b220d37ca4e")
+	)
+	(pad "3" thru_hole circle
+		(at 5.08 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "62576f93-c24a-4c86-9eb9-1fe99f4db5f6")
+	)
+	(pad "4" thru_hole circle
+		(at 7.62 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "82e6b84f-1b62-469c-ab87-f21a9088ee7d")
+	)
+	(pad "5" thru_hole circle
+		(at 10.16 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "ab5731ba-7cfb-4cfb-8da1-eb5ec8e3cbec")
+	)
+	(pad "6" thru_hole circle
+		(at 12.7 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "398fb265-8156-4069-b7ce-a7e0836a1b62")
+	)
+	(pad "7" thru_hole circle
+		(at 15.24 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "49849792-a979-4c04-9e92-5d306b380a27")
+	)
+	(pad "8" thru_hole circle
+		(at 17.78 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3e7937b9-314d-4150-b670-df2aa4cbdcc9")
+	)
+	(pad "9" thru_hole circle
+		(at 20.32 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0055b5d9-7006-4b4c-883f-cee245c771ca")
+	)
+	(pad "10" thru_hole circle
+		(at 22.86 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "791f3274-92ce-4397-b65d-cc50b9966fa3")
+	)
+	(embedded_fonts no)
+	(model "${TURBIMETER_3DMODEL_DIR}/ADS1115_body.wrl"
+		(offset
+			(xyz 11.455 5.5 10.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 90 180 0)
+		)
+	)
+	(model "${KICAD9_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x10_P2.54mm_Horizontal.step"
+		(offset
+			(xyz 0 0 1)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -90)
+		)
+	)
+)

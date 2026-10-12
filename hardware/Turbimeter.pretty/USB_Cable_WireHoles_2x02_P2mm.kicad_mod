@@ -1,0 +1,89 @@
+(footprint "USB_Cable_WireHoles_2x02_P2mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Design: Ing. Alex M. Rivera. Four direct wire holes: 1 VBUS, 2 GND, 3 D-, 4 D+. 2x2 P2mm; 1mm drill; bare wires enter TOP and solder BOTTOM. No connector body; strain relief required.")
+	(property "Reference" "REF**"
+		(at 1 -2 0)
+		(layer "F.SilkS")
+		(uuid "5d6ec4df-7fff-48c9-b1ee-986ad7256322")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "USB_Cable_WireHoles_2x02_P2mm"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "18d3aed1-2bac-4121-8602-4e68be1486c3")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "eaab265a-75c8-445a-a616-53fff0ef2d68")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d64ede50-57ae-4339-906d-778c31c784f9")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 45)
+		(uuid "403ca873-df25-4e2e-a8b2-be7e052cbc31")
+	)
+	(pad "2" thru_hole circle
+		(at 2 0)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "257cdf80-c6a3-4694-a83e-c1bc7e5781b0")
+	)
+	(pad "3" thru_hole circle
+		(at 0 2)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "e00b0051-60f1-4d5f-81a3-ec3b5de49bc7")
+	)
+	(pad "4" thru_hole circle
+		(at 2 2)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "bec2c574-572f-46ce-be35-b65c65e492a2")
+	)
+	(embedded_fonts no)
+)

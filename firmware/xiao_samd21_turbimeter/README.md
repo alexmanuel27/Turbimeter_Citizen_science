@@ -20,7 +20,9 @@ do not upload it for this build.
 **Do not reuse the old 5 V Nano wiring unchanged.** XIAO GPIO and I²C are
 3.3 V. Power the ADS1115/MCP6002 analog circuit at 3.3 V for this test, and
 confirm the LED resistor/driver current and both amplifier output ranges before
-connecting them. The old PCB and drawing are not the final XIAO circuit.
+connecting them. The [two-board hardware design](../../hardware/README.md)
+contains the sensor and controller schematics; it needs physical validation
+before routing and fabrication.
 See the [XIAO pin map](https://wiki.seeedstudio.com/Seeeduino-XIAO/),
 [ADS1115 datasheet](https://www.ti.com/lit/ds/symlink/ads1115.pdf), and
 [MCP6002 specifications](https://www.microchip.com/en-us/product/MCP6002).

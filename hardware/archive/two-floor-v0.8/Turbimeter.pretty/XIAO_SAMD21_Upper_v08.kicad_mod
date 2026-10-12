@@ -1,0 +1,258 @@
+(footprint "XIAO_SAMD21_Upper_v08"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Design: Ing. Alex M. Rivera. Top-side through-hole mounting; route and fabricate B.Cu only. KiCad uses logical PTH annuli on both sides. Design: Ing. Alex M. Rivera.  Design: Ing. Alex M. Rivera. Design: Ing. Alex M. Rivera. Design: Ing. Alex M. Rivera. Design: Ing. Alex M. Rivera. Seeed XIAO SAMD21 on two 1x7, 2.54 mm headers; 15.24 mm row spacing, USB-C at lower short edge Silkscreen adjusted for the proven stack outline; copper geometry unchanged. Silkscreen adjusted for the proven stack outline; copper geometry unchanged. Silkscreen adjusted for the proven stack outline; copper geometry unchanged.")
+	(tags "XIAO SAMD21 header")
+	(property "Reference" "REF**"
+		(at 0 0.6625 0)
+		(layer "F.SilkS")
+		(uuid "8890b597-981c-476a-a910-8587a028cd2c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "XIAO_SAMD21_Upper_v08"
+		(at 0 12.3 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1d034e68-5ff5-419b-aa7a-6a095673fe35")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0f3e5be6-f1e1-46a1-9f2d-c63dbed3c263")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c08c2334-b732-45a4-9f7e-c909bd893efb")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -9.2 -10.8)
+		(end 9.2 10.8)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "466f5463-8274-4792-bc40-efeadef21b80")
+	)
+	(fp_rect
+		(start -8.9 -10.5)
+		(end 8.9 10.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "7e8a8903-bdc4-4d47-8e0d-bd2d14890626")
+	)
+	(fp_rect
+		(start -8.9 -10.5)
+		(end 8.9 10.5)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "34fa21f1-896b-4e41-96bb-d7d1db197509")
+	)
+	(fp_rect
+		(start -3 8.1)
+		(end 3 12.1)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "dbd196b7-c802-4b21-8c7f-9f7705011a5f")
+	)
+	(fp_text user "USB-C"
+		(at 0 6.9 0)
+		(layer "F.SilkS")
+		(uuid "8420b634-a39f-4234-b070-3934e30d2acb")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -7.62 -7.62)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.2)
+		(uuid "f19289a5-4ecc-4e5c-9b21-98a2779eb368")
+	)
+	(pad "2" thru_hole circle
+		(at -7.62 -5.08)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "79c96833-5eb0-4ba6-8a38-95dfa6879d76")
+	)
+	(pad "3" thru_hole circle
+		(at -7.62 -2.54)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "142218a7-d560-4c99-8781-6c722fd9ab1c")
+	)
+	(pad "4" thru_hole circle
+		(at -7.62 0)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "66c80dfc-9240-48e0-8acf-351e5a123d98")
+	)
+	(pad "5" thru_hole circle
+		(at -7.62 2.54)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "20ea7376-983d-4763-afbf-cb982c4c11e4")
+	)
+	(pad "6" thru_hole circle
+		(at -7.62 5.08)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f6730f78-efb1-4091-9de7-4b2b0d04d5d6")
+	)
+	(pad "7" thru_hole circle
+		(at -7.62 7.62)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "fe5323ff-ab22-41d8-8074-9b9b4a1cd144")
+	)
+	(pad "8" thru_hole circle
+		(at 7.62 7.62)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3dd58419-cfb0-4a74-aa6c-c5969098fcb9")
+	)
+	(pad "9" thru_hole circle
+		(at 7.62 5.08)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b1bd566a-2788-4b30-9a4f-00232f66e8dc")
+	)
+	(pad "10" thru_hole circle
+		(at 7.62 2.54)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3b15f337-69f4-45b7-835e-cc9650be61c1")
+	)
+	(pad "11" thru_hole circle
+		(at 7.62 0)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "963f653a-36aa-4d4a-a399-dbf2c0b8d12c")
+	)
+	(pad "12" thru_hole circle
+		(at 7.62 -2.54)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f87a7aa9-70c8-4812-bba5-4bf7ab135c41")
+	)
+	(pad "13" thru_hole circle
+		(at 7.62 -5.08)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0b03f041-a2fe-4b11-9694-d7eb2d7bff11")
+	)
+	(pad "14" thru_hole circle
+		(at 7.62 -7.62)
+		(size 1.7 1.7)
+		(drill 1.02)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "da080f13-31cc-46d8-97e8-810992d0fb65")
+	)
+	(embedded_fonts no)
+	(model "${TURBIMETER_3DMODEL_DIR}/XIAO_SAMD21_supplied.step"
+		(offset
+			(xyz 0 0 2.54)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 90)
+		)
+	)
+	(model "${KICAD9_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x07_P2.54mm_Vertical.step"
+		(offset
+			(xyz -7.62 7.62 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+	(model "${KICAD9_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x07_P2.54mm_Vertical.step"
+		(offset
+			(xyz 7.62 7.62 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

@@ -1,0 +1,272 @@
+(footprint "USB_StackHeader_2x02_P1.27mm_Base_v09"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Design: Ing. Alex M. Rivera. Four-contact USB interboard male on TOP; B.Cu soldering only. Long pins illustrate provisional 14mm stack; select matching actual connectors.")
+	(tags "Through hole pin header THT 2x02 1.27mm double row")
+	(property "Reference" "REF**"
+		(at 0.635 -1.745 0)
+		(layer "F.SilkS")
+		(uuid "733ac48a-80da-4c86-ac8f-4b9d4df9ff7d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "USB_StackHeader_2x02_P1.27mm_Base_v09"
+		(at 0.635 3.015 0)
+		(layer "F.Fab")
+		(uuid "cf1ac3f1-502b-4551-b32b-3843aaa24b01")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "993c80d2-09cc-42a6-8b3b-f27aca36e222")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "dcc0fb2d-3b33-43a2-8c20-ae845cf0c141")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -1.18 -0.81)
+		(end 0 -0.81)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e2ca3d6f-742d-4e82-8a88-01da8b30df53")
+	)
+	(fp_line
+		(start -1.18 0)
+		(end -1.18 -0.81)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "912300d9-4eb6-4477-9b41-a30c43d07e3d")
+	)
+	(fp_line
+		(start -1.18 0.81)
+		(end -1.18 2.015)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a2a224a3-fd75-4d9f-a706-3cbb918c5af9")
+	)
+	(fp_line
+		(start -1.18 0.81)
+		(end -0.666708 0.81)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d5184abc-bea5-41d4-9c32-045971b9c184")
+	)
+	(fp_line
+		(start -1.18 2.015)
+		(end -0.317923 2.015)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "95e22399-a4cd-4a4b-997e-89c1775fb276")
+	)
+	(fp_line
+		(start 0.317923 2.015)
+		(end 0.952077 2.015)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6875a0f6-6902-4b85-8ab1-fae5253322c7")
+	)
+	(fp_line
+		(start 1.587923 -0.745)
+		(end 2.45 -0.745)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "96d1d2dc-0977-401e-8ee5-1a2eec6272c0")
+	)
+	(fp_line
+		(start 1.587923 2.015)
+		(end 2.45 2.015)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4418addf-410b-4a2f-bf5b-887211a083fe")
+	)
+	(fp_line
+		(start 2.45 -0.745)
+		(end 2.45 2.015)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5d343e73-c612-4225-9115-031f7fed86d8")
+	)
+	(fp_rect
+		(start -1.57 -1.14)
+		(end 2.84 2.41)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "e651880d-de3a-445a-885f-0706b5d65b3b")
+	)
+	(fp_line
+		(start -1.07 0.2175)
+		(end -0.2175 -0.635)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e8b0fcd5-16fa-40b2-907c-647914b59c56")
+	)
+	(fp_line
+		(start -1.07 1.905)
+		(end -1.07 0.2175)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "7f461f11-5e6f-4d6a-b36a-ec4ea9a6cc5f")
+	)
+	(fp_line
+		(start -0.2175 -0.635)
+		(end 2.34 -0.635)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "bc5614fd-53f1-4c1b-b02d-03c45a7b74de")
+	)
+	(fp_line
+		(start 2.34 -0.635)
+		(end 2.34 1.905)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e7af05cb-d963-4cef-bf41-35a53a3978c5")
+	)
+	(fp_line
+		(start 2.34 1.905)
+		(end -1.07 1.905)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "b3b5cdc9-40bf-480b-bf14-db3bc7188eae")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0.635 0.635 90)
+		(layer "F.Fab")
+		(uuid "71d1ed38-d589-44c7-bb21-fd15a9860223")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1 1)
+		(drill 0.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "fa180243-0fc9-438f-965c-7ae7cedd40de")
+	)
+	(pad "2" thru_hole circle
+		(at 1.27 0)
+		(size 1 1)
+		(drill 0.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b5462a87-8b19-4f9a-9cb6-b782b8c8949f")
+	)
+	(pad "3" thru_hole circle
+		(at 0 1.27)
+		(size 1 1)
+		(drill 0.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "483f2acd-9759-42b5-a2fc-a3e964716bce")
+	)
+	(pad "4" thru_hole circle
+		(at 1.27 1.27)
+		(size 1 1)
+		(drill 0.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "79dc8139-c087-43b1-b433-3d389c8443e5")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/Connector_PinHeader_1.27mm.3dshapes/PinHeader_2x02_P1.27mm_Vertical.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+	(model "${TURBIMETER_3DMODEL_DIR}/StackPins_2x02_P1.27mm.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

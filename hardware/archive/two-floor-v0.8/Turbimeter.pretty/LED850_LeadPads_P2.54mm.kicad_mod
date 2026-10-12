@@ -1,0 +1,116 @@
+(footprint "LED850_LeadPads_P2.54mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Design: Ing. Alex M. Rivera. Top-side through-hole mounting; route and fabricate B.Cu only. KiCad uses logical PTH annuli on both sides. Design: Ing. Alex M. Rivera.  Design: Ing. Alex M. Rivera. Design: Ing. Alex M. Rivera. Design: Ing. Alex M. Rivera. 850nm LED formed-lead solder pads, 2.54mm pitch; optical body is supported sideways by the enclosure holder, not flat on this pad pattern. Silkscreen adjusted for the proven stack outline; copper geometry unchanged. Silkscreen adjusted for the proven stack outline; copper geometry unchanged.")
+	(property "Reference" "REF**"
+		(at 1.27 -2.5 270)
+		(layer "F.SilkS")
+		(uuid "8ec189fb-4969-4b17-b06d-d978fed3d2fc")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "LED850_LeadPads_P2.54mm"
+		(at 1.27 2.2 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "17c4a02e-c2e0-4549-9393-644ce4c1bc34")
+		(effects
+			(font
+				(size 0.7 0.7)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5a465528-0052-4c75-83ad-16f6adee0bfe")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "674c3bf9-fbc5-4a58-8590-749e38b40dbd")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -1.1 -1.1)
+		(end 3.64 1.1)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "17d82338-35e7-4ea9-b296-20636669ccf9")
+	)
+	(fp_text user "Ing. Alex M. Rivera"
+		(at 1.27 3.5 0)
+		(layer "F.Fab")
+		(uuid "0121a43e-5017-42d5-bf63-8e7b5c6fbd04")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.1)
+			)
+		)
+	)
+	(fp_text user "K   A"
+		(at 1.27 -1.4 0)
+		(layer "F.Fab")
+		(uuid "20657794-64d4-4cea-81cf-ec2b04feb741")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.1)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1.7 1.7)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "4584d972-204b-4ee9-9ecd-b67fcd6440a0")
+	)
+	(pad "2" thru_hole circle
+		(at 2.54 0)
+		(size 1.7 1.7)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "6038f556-f65b-4b06-a6e7-6dcf621f3f12")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D5.0mm_Horizontal_O1.27mm_Z3.0mm_IRGrey.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

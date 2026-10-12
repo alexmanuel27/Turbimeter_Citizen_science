@@ -39,7 +39,8 @@ O-ring assortment.
 | [`firmware/firmware.ino`](firmware/firmware.ino) | Experimental optical-index sketch; still uses TL072 and status LEDs, so it is **not** the final USB-C/NTU firmware |
 | [`android-app/`](android-app/) | Android USB-CDC screen/controller, prepared for Google Play closed testing; local readings only |
 | [`firmware/legacy_sen0189/`](firmware/legacy_sen0189/) | Original DFRobot SEN0189 firmware, retained for reference |
-| [`hardware/`](hardware/) and [`3D/`](3D/) | Earlier PCB and enclosure files; mechanical/electrical revisions are pending |
+| [`hardware/`](hardware/README.md) | Two KiCad projects: sensor/base and upper XIAO + upright ADS1115. Base outline preserved; cable relief filled only on upper PCB. 44 mm module envelope; THT on TOP, SMD/soldering/routing on BOTTOM (single copper face B.Cu); **no tracks**. 3D models and individual/connected renders included. ERC/placement checks pass; height provisionally 36–38 mm, pending dry fit. |
+| [`3D/`](3D/) | Earlier enclosure files; mechanical revision is pending |
 | [`docs/diagrams/legacy-circuit-schematic.svg`](docs/diagrams/legacy-circuit-schematic.svg) | Earlier TL072 circuit illustration, not a build schematic for this design |
 
 The original SEN0189 prototype is shown below. It is superseded by the
@@ -51,7 +52,7 @@ discrete 90° optical design.
 
 1. Bench-test the LED, both photodiodes, MCP6002, ADS1115, and feedback
    values with the actual sample chamber.
-2. Revise the PCB and enclosure, choose a lid seal that fits the final groove,
+2. Route the two PCBs, fit-check the stack, actual connector heights and cuvette, verify the opaque optical holder and enclosure, choose a lid seal that fits the final groove,
    and verify USB-C power/data plus cable-gland sealing.
 3. Test the new XIAO firmware and Android app together on a USB-C phone and
    distribute the app through Google Play closed testing.
