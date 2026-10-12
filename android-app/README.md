@@ -1,5 +1,7 @@
 # Android app
 
+Design: **Ing. Alex M. Rivera**. Current release: **0.4 / code 4**.
+
 The Android phone is the turbidimeter's screen and controller. This version
 connects to a USB-CDC XIAO SAMD21 and requests a reading. The side menu has
 Home, History, and Privacy. Each real reading is saved locally with its UTC
@@ -20,9 +22,12 @@ The app does not upload readings or request location permission.
    its [wiring and test steps](../firmware/xiao_samd21_turbimeter/README.md)
    before connecting the analog circuit.
 
-For the final sealed instrument, the cable cut and passed through the gland
-still needs a sound electrical termination at the board's USB-C connection.
-Test the complete cable and the intended Android phone before sealing.
+For the sealed instrument, the four-wire cable runs through base J2,
+interboard J4 and upper J5 to a compact USB-C pigtail in the XIAO socket.
+USB-C host/device detection must be handled by suitable plugs or an OTG
+adapter; it is not established by counting the four wires. Follow the
+[hardware cable and assembly notes](../hardware/README.md), and test the
+complete sensor with compatible Android phones before sealing.
 
 ## Serial contract, version 1
 

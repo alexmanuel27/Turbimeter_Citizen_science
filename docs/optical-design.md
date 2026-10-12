@@ -7,11 +7,12 @@ Design: **Ing. Alex M. Rivera**.
 Build one closed turbidimeter that any compatible Android USB-C phone with USB
 host support can power and read. Calibration belongs to the instrument, not
 to a particular phone: changing phones must not require new coefficients.
-The app will show a quantitative turbidity value and optionally upload it to the
-citizen-science website. The instrument has no battery, screen, or status
-LEDs. **The optical bench, firmware, app, and NTU calibration are not yet
-validated.** They must be ready before 18 October 2026; community deployment
-comes afterward.
+The Android 0.4 release reads the instrument, keeps local history and exports
+CSV. Online upload, contributor identity and location capture are deferred;
+the citizen-science API is not specified. The instrument has no battery,
+screen, or status LEDs. **The assembled optical circuit and quantitative
+calibration are not yet validated.** Instrument, firmware, app and calibration
+must be ready before 18 October 2026; community deployment comes afterward.
 
 The DFRobot SEN0189 sensor and its firmware are retained only as an earlier
 prototype. The reviewed monolithic schematic is archived. The active
@@ -72,6 +73,11 @@ outputs a relative index and controls LEDs. The current USB bench sketch is
 
 ## Enclosure and USB cable
 
+The current enclosure is supplied as [cuerpo.stl](../3D/cuerpo.stl) and
+[tapa.stl](../3D/tapa.stl). These replace the earlier four separate exports.
+The [enclosure notes and preview](../3D/README.md) record the overall mesh
+dimensions; they do not verify the internal 44 mm envelope or complete PCB fit.
+
 The earlier purchase workbook specifies Goobay 66508 (USB-C to USB-C,
 5.5 ± 0.15 mm outer diameter) and a 3–6.5 mm M12 gland. The user's actual
 four-wire cable has not been identified. Check its diameter against the gland.
@@ -84,7 +90,7 @@ sealing before closing the enclosure. The left-facing XIAO socket needs a
 compact plug; the provisional 5.5 mm plug-tail allowance needs a dry fit.
 Verify lid dimensions before choosing an O-ring from the assortment.
 
-## From optical ratio to reliable NTU
+## From optical ratio to quantitative turbidity
 
 1. Fix the final optical geometry and record LED-off/LED-on readings from both
    channels, including the clear-water background.
@@ -101,10 +107,11 @@ Verify lid dimensions before choosing an O-ring from the assortment.
    dark/lit detector signals and the corrected ratio. Verify that differences
    stay within the instrument's stated measurement uncertainty; reject a
    measurement if the phone cannot power or enumerate the instrument.
-6. Show/upload NTU only when the calibration is valid for that range; otherwise
+6. Show a quantitative result only when the calibration and reportable unit
+   are valid for that range; otherwise
    label the reading as an uncalibrated optical ratio or out of range.
 
-The Android app prototype is present, but the citizen-science API has not yet
-been specified. Upload must remain optional. A published measurement record
-should include the reading, unit, calibration identity, timestamp, and quality
-status.
+The current Android app does not upload readings or collect location. A future
+upload feature must remain optional and include reading, unit, calibration
+identity, timestamp and quality status. Contributor signature and acquisition
+location belong to that later feature and require explicit user controls.

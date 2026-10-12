@@ -45,6 +45,12 @@ Analog gain, feedback compensation, LED current, supply stability, noise,
 phone independence and quantitative turbidity still need bench tests and
 calibration. Generate manufacturing outputs only after routing and fit checks.
 
+The current enclosure meshes are `../3D/cuerpo.stl` and `../3D/tapa.stl`.
+Their binary record counts and bounding boxes were checked for documentation;
+triangle data was preserved when adding attribution to their STL headers.
+The enclosure preview shows the separate meshes. No PCB-to-enclosure collision,
+internal-diameter, sealing or assembled-height validation has been performed.
+
 The supplied ADS model prints A3/A2/A1/A0, while the schematic uses
 A0/A1/A2/A3. Its geometry is visual guidance only; confirm the real module
 before fabrication. No electrical pin mapping was changed based on the STEP.

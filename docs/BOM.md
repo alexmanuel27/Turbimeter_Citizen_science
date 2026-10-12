@@ -28,6 +28,11 @@ is preserved on the base; only its cable relief is filled on the upper PCB.
 The old PCB cannot replace these two carrier boards. No battery, display, separate turbidimeter, or additional gland sizes
 are needed.
 
+The updated enclosure files are [cuerpo.stl](../3D/cuerpo.stl) and
+[tapa.stl](../3D/tapa.stl). Check the actual lid groove and gland seat on
+these parts before selecting seals; the updated meshes do not validate the
+workbook's O-ring assortment or cable diameter.
+
 ## Changes not yet reflected in the workbook — revision 0.9
 
 Do not use the spreadsheet subtotal as the cost of the new stack. Confirm stock

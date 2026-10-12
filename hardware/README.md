@@ -202,3 +202,12 @@ Regenerate viewer meshes and renders with KiCad Python:
 
 The renders show assembly geometry without manual tracks. They do not
 establish enclosure fit or electrical correctness of a generic module model.
+
+## Current enclosure files
+
+The updated body and lid are [cuerpo.stl](../3D/cuerpo.stl) and
+[tapa.stl](../3D/tapa.stl). The [enclosure preview and dimensions](../3D/README.md)
+replace the older four-part exports. The nominal 44 mm internal envelope,
+stack height, cuvette, module overhangs, compact USB plug and lid seating
+must be checked against these meshes and the real printed parts. The PCB
+renders above do not include the enclosure and do not establish that fit.

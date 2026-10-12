@@ -1,62 +1,158 @@
 # Citizen-science turbidimeter
 
-This repository tracks a **single, quantitative turbidimeter prototype**. The
-target is to have the instrument, Android app, calibration, and validation
-ready by **18 October 2026**. Community deployment follows that date.
+A compact, reproducible instrument for measuring water turbidity with an
+**Android USB-C phone as its power supply, screen and controller**.
 
-## Current design target
+Design: **Ing. Alex M. Rivera**. Updated **12 October 2026**.
 
-- **Sensor:** 850 nm IR LED, BPW34 photodiode at 90° for scattered light, and
-  a second BPW34 to monitor the LED. An MCP6002 dual amplifier and ADS1115
-  read the two channels; a Seeed XIAO SAMD21 controls the LED.
-- **Readout:** the Android phone supplies power through USB-C, displays the
-  reading, and keeps a local history. Online upload is outside this release. The
-  instrument has no battery, screen, or status LEDs.
-- **Enclosure:** closed body with a fixed 2 m USB-C data cable through one M12
-  cable gland. The technician cuts the sensor-side plug, routes the cable,
-  then terminates and tests power, USB data, and USB-C configuration wiring
-  before sealing. The selected cable has a 5.5 ± 0.15 mm outer diameter;
-  the gland grips 3–6.5 mm cable.
-- **Output:** a numeric NTU value is a *goal*, not a property of the current
-  firmware. Dark-corrected scattered/reference readings must first be
-  calibrated with known standards and validated on independent samples.
+The current prototype combines a custom optical sensor, two stacked carrier
+PCBs, a printed enclosure and an Android app. It has **no battery or display**.
+The aim is a reliable quantitative result after calibration and independent
+validation. The current firmware reports an **uncalibrated optical ratio**.
 
-The [optical and validation plan](docs/optical-design.md) describes the work
-remaining. The [one-unit shopping list](docs/shopping-list-prototype-usb-c.xlsx)
-is in English, shows VAT-inclusive prices and full supplier URLs as text, and
-totals **€76.52** for priced items. Calibration standards require a quote;
-delivery is excluded. The PCB and cuvettes are already available, so they are
-not in the list. Confirm the lid groove before buying or using the selected
-O-ring assortment.
+![Current two-board assembly](hardware/renders/assembly.png)
 
-## Repository status
+*Revision 0.9 placement render. The PCBs are unrouted; connector reach,
+module dimensions and enclosure fit require a physical assembly check.*
 
-| Path | Status |
-| --- | --- |
-| [`docs/optical-design.md`](docs/optical-design.md) | Current design and validation plan |
-| [`docs/BOM.md`](docs/BOM.md) | Procurement notes; workbook above is the purchase list |
-| [`firmware/xiao_samd21_turbimeter/`](firmware/xiao_samd21_turbimeter/) | Current XIAO optical bench firmware; reports diagnostic counts and an uncalibrated ratio over USB |
-| [`firmware/firmware.ino`](firmware/firmware.ino) | Experimental optical-index sketch; still uses TL072 and status LEDs, so it is **not** the final USB-C/NTU firmware |
-| [`android-app/`](android-app/) | Android USB-CDC screen/controller, prepared for Google Play closed testing; local readings only |
-| [`firmware/legacy_sen0189/`](firmware/legacy_sen0189/) | Original DFRobot SEN0189 firmware, retained for reference |
-| [`hardware/`](hardware/README.md) | Two KiCad projects: sensor/base and upper XIAO + upright ADS1115. Base outline preserved; cable relief filled only on upper PCB. 44 mm module envelope; THT on TOP, SMD/soldering/routing on BOTTOM (single copper face B.Cu); **no tracks**. 3D models and individual/connected renders included. ERC/placement checks pass; height provisionally 36–38 mm, pending dry fit. |
-| [`3D/`](3D/) | Earlier enclosure files; mechanical revision is pending |
-| [`docs/diagrams/legacy-circuit-schematic.svg`](docs/diagrams/legacy-circuit-schematic.svg) | Earlier TL072 circuit illustration, not a build schematic for this design |
+## Current status
 
-The original SEN0189 prototype is shown below. It is superseded by the
-discrete 90° optical design.
+| Part | Available now | Remaining work |
+| --- | --- | --- |
+| Electronics | Two KiCad 9 projects, schematics, placed components and 3D models; electrical and placement checks pass | Route, verify manufacturing outputs, fabricate and solder |
+| Enclosure | Updated body and lid meshes: `cuerpo.stl` and `tapa.stl` | Check the complete stack, optical alignment, USB plug, gland and lid seal |
+| Firmware | XIAO SAMD21 USB-CDC firmware; dark/lit acquisition, ratio and hardware errors | Test with the assembled ADS1115 and optical circuit; add validated calibration |
+| Android app | Version 0.4: connect, measure, local history, CSV sharing, privacy and deletion; Google Play closed-test preparation | Test the release with the completed instrument and finish the Play checklist |
+| Quantitative measurement | Calibration and validation plan | Measure standards and independent samples; establish range, uncertainty and reportable unit |
 
-<img src="img/prototype.jpeg" width="600" alt="Earlier SEN0189 prototype">
+**Target: instrument, app, calibration and validation ready by 18 October
+2026. Community deployment follows that date.** This is a development target;
+the assembled optical instrument has not yet been validated. Google Play
+publication follows its separate testing and review process.
 
-## Before 18 October
+## How it works
 
-1. Bench-test the LED, both photodiodes, MCP6002, ADS1115, and feedback
-   values with the actual sample chamber.
-2. Route the two PCBs, fit-check the stack, actual connector heights and cuvette, verify the opaque optical holder and enclosure, choose a lid seal that fits the final groove,
-   and verify USB-C power/data plus cable-gland sealing.
-3. Test the new XIAO firmware and Android app together on a USB-C phone and
-   distribute the app through Google Play closed testing.
-4. Calibrate against known turbidity standards, quantify repeatability and
-   error across the intended range, and only then enable NTU reporting.
+An **850 nm infrared LED** illuminates a sample in a spectrophotometer cuvette
+with **10 mm optical path** and a provisional **12.5 × 12.5 mm exterior**.
+A BPW34 photodiode detects light scattered at **90°**. A second, shielded BPW34
+monitors a fixed fraction of the LED output.
+
+```mermaid
+flowchart LR
+    LED[850 nm LED] --> Sample[Cuvette]
+    Sample --> Scatter[90° scatter photodiode]
+    LED --> Reference[Shielded reference photodiode]
+    Scatter --> Amplifier[MCP6002 dual amplifier]
+    Reference --> Amplifier
+    Amplifier --> ADC[ADS1115]
+    ADC --> MCU[XIAO SAMD21]
+    MCU <-->|USB CDC| Phone[Android app]
+```
+
+For each measurement, the firmware reads both channels with the LED off and
+on, subtracts the dark readings and calculates the scatter/reference ratio.
+This approach is intended to reduce sensitivity to LED-output changes; its
+performance must be demonstrated with the real instrument and different phones.
+
+The XIAO's regulated **3.3 V** rail powers the analog circuit and ADS1115.
+A **10 µF rail capacitor** provides additional decoupling. D7 controls the LED
+through two series 220 Ω resistors; the circuit limits current with resistors.
+LED current, amplifier gain, noise and saturation remain bench-test items.
+
+**A ratio is not an FNU/NTU value.** Calibration with known turbidity standards,
+a defined valid range and independent validation are required before reporting
+turbidity. See the [optical design and validation plan](docs/optical-design.md).
+
+## Two stacked PCBs
+
+| Floor | Project | Main parts |
+| --- | --- | --- |
+| Base: sensor and cable entry | [hardware/esque.kicad_pro](hardware/esque.kicad_pro) | LED, two BPW34s, MCP6002, passives, J2 cable holes and J1/J4 interboard links |
+| Upper: controller and ADC | [hardware/controller/controller.kicad_pro](hardware/controller/controller.kicad_pro) | XIAO SAMD21, upright ADS1115, C5, mating J1/J4 sockets and J5 pigtail holes |
+
+- **Single copper face: B.Cu only.** Through-hole parts face upwards; SMD
+  parts and all solder joints are underneath. Routing remains manual.
+- The proven base outline and its cable relief are retained. The upper PCB
+  fills that relief and keeps the cuvette opening.
+- Modules may overhang the carriers within the **44 mm internal cylinder**.
+- J1 carries analog signals, LED control and 3.3 V power. J4 carries the four
+  USB 2.0 power/data signals. J2/J5 are **four bare through-hole wire lands**.
+- The preferred stack height is **35 mm**. The present provisional budget is
+  **36–38 mm**, before lid clearance and cable bends; it is not a verified fit.
+
+[Assembly, connector pinouts and routing notes](hardware/README.md) ·
+[Board views and individual/connected renders](hardware/pcb-top-preview.svg) ·
+[Validation results](hardware/validation.md)
+
+Existing geometry exports/Gerbers predate this revision. Generate a new
+fabrication set after routing and mechanical checks.
+
+## Updated enclosure
+
+![Current body and lid](3D/enclosure-preview.png)
+
+The current printable meshes are [cuerpo.stl](3D/cuerpo.stl) (body) and
+[tapa.stl](3D/tapa.stl) (lid). They replace the earlier separate case, neck,
+sensor-holder and lid exports. Dimensions, source notes and assembly checks
+are in the [enclosure README](3D/README.md).
+
+The closed instrument uses a fixed cable through one gland. Verify cable
+strain relief, the actual gland diameter, the lid seal, light exclusion and
+the USB pigtail clearance before closing it. The STL files alone do not
+establish a watertight assembly or optical alignment.
+
+## Android app and USB connection
+
+The app works locally: **Connect sensor → Measure now → History**. Real
+readings are saved with their UTC timestamp and calibration status, and can
+be shared as CSV. Privacy explains local storage and allows deletion.
+**This release has no online upload, contributor form or location capture.**
+
+The phone must support **USB host/OTG**. The current carriers carry four
+signals: VBUS, GND, D− and D+. USB-C role detection must be handled correctly
+in the plugs or OTG adapter; four conductors alone do not prove compatibility.
+The cable runs through base J2, interboard J4 and upper J5 to a short USB-C
+pigtail plugged into the XIAO. Its 14 edge pins do not expose USB data.
+The left-facing socket needs a compact plug and a physical clearance check.
+
+[App setup and serial protocol](android-app/README.md) ·
+[Current firmware and upload instructions](firmware/xiao_samd21_turbimeter/README.md) ·
+[Google Play closed-test checklist](android-app/play-store/release-checklist.md)
+
+The XIAO-only USB bench test verified `PING` and the expected missing-ADC
+error. It did not validate an optical reading. The complete sensor and app
+must be tested together after assembly.
+
+## Procurement
+
+The [English purchase workbook](docs/shopping-list-prototype-usb-c.xlsx)
+contains supplier links and VAT-inclusive prices for one prototype. It
+predates the current stack: **do not order directly from it without reading
+[BOM revision notes](docs/BOM.md)**. Those notes cover the XIAO replacement,
+SMD passives, interboard connectors, carrier PCBs and USB pigtail.
+Check stock before ordering; the cuvettes and XIAO are already available.
+
+## Work before 18 October
+
+1. Finish routing both PCBs and check the real modules, mating connectors,
+   cuvette, optics and cable against the updated enclosure.
+2. Generate and verify manufacturing files, fabricate the carriers, solder
+   the assembly and check power, LED current and USB communication.
+3. Test firmware acquisition, dark subtraction, reference level, noise,
+   saturation and repeatability with the real optical circuit.
+4. Calibrate with known standards; validate independent samples, the usable
+   range and uncertainty, including measurements across compatible phones.
+5. Test the Android release with the complete sensor: connection, measurement,
+   history, CSV export, privacy, deletion and restart. Complete the Play
+   closed-test steps before wider distribution.
 
 Community deployment is the phase after 18 October.
+
+## Earlier designs
+
+The [SEN0189 firmware](firmware/legacy_sen0189/),
+[experimental Nano/TL072 sketch](firmware/firmware.ino),
+[earlier circuit drawing](docs/diagrams/legacy-circuit-schematic.svg) and
+[archived KiCad revisions](hardware/archive/) are retained as references.
+They are not the active XIAO design. Older enclosure animations remain in
+`img/3d/`; current geometry is in `3D/`.
