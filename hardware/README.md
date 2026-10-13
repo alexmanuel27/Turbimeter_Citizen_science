@@ -1,213 +1,150 @@
-# Two-floor turbidimeter electronics — revision 0.9
+# Two-floor electronics — upper revision 0.10
 
-Design: **Ing. Alex M. Rivera**. Updated 12 October 2026.
+Design: **Ing. Alex M. Rivera**. Updated **13 October 2026**.
 
-Two KiCad 9 projects contain schematics and placed **unrouted** PCBs. All
-tracks and copper zones remain for manual routing.
+The upper PCB is aligned to the user's routed base. **The base PCB, schematic,
+project settings and fabrication exports were not edited during this alignment.**
+The upper board has no tracks; its existing F.Cu ground zone was retained and
+refilled after moving components.
 
-| Floor, bottom to top | Open this project | Components |
+| Floor | KiCad 9 project | State |
 | --- | --- | --- |
-| 1 — Sensor / cable entry | [esque.kicad_pro](esque.kicad_pro) | Optics, MCP6002, passives, C6, sensor link J1, four THT wire holes J2, USB link J4 |
-| 2 — Controller + ADC | [controller/controller.kicad_pro](controller/controller.kicad_pro) | XIAO SAMD21, upright ADS1115, C5, J1/J4, four THT pigtail holes J5 |
+| Base — optics and cable entry | [esque.kicad_pro](esque.kicad_pro) | User routing retained as supplied |
+| Upper — controller and ADC | [controller/controller.kicad_pro](controller/controller.kicad_pro) | Revision 0.10; placement checked; route manually |
 
-The **base contour is unchanged**. Only the lower-left USB cable relief is
-filled on the upper PCB; the cuvette opening and other mounting reliefs are
-preserved. A **44 mm circle on Dwgs.User** marks the available cylinder space,
-not a milling line. Module bodies may overhang the carrier within that circle.
+![Current placement and renders](pcb-top-preview.svg)
 
-Shared symbols and footprints are in [Turbimeter.pretty](Turbimeter.pretty/)
-and the project library tables. The [single-board source](archive/single-board-v0.5/)
-and [previous three-floor design](archive/three-floor-v0.6/) are archived.
-The old separate ADC project is retired. Existing Gerbers/STL predate this
-revision and **must not be used to manufacture this assembly**.
+[Connected-board drawing](stack-assembly.svg) · [Validation](validation.md)
 
-![Board placement for manual routing](pcb-top-preview.svg)
+## Mounting faces
 
-![Provisional vertical assembly](stack-assembly.svg)
+The revised base uses **B for through-hole components** and **F for SMD**.
+The upper board follows that physical orientation:
 
-## Assembly and height
+| Physical face in the assembled instrument | Native KiCad face | Upper components |
+| --- | --- | --- |
+| UP, away from the board below | B | XIAO A1, upright ADS1115 U2, J5 wire heads |
+| BELOW, solder side | F | Female SMD sockets J1/J4, C5, through-hole solder joints |
 
-**Single-face fabrication: B.Cu is the only copper layer to route and export.**
-Through-hole components mount on TOP (F); all SMD mount on BOTTOM (B).
-All solder joints are made from BOTTOM. TOP/BOTTOM marks are on the relevant
-silkscreens; the PCB drawing and fabrication layers list the mounting rule.
-KiCad keeps two logical copper layers and conventional PTH annuli on both;
-**omit F.Cu from fabrication outputs**. No F.Cu tracks/zones or vias are allowed.
-A single-face layout may need insulated top-side wire jumpers where traces
-cannot cross; resolve that during manual routing. Confirm the fabricator's
-single-layer drill/plating process before ordering.
+Route the **upper PCB on F.Cu only**. Its soldering remains on one physical
+face. KiCad retains conventional plated through-hole annuli on both logical
+copper layers. Export the selected manufacturing layer after routing checks.
 
-Base J1/J4 are **male THT on TOP**, soldered underneath. Upper J1/J4 are
-**female SMD on BOTTOM**. This orientation makes both boards solderable on
-one face. Upper A1/U2 and wire heads at J5 are on TOP; C5 is underneath.
-Base R1–R6 and C1–C4 are underneath; D1/D2/D3/U1/C6 and wire heads at J2 stay on TOP.
-J2/J5 are four **1 mm through-holes**, arranged 2×2 at 2 mm pitch; no header is fitted.
-The ADS1115 stands along the right wing. XIAO lies flat, rotated with USB
-facing LEFT, following the supplied placement suggestion. The on-disk file
-still contained the old orientation, so the suggestion was reconstructed
-from the screenshot and adjusted for copper and mounting clearances.
-J1 now runs down the right wing; J4 is at the bottom. C6 was moved below J1,
-R3/R4 adjusted underneath, and C5 placed beneath XIAO near the ADS header.
-The proposed left-side J4 would interfere with the base optical assembly.
+The base currently contains **86 F.Cu segments, 7 B.Cu segments and one F.Cu
+zone**, as supplied. This alignment does not change or approve that routing.
+Its existing TOP/BOTTOM legends and revision text were also preserved; use
+the actual F/B component layers when interpreting assembly faces.
 
-**35 mm remains the preferred overall height, not a verified fit.** The
-provisional budget from base underside to upright module top is:
+## Mechanical matching
 
-| Item | Estimated dimension |
-| --- | --- |
-| Space below base for SMD / trimmed solder tails | Approximately 1 mm; cable bends need additional clearance |
-| Base thickness | 1.6 mm |
-| Base top → upper PCB top | 14 mm (12.4 mm clear gap for 1.6 mm upper PCB) |
-| Upright ADS1115 assembly above upper PCB | Approximately 19 mm, including ≥2 mm bottom clearance |
-| Total | 1 + 1.6 + 14 + 19 = 35.6 mm; provisionally allow 36–38 mm, before lid clearance |
+The original base contour remains intact. The upper outline matches it except
+for filling the lower-left USB cable relief; both retain the cuvette opening.
+The nominal cuvette exterior is **12.5 × 12.5 mm**. A 44 mm Dwgs.User circle
+marks the available enclosure diameter and is not a milling line.
 
-The module is **estimated**, approximately 29 × 18 mm with 18 mm vertical,
-1×10 header at 2.54 mm pitch. The supplied 3D board body projects
-within X 49–50.6, Y 19.18–47.33 mm on Dwgs.User; its components and
-header tails extend beyond that body outline. Confirm the delivered module's
-pin order, dimensions, header setback and component side before fabrication.
-Its lower edge is modelled about 2 mm above the upper PCB. C5 is underneath;
-check the breakout's existing local decoupling and route its supply return.
-The supplied ADS STEP represents a different variant, including printed
-A3/A2/A1/A0 order; the schematic remains A0/A1/A2/A3 pending confirmation
-from the real module. **The 3D model is not the pinout authority.** The supplier
-[lists the intended 006632 module as 29 × 18 mm](https://www.tinytronics.nl/en/sensors/current-voltage/ads1115-adc-module-16-bit-i2c-4-channels).
+All coordinates below are the **shared native KiCad coordinates**. Viewing
+from the physical B side mirrors the drawing.
 
-Select compatible connectors with sufficient reach for the 12.4 mm gap;
-footprint pad geometry does not define a purchased part's mating height.
-Use low-profile XIAO mounting with clearance above the carrier, and
-verify the USB plug/bend inside the 44 mm cylinder. Guides/spacers must
-support both floors and the upright module. Confirm C6 and sideways optical
-bodies below the upper PCB in a dry assembly.
-
-## Connections between floors
-
-View both boards from above in the same orientation. Bottom-side viewing
-mirrors the image. Mating contact axes align; the SMD solder pads are offset
-from those axes. Keep both connector placements fixed while routing.
-
-| Connector | Pitch | Base F male → upper B socket | Pins in order |
+| Upper part | Position, mm | Native orientation | Purpose |
 | --- | --- | --- | --- |
-| J1 | 1×6, 2.00 mm | Analog / power | 1 GND; 2 3V3; 3 LED_DRIVE; 4 SCATTER_OUT; 5 REFERENCE_OUT; 6 GND |
-| J4 | 2×2, 1.27 mm | USB 2.0 | 1 USB_VBUS; 2 GND; 3 USB_DM; 4 USB_DP |
+| J1 | 21.17175, 29.020 | 0°, F | Six mating contact axes match base J1 |
+| J4 | 32.20675, 47.185 | 0°, F | Four mating contact axes match base J4 |
+| A1 | 31.500, 37.500 | 90°, B | XIAO, USB toward the left in shared coordinates |
+| U2 | 43.500, 44.660 | 90°, B | Upright ADS1115 on the right wing |
+| J5 | 38.200, 47.600 | 180°, B | Accessible wire holes below the XIAO body |
+| C5 | 40.000, 32.000 | 180°, F | 100 nF decoupling under the module |
 
-J1 pin 1 contact is X 47.30, Y 24.00 mm; pins advance +Y by 2 mm.
-J4 pin 1 contact is X 33.50, Y 47.00 mm; even pins are 1.27 mm to the
-right, and the second row advances +Y by 1.27 mm. Pin numbers match across
-floors. The tall base pins are the two interboard links, not spare test pins.
+Keep **J1/J4 mating axes fixed** while routing. SMD solder-pad centres are
+offset from the socket contact axes. All ten contacts were checked by pin
+number and net against the base.
 
-J1 analog outputs go directly to U2 AIN0 (scatter) and AIN1 (reference).
-XIAO D4/D5 connect to SDA/SCL. ADS1115 ADDR is grounded (`0x48`).
+J4 uses a local copy of the standard KiCad 2×2 P1.27 SMD socket footprint.
+Three silk segments were moved to Fab to clear nearby XIAO pads; contact
+geometry and 3D model are unchanged. The schematic references that local copy.
 
-## Fixed USB cable and upper pigtail
+### Stack height
 
-**Phone → USB-C host/OTG plug → four wires → base J2 → four-contact J4
-→ upper J5 → short legacy-compatible USB-C male pigtail → XIAO socket.**
-J2/J5 are direct wire holes: insert stripped wires from TOP and solder BOTTOM.
-The 2×2 grouping has pins 1/2 in the first row and 3/4 in the second row.
-Secure both cables mechanically; their solder joints must carry no cable load.
+The provisional spacing is **14 mm between corresponding PCB faces**, or a
+12.4 mm clear gap for 1.6 mm boards. With roughly 19 mm of upright ADS1115
+above the upper board and 1 mm beneath the base, the nominal total is
+**35.6 mm**. Allow approximately **36–38 mm before lid and cable clearance**.
+The preferred 35 mm total has not been verified.
 
-J2, both J4 halves and J5 share this pin order:
+Select actual long-reach male headers, compatible SMD sockets and module
+supports. Trim and insulate tails as required. Verify real optical bodies,
+connector insertion, USB plug and cable bends with the printed enclosure.
 
-| Pin | Signal | Assembly note |
+## Electrical connections
+
+| Interboard connector | Pin order, identical across both boards |
+| --- | --- |
+| J1 — 1×6, 2.00 mm | 1 GND; 2 3V3; 3 LED_DRIVE; 4 SCATTER_OUT; 5 REFERENCE_OUT; 6 GND |
+| J4 — 2×2, 1.27 mm | 1 USB_VBUS; 2 GND; 3 USB_DM; 4 USB_DP |
+
+Base J1 pin 1 is at **21.17175, 24.020 mm**; subsequent contacts advance +Y
+by 2 mm. Base J4 pin 1 is at **32.84175, 46.550 mm**; pin 2 is 1.27 mm to
+the left, and the second row advances +Y by 1.27 mm.
+
+**The cable wire-hole numbering differs between boards after the user's
+base revision. Follow net names, not matching hole numbers:**
+
+| Wire hole | Base J2 | Upper J5 |
 | --- | --- | --- |
-| 1 | USB_VBUS | Raw USB supply, entering through XIAO's onboard USB socket |
-| 2 | GND | Power/data return |
-| 3 | USB_DM | D− |
-| 4 | USB_DP | D+ |
+| 1 | USB_DM (D−) | USB_VBUS |
+| 2 | USB_DP (D+) | GND |
+| 3 | USB_VBUS | USB_DM (D−) |
+| 4 | GND | USB_DP (D+) |
 
-**There is no CC net on either carrier.** Four wires carry USB 2.0 data and
-power, but the phone-facing USB-C plug still needs local device detection:
-use a correctly terminated captive/legacy plug with **Rd 5.1 kΩ to GND**, or
-an appropriate USB-C OTG adapter. A cut ordinary A-to-C charging cable's C
-plug normally has Rp instead and cannot be assumed to make the phone a host.
-The user's actual cable/plug type remains unconfirmed; counting four wires
-alone does not establish its USB-C role. Do not cut a normal C-to-C cable and
-expect operation after discarding its CC path.
+J2/J5 are bare 1 mm through-holes in a 2×2 group at 2 mm pitch. Insert wires
+from the component side and solder on the opposite side. Secure both cables
+mechanically so that their joints carry no cable load.
 
-The micro-facing pigtail must be a **legacy USB2-compatible USB-C male**;
-a compliant A-to-C device-side plug uses **Rp 56 kΩ from CC to VBUS** locally.
-This and the phone-side Rd are separate local terminations; they are not
-connected by a CC wire across the carriers. Preserve XIAO's onboard Rd;
-verify connector construction, continuity and both plug orientations.
-See [Chromium's manufacturer cable guide](https://chromium.googlesource.com/playground/chromium-org-site/+/refs/heads/main/chromium-os/cable-and-adapter-tips-and-tricks/index.md).
-No additional CC resistor has been invented on a board with no CC conductor.
+The USB path is **phone → cable/OTG termination → base J2 → J4 → upper J5
+→ compact USB-C male pigtail → XIAO socket**. The XIAO edge pins do not expose
+D+/D−; edge pin 14 remains unconnected because it is after the protection diode.
 
-The XIAO's 14 edge pins **do not expose D+/D−**. Edge pin 14 (5V) stays NC:
-it is after the protection diode. USB enters through the onboard socket.
-See the [official XIAO schematic](https://files.seeedstudio.com/wiki/Seeeduino-XIAO/res/Seeeduino-XIAO-v1.0-SCH-191112.pdf).
+No carrier CC net exists. A phone-facing captive/legacy plug needs suitable
+local Rd termination or a proper OTG adapter; a normal C-to-C cable cannot
+lose its CC path and still be assumed to work. The micro-facing plug must be
+legacy USB2-compatible. Verify actual plug construction, continuity and both
+phone orientations. See [Chromium's cable guide](https://chromium.googlesource.com/playground/chromium-org-site/+/refs/heads/main/chromium-os/cable-and-adapter-tips-and-tricks/index.md).
 
-The LEFT USB exit has about **5.5 mm of rectangular plug-tail clearance**
-within the 44 mm cylinder (Dwgs.User). This is a provisional compact **bare
-or right-angle plug** allowance; a normal moulded plug may not fit. The
-pigtail and bend are not modelled. Check the actual plug before routing or
-manufacturing; do not interpret a clear PCB socket as a verified cable fit.
+The left-facing XIAO socket has a provisional compact plug-tail allowance,
+not a verified moulded-plug fit. Keep D+/D− short and together, with a sound
+return path and away from high-impedance analog wiring.
 
-Route D+/D− together, short, with a continuous ground reference and no stubs.
-Keep the cable pair twisted up to the pads and away from the high-impedance
-analog inputs. The schematic represents the external pigtail by J5 and
-assembly notes; KiCad cannot check its physical connection to the XIAO socket.
-Test USB enumeration, both phone plug orientations, communication and loaded
-supply voltage on the assembled device before closing the enclosure.
+J1 feeds U2 AIN0 (scatter) and AIN1 (reference). XIAO D4/D5 provide SDA/SCL;
+ADDR is grounded for address `0x48`. The 3.3 V rail supplies the analog circuit.
+Gain, LED current, noise, saturation and phone independence require bench tests.
+The supplied ADS model prints a different analog-pin order; verify the actual
+module. No pin mapping was changed to match a generic 3D asset.
 
-## Sensor routing and checks
+## Checks and renders
 
-- R1–R6 and C1–C5 use **1206 SMD, mounted on BOTTOM**. R3/R4 are 10 kΩ, 1%; C1/C2 are
-  10 pF C0G/NP0; C3–C5 are 100 nF X7R.
-- R1/R2 = 1 MΩ and C1/C2 = 10 pF are starting values. Keep amplifier
-  feedback paths short, clean and away from LED/USB/I²C switching.
-- C4 is by U1 VDD; C3 filters the 1.65 V amplifier bias. C6 remains radial
-  10 µF, 16 V, 5 mm body/2 mm pitch, **positive to 3V3**.
-- D1/D2 mount sideways in the opaque holder. D1 views the cuvette at 90°;
-  D2 sees a fixed LED pick-off shielded from the sample. D3 uses formed
-  leads; the holder fixes its axis. Optical body clearances remain unverified.
-- Nominal cuvette exterior is **12.5 × 12.5 mm**. The proven opening is retained.
-- XIAO supplies 3V3 to U1/U2. D7 drives the IR LED through two series 220 Ω
-  resistors. Check loaded GPIO voltage, LED current, noise and saturation.
-
-[Validation results](validation.md) separate placement checks from routing.
-Repeat the checks on macOS:
+Check the upper board against the current base:
 
 ```sh
-/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 hardware/check_stack.py --unrouted
+/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 hardware/check_stack.py --match-base
 ```
 
-After routing, omit `--unrouted` to also require zero unconnected items.
-Generate new Gerbers only after routing and mechanical fit approval.
-[BOM revision notes](../docs/BOM.md) list parts not yet in the purchase workbook.
-Calibrate and independently validate the instrument before reporting NTU.
+This mode checks upper ERC, DRC, schematic parity, the module envelope and
+all mating contacts. It permits unfinished upper routing and does **not**
+approve base DRC findings. The older all-board check describes the earlier
+unrouted, B.Cu fabrication stage and is not the current alignment check.
 
-## 3D models and renders
+[3D model notes](3dmodels/README.md) describe the supplied assets and their
+limits. [Current enclosure meshes](../3D/README.md) are `cuerpo.stl` and
+`tapa.stl`. The renders show individual boards and the connected stack, with
+the B component faces physically upwards. They do not include the enclosure
+or prove sealing, module dimensions or a complete cable fit.
 
-[pcb-top-preview.svg](pcb-top-preview.svg) includes the two board views followed
-by individual TOP/BOTTOM renders and the connected stack.
-[3D model notes](3dmodels/README.md) record sources, derived meshes and limits.
-All placed components have 3D models; J2/J5 are bare through-hole wire lands, so no
-connector body is invented. Supplied STEP files remain unmodified.
-
-The XIAO model uses two standard KiCad headers. The ADS model's straight
-header is removed from a derived viewer mesh and replaced by a standard
-right-angle header. BPW34 viewer bodies use provisional formed leads; the
-LED uses KiCad's horizontal 5 mm IR model. Long interboard pins are visual
-estimates for the 14 mm spacing, **not a selected connector SKU**. Standard
-stock tails can project beyond the carrier/cylinder and need trimming; check
-all clearances, real optical axes and USB plug/bend in the actual holder.
-
-Regenerate viewer meshes and renders with KiCad Python:
+Regenerate the views with KiCad Python:
 
 ```sh
-/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 hardware/3dmodels/rebuild_visual_models.py
 /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 hardware/render_assembly.py
 ```
 
-The renders show assembly geometry without manual tracks. They do not
-establish enclosure fit or electrical correctness of a generic module model.
-
-## Current enclosure files
-
-The updated body and lid are [cuerpo.stl](../3D/cuerpo.stl) and
-[tapa.stl](../3D/tapa.stl). The [enclosure preview and dimensions](../3D/README.md)
-replace the older four-part exports. The nominal 44 mm internal envelope,
-stack height, cuvette, module overhangs, compact USB plug and lid seating
-must be checked against these meshes and the real printed parts. The PCB
-renders above do not include the enclosure and do not establish that fit.
+The supplied source models remain unchanged. [BOM notes](../docs/BOM.md)
+list unpriced connectors and replacements. Generate final fabrication outputs
+only after routing and fit checks; calibrate and validate before reporting
+quantitative turbidity.

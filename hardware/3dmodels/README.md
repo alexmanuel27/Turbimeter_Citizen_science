@@ -1,6 +1,6 @@
-# Assembly models — revision 0.9
+# Assembly models — upper assembly revision 0.10
 
-Assembly design: **Ing. Alex M. Rivera**. Updated 12 October 2026.
+Assembly design: **Ing. Alex M. Rivera**. Updated 13 October 2026.
 
 Supplied source CAD files retain their original authorship and content.
 These reference models do not replace delivered-part measurements.
@@ -42,3 +42,11 @@ needs it. KiCad's STEP exporter does not include the derived VRML bodies.
 it leaves the editable PCB projects unchanged. Renders are in `../renders/`.
 Temporary assembly files use absolute resolved model paths and a 14 mm
 TOP-to-TOP spacing; they are not extra PCB projects.
+
+The current base and upper through-hole components mount on native B, which
+faces physically UP. Upper SMD sockets and C5 mount on F. Temporary assembly
+renders place the upper board toward negative native Z to match that orientation.
+
+The user disabled the long-pin extension models on base J1/J4. Their visibility
+settings are preserved, so current renders show the standard short headers.
+The 14 mm stack spacing still requires an actual connector-reach check.

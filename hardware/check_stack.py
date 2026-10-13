@@ -52,10 +52,63 @@ def net_nodes(path):
     return result
 
 
+def check_upper_against_base():
+    """Validate the upper board against the user's routed base without editing it."""
+    base = pcbnew.LoadBoard(str(PROJECTS['sensor'].with_suffix('.kicad_pcb')))
+    upper = pcbnew.LoadBoard(str(PROJECTS['controller'].with_suffix('.kicad_pcb')))
+    assert contour(upper, True) == contour(base, True), 'upper outline differs beyond cable relief'
+    parts = [{f.GetReference(): f for f in b.GetFootprints()} for b in (base, upper)]
+    assert set(parts[1]) == {'A1', 'U2', 'C5', 'J1', 'J4', 'J5'}
+    assert 'Ing. Alex M. Rivera' in upper.GetTitleBlock().GetComment(0)
+    for ref, f in parts[1].items():
+        assert f.IsFlipped() == (ref in {'A1', 'U2', 'J5'}), (ref, 'B components / F solder side')
+    for t in upper.GetTracks():
+        assert not isinstance(t, pcbnew.PCB_VIA) and t.GetLayer() == pcbnew.F_Cu
+    assert all(z.GetLayer() == pcbnew.F_Cu for z in upper.Zones())
+    for ref, bounds in [('A1', (-8.95, 8.95, -10.65, 11.95)), ('U2', (-2.62, 25.53, -7.1, -5.5))]:
+        f = parts[1][ref]; a = math.radians(f.GetOrientationDegrees())
+        ox, oy = pcbnew.ToMM(f.GetPosition())
+        for x in bounds[:2]:
+            for y in bounds[2:]:
+                y = -y if f.IsFlipped() else y
+                assert math.hypot(ox+math.cos(a)*x+math.sin(a)*y-34.278,
+                                  oy-math.sin(a)*x+math.cos(a)*y-33.2356) < 22, (ref, '44 mm envelope')
+    with tempfile.TemporaryDirectory(prefix='turbimeter-upper-') as directory:
+        tmp = Path(directory); nets = []
+        for i, name in enumerate(('sensor', 'controller')):
+            xml = tmp/f'{name}.xml'
+            command('sch', 'export', 'netlist', PROJECTS[name].with_suffix('.kicad_sch'), '-o', xml, '--format', 'kicadxml')
+            nets.append(net_nodes(xml))
+        for ref, count in [('J1', 6), ('J4', 4)]:
+            socket = parts[1][ref]; ox, oy = pcbnew.ToMM(socket.GetPosition())
+            a = math.radians(socket.GetOrientationDegrees()); mirror = -1 if socket.IsFlipped() else 1
+            pins = {p.GetNumber(): p for p in parts[0][ref].Pads()}
+            for i in range(count):
+                x = 0 if ref == 'J1' else (.635 if i % 2 == 0 else -.635)
+                y = ((i-2.5)*2 if ref == 'J1' else (i//2-.5)*1.27)*mirror
+                px, py = pcbnew.ToMM(pins[str(i+1)].GetPosition())
+                assert math.hypot(px-ox-math.cos(a)*x-math.sin(a)*y,
+                                  py-oy+math.sin(a)*x-math.cos(a)*y) < .00001, (ref, i+1, 'mating axis')
+                assert nets[0][ref, str(i+1)] == nets[1][ref, str(i+1)], (ref, i+1, 'net mismatch')
+        assert [nets[0]['J2', str(i)] for i in range(1, 5)] == ['USB_DM', 'USB_DP', 'USB_VBUS', 'GND']
+        assert [nets[1]['J5', str(i)] for i in range(1, 5)] == USB_PINS
+        command('sch', 'erc', PROJECTS['controller'].with_suffix('.kicad_sch'), '-o', tmp/'upper-erc.rpt', '--exit-code-violations')
+        command('pcb', 'drc', PROJECTS['controller'].with_suffix('.kicad_pcb'), '-o', tmp/'upper-drc.json', '--format', 'json', '--schematic-parity')
+        report = json.loads((tmp/'upper-drc.json').read_text())
+        assert not report['violations'], report['violations']
+        assert not report['schematic_parity'], report['schematic_parity']
+        print(f"PASS: upper ERC/DRC/parity 0; {len(report['unconnected_items'])} unrouted items; all 10 mating contacts align and carry matching nets.")
+        print('Base checked as a mechanical/electrical reference only; its routing and DRC findings are not modified or approved.')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--unrouted', action='store_true', help='Require zero tracks/zones; allow unrouted nets.')
+    parser.add_argument('--match-base', action='store_true', help='Check upper placement against the current routed base; allow upper unrouted nets.')
     args = parser.parse_args()
+    if args.match_base:
+        check_upper_against_base()
+        return
     boards = {name: pcbnew.LoadBoard(str(base.with_suffix('.kicad_pcb'))) for name, base in PROJECTS.items()}
     parts = {name: {f.GetReference(): f for f in board.GetFootprints()} for name, board in boards.items()}
     original = contour(pcbnew.LoadBoard(str(HW / 'archive/single-board-v0.5/esque.kicad_pcb')))

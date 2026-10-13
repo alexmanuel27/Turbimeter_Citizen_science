@@ -21,8 +21,8 @@ groove: the selected O-ring kit reaches only 28 mm inner diameter.
 The workbook still lists a USB-C Nano. That board has been superseded by the
 **XIAO SAMD21 already in hand**; do not order the Nano for this firmware.
 
-The cuvettes are on hand. The active design is now a stack of two **unrouted**
-boards: sensor/base and upper XIAO + upright ADS1115. See the
+The cuvettes are on hand. The active design is now a stack of two
+boards: a user-routed base and an aligned, unrouted upper XIAO + upright ADS1115 PCB. See the
 [hardware assembly notes](../hardware/README.md). The enclosure-derived outline
 is preserved on the base; only its cable relief is filled on the upper PCB.
 The old PCB cannot replace these two carrier boards. No battery, display, separate turbidimeter, or additional gland sizes
@@ -33,7 +33,7 @@ The updated enclosure files are [cuerpo.stl](../3D/cuerpo.stl) and
 these parts before selecting seals; the updated meshes do not validate the
 workbook's O-ring assortment or cable diameter.
 
-## Changes not yet reflected in the workbook — revision 0.9
+## Changes not yet reflected in the workbook — upper revision 0.10
 
 Do not use the spreadsheet subtotal as the cost of the new stack. Confirm stock
 and select the connector mating heights before ordering these replacements or
@@ -47,11 +47,11 @@ additional items. Prices and supplier SKUs for this revision are not assigned.
 | 2 | 1206 10 pF capacitors, C0G/NP0 | C1/C2, provisional feedback compensation |
 | 3 | 1206 100 nF capacitors, X7R | C3/C4/C5; ≥10 V |
 | 1 | 10 µF, 16 V radial capacitor | C6: 5 mm diameter, 2 mm lead pitch; check real height |
-| 1 pair | 1×6, **2.00 mm** SMD female socket + long-reach THT male header | J1; male THT on base TOP, female SMD beneath upper PCB; solder both on BOTTOM |
+| 1 pair | 1×6, **2.00 mm** SMD female socket + long-reach THT male header | J1; male THT on base B (UP), female SMD on upper F (BELOW); solder from F |
 | 1 pair | 2×2, **1.27 mm** SMD female socket + long-reach THT male header | J4 USB link; male THT on base TOP, female SMD beneath upper PCB; match actual footprint and mating reach |
 | 1 | 1×10, 2.54 mm right-angle male header | Upright ADS1115 mounting; verify delivered module pin geometry and orientation |
 | 2 | 1×7, 2.54 mm low-profile XIAO header strips | 15.24 mm row spacing; select actual module mounting height |
-| 2 | Carrier PCBs | Single copper face B.Cu; fabricate after routing and dry fit; cable relief on base only |
+| 2 | Carrier PCBs | Upper routing/solder side F.Cu; retain base routing as supplied; fabricate after checks; cable relief on base only |
 | 1 | Compact legacy-compatible USB2 male pigtail, 4 wires | Solder to THT J5 and plug into XIAO; verify local Rp and available plug-tail clearance |
 | As needed | Enclosure guides/spacers and module support | Approximately 14 mm PCB top-to-top spacing; support upright ADS1115 ≥2 mm above upper PCB and trim THT tails beneath the base |
 

@@ -3,7 +3,7 @@
 A compact, reproducible instrument for measuring water turbidity with an
 **Android USB-C phone as its power supply, screen and controller**.
 
-Design: **Ing. Alex M. Rivera**. Updated **12 October 2026**.
+Design: **Ing. Alex M. Rivera**. Updated **13 October 2026**.
 
 The current prototype combines a custom optical sensor, two stacked carrier
 PCBs, a printed enclosure and an Android app. It has **no battery or display**.
@@ -12,14 +12,14 @@ validation. The current firmware reports an **uncalibrated optical ratio**.
 
 ![Current two-board assembly](hardware/renders/assembly.png)
 
-*Revision 0.9 placement render. The PCBs are unrouted; connector reach,
+*Upper revision 0.10 aligned to the user-routed base. Upper traces remain pending; connector reach,
 module dimensions and enclosure fit require a physical assembly check.*
 
 ## Current status
 
 | Part | Available now | Remaining work |
 | --- | --- | --- |
-| Electronics | Two KiCad 9 projects, schematics, placed components and 3D models; electrical and placement checks pass | Route, verify manufacturing outputs, fabricate and solder |
+| Electronics | User-routed base and aligned upper PCB; upper electrical and placement checks pass | Route the upper PCB, review base DRC findings, verify outputs, fabricate and solder |
 | Enclosure | Updated body and lid meshes: `cuerpo.stl` and `tapa.stl` | Check the complete stack, optical alignment, USB plug, gland and lid seal |
 | Firmware | XIAO SAMD21 USB-CDC firmware; dark/lit acquisition, ratio and hardware errors | Test with the assembled ADS1115 and optical circuit; add validated calibration |
 | Android app | Version 0.4: connect, measure, local history, CSV sharing, privacy and deletion; Google Play closed-test preparation | Test the release with the completed instrument and finish the Play checklist |
@@ -70,8 +70,9 @@ turbidity. See the [optical design and validation plan](docs/optical-design.md).
 | Base: sensor and cable entry | [hardware/esque.kicad_pro](hardware/esque.kicad_pro) | LED, two BPW34s, MCP6002, passives, J2 cable holes and J1/J4 interboard links |
 | Upper: controller and ADC | [hardware/controller/controller.kicad_pro](hardware/controller/controller.kicad_pro) | XIAO SAMD21, upright ADS1115, C5, mating J1/J4 sockets and J5 pigtail holes |
 
-- **Single copper face: B.Cu only.** Through-hole parts face upwards; SMD
-  parts and all solder joints are underneath. Routing remains manual.
+- **Upper solder/copper face: F.Cu.** Through-hole components mount on B,
+  physically upwards; SMD sockets and solder joints are on F, underneath.
+  The base routing is retained as supplied; upper routing remains manual.
 - The proven base outline and its cable relief are retained. The upper PCB
   fills that relief and keeps the cuvette opening.
 - Modules may overhang the carriers within the **44 mm internal cylinder**.
@@ -84,8 +85,8 @@ turbidity. See the [optical design and validation plan](docs/optical-design.md).
 [Board views and individual/connected renders](hardware/pcb-top-preview.svg) ·
 [Validation results](hardware/validation.md)
 
-Existing geometry exports/Gerbers predate this revision. Generate a new
-fabrication set after routing and mechanical checks.
+The base exports are retained as supplied by the user. Generate the upper
+fabrication set after routing, and review both boards before manufacture.
 
 ## Updated enclosure
 
@@ -134,7 +135,7 @@ Check stock before ordering; the cuvettes and XIAO are already available.
 
 ## Work before 18 October
 
-1. Finish routing both PCBs and check the real modules, mating connectors,
+1. Route the aligned upper PCB, review the existing base findings and check the real modules, mating connectors,
    cuvette, optics and cable against the updated enclosure.
 2. Generate and verify manufacturing files, fabricate the carriers, solder
    the assembly and check power, LED current and USB communication.

@@ -27,7 +27,7 @@ does not show a verified assembled enclosure or installed electronics.
 
 ## Fit checks with the electronics
 
-Use the [revision 0.9 two-board assembly](../hardware/README.md):
+Use the [upper revision 0.10 alignment](../hardware/README.md):
 
 - Preserve the base PCB's cable relief; it is filled on the upper PCB only.
 - Verify the nominal 44 mm internal cylinder against the mesh and printed part.

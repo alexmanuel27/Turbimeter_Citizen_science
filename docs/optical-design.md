@@ -18,8 +18,9 @@ The DFRobot SEN0189 sensor and its firmware are retained only as an earlier
 prototype. The reviewed monolithic schematic is archived. The active
 [two-floor KiCad assembly](../hardware/README.md) separates the sensor/base
 from the upper XIAO + upright ADS1115. Through-hole electronics face upwards; SMD parts mount underneath. Base
-TOP male THT headers mate with upper BOTTOM female SMD sockets. All soldering
-and routing use B.Cu only; omit F.Cu from the single-face fabrication set.
+B-side male THT headers mate with upper F-side female SMD sockets. Physical
+component-UP is B; upper soldering and routing use F. The base routing is
+retained as supplied; see the current validation notes before fabrication.
 The base contour is unchanged; only the USB cable relief is filled on the
 upper PCB. Both cuvette openings remain, for a nominal 12.5 × 12.5 mm exterior.
 Module bodies may overhang within the 44 mm cylinder. The cut phone cable
@@ -27,7 +28,7 @@ solders to base J2, passes through J4, then upper J5 feeds a short USB-C male
 pigtail into the XIAO socket. J2/J5 are four THT wire holes; J4 has four contacts.
 USB-C role detection must be terminated locally in the cable plugs / OTG adapter;
 there is no CC conductor across the carrier boards.
-Both PCBs remain **unrouted**. Preferred height is 35 mm; the estimate is
+The base has user routing; the aligned upper PCB remains **unrouted**. Preferred height is 35 mm; the estimate is
 36–38 mm and requires real module, connector, optical-holder and cable fit checks.
 The current 3D models and renders illustrate the revised assembly. The [one-unit purchase workbook](shopping-list-prototype-usb-c.xlsx)
 contains the previous supplier URLs and VAT-inclusive prices; the
