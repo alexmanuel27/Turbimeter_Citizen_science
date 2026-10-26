@@ -4,9 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Design: Ing. Alex M. Rivera. */
 public final class MeasurementFrameCheck {
     public static void main(String[] args) {
-        assert MeasurementFrame.parse("TURB1,DEMO,0.2500") != null;
+        assert MeasurementFrame.parse("TURB1,DEMO,0.2500") == null;
+        assert MeasurementFrame.errorMessage("TURB1,DEMO,0.2500").contains("firmware");
         assert MeasurementFrame.parse("TURB1,RATIO,0.2500").kind == MeasurementFrame.Kind.RATIO;
         assert MeasurementFrame.parse("TURB1,RESULT,12.3,FNU,CAL-001,OK").kind == MeasurementFrame.Kind.RESULT;
         assert MeasurementFrame.parse("TURB1,RESULT,12.3,FNU,,OK") == null;

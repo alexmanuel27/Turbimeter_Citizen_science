@@ -2,6 +2,11 @@
 
 Design: **Ing. Alex M. Rivera**. Checked **13 October 2026**.
 
+> **Historical report, 13 October 2026.** Later user routing, the independent
+> controller project, J1 pitch change and mounting hole are not validated by
+> this report. See the [current hardware notes](README.md). The historical
+> `check_stack.py` assertions are not a current manufacturing approval.
+
 ## Scope
 
 The user's routed base is the mechanical and electrical reference. SHA-256

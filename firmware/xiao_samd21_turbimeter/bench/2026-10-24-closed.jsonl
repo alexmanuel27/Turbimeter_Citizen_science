@@ -1,0 +1,26 @@
+{"record_type": "metadata", "condition": "Closed enclosure, alcohol-filled cuvette, no movement requested; R1/R2=100k and VREF approx 1.6V reported by builder", "n": 20, "mean": 0.646405, "min": 0.6453, "max": 0.6479, "sample_sd": 0.0005433570116463692, "cv_percent": 0.08405829343002748, "median_response_ms": 203.0, "max_response_ms": 213, "design": "Ing. Alex M. Rivera", "date": "2026-10-24", "unit": "dimensionless optical ratio; not FNU/NTU", "firmware_sha256": "ba480dc646202309d49f4bac670deced576ff17c970bbc6c192d9a3806956f36", "interpretation": "Short-run optical ratio repeatability only; not a calibration, accuracy assessment or between-sample validation."}
+{"time_utc": "2026-10-24T15:31:19.780942+00:00", "port": "/dev/cu.usbmodem101", "command": "PING", "response": "TURB1,PONG", "elapsed_ms": 1}
+{"time_utc": "2026-10-24T15:31:20.788636+00:00", "port": "/dev/cu.usbmodem101", "command": "RAW", "response": "TURB1,RAW,13261,14165,13309,14708", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:21.797271+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6457", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:22.805380+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:23.813698+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:24.818983+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:25.827967+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:26.839704+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6464", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:27.847704+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6460", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:28.856399+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6453", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:29.875003+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6464", "elapsed_ms": 213}
+{"time_utc": "2026-10-24T15:31:30.879915+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6469", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:31.889254+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6467", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:32.897027+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:33.905889+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6469", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:34.914617+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6469", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:35.922991+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:36.927283+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6464", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:37.936748+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6460", "elapsed_ms": 204}
+{"time_utc": "2026-10-24T15:31:38.945535+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6469", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:39.954024+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6479", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:40.959838+00:00", "port": "/dev/cu.usbmodem101", "command": "MEASURE", "response": "TURB1,RATIO,0.6465", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:41.966938+00:00", "port": "/dev/cu.usbmodem101", "command": "RAW", "response": "TURB1,RAW,13259,14166,13307,14709", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:42.974735+00:00", "port": "/dev/cu.usbmodem101", "command": "DIAG", "response": "TURB1,DIAG,13260,14166,13307,14709,0.6462", "elapsed_ms": 203}
+{"time_utc": "2026-10-24T15:31:43.778369+00:00", "port": "/dev/cu.usbmodem101", "command": "PING", "response": "TURB1,PONG", "elapsed_ms": 1}

@@ -7,32 +7,34 @@ Design: **Ing. Alex M. Rivera**.
 Build one closed turbidimeter that any compatible Android USB-C phone with USB
 host support can power and read. Calibration belongs to the instrument, not
 to a particular phone: changing phones must not require new coefficients.
-The Android 0.4 release reads the instrument, keeps local history and exports
-CSV. Online upload, contributor identity and location capture are deferred;
+The Android 0.5 release reads the instrument, supports reference calibration,
+keeps local history and exports CSV. Online upload, contributor identity and location capture are deferred;
 the citizen-science API is not specified. The instrument has no battery,
-screen, or status LEDs. **The assembled optical circuit and quantitative
-calibration are not yet validated.** Instrument, firmware, app and calibration
-must be ready before 18 October 2026; community deployment comes afterward.
+screen, or status LEDs. The assembled optical circuit now produces real
+uncalibrated ratios on the Mac; quantitative accuracy remains unvalidated.
+The original 18 October target has passed; calibration and independent
+validation remain prerequisites for community deployment. See the
+[26 October bench records](../firmware/xiao_samd21_turbimeter/bench/README.md).
 
 The DFRobot SEN0189 sensor and its firmware are retained only as an earlier
 prototype. The reviewed monolithic schematic is archived. The active
 [two-floor KiCad assembly](../hardware/README.md) separates the sensor/base
-from the upper XIAO + upright ADS1115. Through-hole electronics face upwards; SMD parts mount underneath. Base
-B-side male THT headers mate with upper F-side female SMD sockets. Physical
-component-UP is B; upper soldering and routing use F. The base routing is
-retained as supplied; see the current validation notes before fabrication.
-The base contour is unchanged; only the USB cable relief is filled on the
-upper PCB. Both cuvette openings remain, for a nominal 12.5 × 12.5 mm exterior.
-Module bodies may overhang within the 44 mm cylinder. The cut phone cable
-solders to base J2, passes through J4, then upper J5 feeds a short USB-C male
-pigtail into the XIAO socket. J2/J5 are four THT wire holes; J4 has four contacts.
-USB-C role detection must be terminated locally in the cable plugs / OTG adapter;
-there is no CC conductor across the carrier boards.
-The base has user routing; the aligned upper PCB remains **unrouted**. Preferred height is 35 mm; the estimate is
-36–38 mm and requires real module, connector, optical-holder and cable fit checks.
-The current 3D models and renders illustrate the revised assembly. The [one-unit purchase workbook](shopping-list-prototype-usb-c.xlsx)
-contains the previous supplier URLs and VAT-inclusive prices; the
-[BOM revision notes](BOM.md) list additional/replacement parts for the stack.
+from the upper XIAO + upright ADS1115. Through-hole electronics face upwards;
+SMD parts mount underneath.
+The active J1 connection now uses a 2.54 mm THT socket on the base and an SMD
+male header under the controller. The saved boards include subsequent builder
+routing and component changes; historical 3D views are not the current
+placement reference. The base contour and cuvette opening remain the design
+reference, with a nominal 12.5 × 12.5 mm cuvette exterior and a 44 mm cylinder
+allowance. Actual connector engagement, optical alignment, cable support,
+sealing and total stack height require physical checks.
+
+The USB connection uses the XIAO socket. Earlier J2/J4/J5 carrier links are a
+retired layout; consult the saved PCB files and actual cable assembly.
+USB-C role detection must be handled correctly by the plugs/OTG adapter.
+The [one-unit purchase workbook](shopping-list-prototype-usb-c.xlsx) is the
+latest user-edited copy; the [BOM notes](BOM.md) explain as-built differences.
+Prices have not been refreshed during repository organization.
 
 ## Optical and electrical concept
 
@@ -48,15 +50,15 @@ The intended signal chain is:
 
 | Stage | Planned part / connection |
 | --- | --- |
-| Illumination | 850 nm IR LED controlled by XIAO SAMD21 D7 through a verified current-limited circuit |
+| Illumination | 850 nm IR LED controlled by XIAO SAMD21 D10 (KiCad A1 pin 11) through a verified current-limited circuit |
 | Detection | Two BPW34 photodiodes: 90° scatter and shielded reference |
-| Amplification | MCP6002 dual amplifier at 3.3 V; start with 1 MΩ feedback resistors and tune using measured signal levels |
+| Amplification | MCP6002 dual amplifier at 3.3 V; schematic starting value 1 MΩ, builder reports 100 kΩ fitted for bench tests |
 | Conversion | ADS1115 at 3.3 V, with the two amplifier outputs on AIN0 and AIN1; I²C to XIAO D4/D5 |
 | Phone interface | USB-C XIAO SAMD21, data-capable 2 m USB-C cable, Android USB host app |
 
 The schematic starts with a 1.65 V midrail reference, 1 MΩ/10 pF feedback
 per MCP6002 channel, and two 220 Ω resistors in series with the IR LED from
-D7 (about 4 mA at a 1.4 V LED drop). These are **bench starting values**.
+D10 (about 4 mA at a 1.4 V LED drop). These are **bench starting values**.
 The XIAO regulates USB power to 3.3 V. A 10 µF capacitor across that rail
 helps with short transients; it does not set the LED current. The shielded
 reference photodiode must see a fixed fraction of the LED light so the

@@ -12,206 +12,6 @@
 		(comment 2 "Two-floor prototype; 44mm cylinder / USB solder entry")
 	)
 	(lib_symbols
-		(symbol "Connector_Generic:Conn_01x04"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 0 5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Conn_01x04"
-				(at 0 -7.62 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Connector*:*_1x??_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Conn_01x04_1_1"
-				(rectangle
-					(start -1.27 3.81)
-					(end 1.27 -6.35)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(rectangle
-					(start -1.27 2.667)
-					(end 0 2.413)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -4.953)
-					(end 0 -5.207)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at -5.08 2.54 0)
-					(length 3.81)
-					(name "Pin_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 0 0)
-					(length 3.81)
-					(name "Pin_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -2.54 0)
-					(length 3.81)
-					(name "Pin_3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -5.08 0)
-					(length 3.81)
-					(name "Pin_4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Connector_Generic:Conn_01x06"
 			(pin_names
 				(offset 1.016)
@@ -460,206 +260,6 @@
 						)
 					)
 					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Connector_Generic:Conn_02x02_Odd_Even"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 1.27 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Conn_02x02_Odd_Even"
-				(at 1.27 -5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Generic connector, double row, 02x02, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Connector*:*_2x??_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Conn_02x02_Odd_Even_1_1"
-				(rectangle
-					(start -1.27 1.27)
-					(end 3.81 -3.81)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(rectangle
-					(start -1.27 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 0.127)
-					(end 2.54 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 -2.413)
-					(end 2.54 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at -5.08 0 0)
-					(length 3.81)
-					(name "Pin_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -2.54 0)
-					(length 3.81)
-					(name "Pin_3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 0 180)
-					(length 3.81)
-					(name "Pin_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -2.54 180)
-					(length 3.81)
-					(name "Pin_4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2312,16 +1912,6 @@
 	)
 	(wire
 		(pts
-			(xy 267.97 43.18) (xy 273.05 43.18)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "452c10e0-b215-46a4-a906-1cfd0bcbbef2")
-	)
-	(wire
-		(pts
 			(xy 87.63 107.95) (xy 87.63 113.03)
 		)
 		(stroke
@@ -2329,16 +1919,6 @@
 			(type default)
 		)
 		(uuid "4757562a-b1d9-46a9-8b4c-21e4cc256786")
-	)
-	(wire
-		(pts
-			(xy 255.27 43.18) (xy 250.19 43.18)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5549d141-73ef-411e-a059-4a384d7684ab")
 	)
 	(wire
 		(pts
@@ -2582,16 +2162,6 @@
 	)
 	(wire
 		(pts
-			(xy 255.27 45.72) (xy 250.19 45.72)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c4ec1a2c-9c1e-472d-b99f-525a2e0ae529")
-	)
-	(wire
-		(pts
 			(xy 87.63 167.64) (xy 87.63 172.72)
 		)
 		(stroke
@@ -2662,16 +2232,6 @@
 	)
 	(wire
 		(pts
-			(xy 267.97 45.72) (xy 273.05 45.72)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f626d8bf-2cb2-4349-bcb0-96b75127beec")
-	)
-	(wire
-		(pts
 			(xy 119.38 107.95) (xy 119.38 113.03)
 		)
 		(stroke
@@ -2689,16 +2249,6 @@
 			(justify left bottom)
 		)
 		(uuid "014ee849-4db9-444d-b456-cb0322c00953")
-	)
-	(label "USB_DP"
-		(at 273.05 45.72 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left bottom)
-		)
-		(uuid "0b9e8c56-0ee2-4699-85db-c24325c6fa83")
 	)
 	(label "SCATTER_SUM"
 		(at 119.38 113.03 0)
@@ -2800,16 +2350,6 @@
 		)
 		(uuid "4686dc1c-eb2e-479e-8181-9a6a772a280b")
 	)
-	(label "USB_DM"
-		(at 250.19 45.72 180)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify right bottom)
-		)
-		(uuid "488eb13f-fedd-45c6-8e76-6288e52ccd17")
-	)
 	(label "GND"
 		(at 364.49 95.25 0)
 		(effects
@@ -2829,16 +2369,6 @@
 			(justify left bottom)
 		)
 		(uuid "525f46fe-00e4-488a-b7ab-e278fb25133b")
-	)
-	(label "USB_VBUS"
-		(at 139.7 45.72 180)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify right bottom)
-		)
-		(uuid "5535734c-a49a-4ce5-bbd3-71e92fdade47")
 	)
 	(label "REFERENCE_SUM"
 		(at 29.21 180.34 180)
@@ -2870,16 +2400,6 @@
 		)
 		(uuid "61e6f440-4c72-4e81-a94b-bde656fd126b")
 	)
-	(label "GND"
-		(at 273.05 43.18 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left bottom)
-		)
-		(uuid "6290091d-695a-4016-af45-d124d362d668")
-	)
 	(label "SCATTER_SUM"
 		(at 29.21 119.38 180)
 		(effects
@@ -2899,16 +2419,6 @@
 			(justify left bottom)
 		)
 		(uuid "6400d6f8-2375-4428-9395-0242a2100ea2")
-	)
-	(label "GND"
-		(at 139.7 48.26 180)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify right bottom)
-		)
-		(uuid "66a1788a-8fa1-4b33-b404-fe87e7759267")
 	)
 	(label "GND"
 		(at 46.99 119.38 0)
@@ -2950,16 +2460,6 @@
 		)
 		(uuid "7979c83e-1cda-4736-85e6-6fde07c4f553")
 	)
-	(label "USB_DM"
-		(at 139.7 40.64 180)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify right bottom)
-		)
-		(uuid "7b24c570-6fc3-4cc3-a19a-49e6a6fbc578")
-	)
 	(label "VREF"
 		(at 260.35 110.49 0)
 		(effects
@@ -2999,16 +2499,6 @@
 			(justify left bottom)
 		)
 		(uuid "9093e317-b527-41eb-baa8-bd1b522f4d28")
-	)
-	(label "USB_DP"
-		(at 139.7 43.18 180)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify right bottom)
-		)
-		(uuid "955ae932-09f4-47e4-af8a-c767ebc4745b")
 	)
 	(label "REFERENCE_OUT"
 		(at 48.26 50.8 180)
@@ -3109,16 +2599,6 @@
 			(justify right bottom)
 		)
 		(uuid "c1ec9b9a-5c7b-4483-85d3-848c9a105507")
-	)
-	(label "USB_VBUS"
-		(at 250.19 43.18 180)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify right bottom)
-		)
-		(uuid "c5f3c1d6-e6eb-4454-a096-fe948f5d4f0c")
 	)
 	(label "GND"
 		(at 336.55 119.38 0)
@@ -3413,78 +2893,6 @@
 				(path "/75c2cdd8-ee1f-425f-ac71-2fd7db363bf4"
 					(reference "U1")
 					(unit 3)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_02x02_Odd_Even")
-		(at 260.35 43.18 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "42bcd546-3124-4929-bf4c-9e1f77eb0dc0")
-		(property "Reference" "J4"
-			(at 260.35 31.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "USB_STACK_4_1.27mm"
-			(at 260.35 57.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Turbimeter:USB_StackHeader_2x02_P1.27mm_Base_v09"
-			(at 260.35 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 260.35 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 260.35 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "c4c418af-79c5-4f82-992e-f396ef9e71e1")
-		)
-		(pin "3"
-			(uuid "ae6db329-962d-4015-a061-9eab2682edba")
-		)
-		(pin "2"
-			(uuid "84ede09b-c451-45fa-88de-70349f2b75bb")
-		)
-		(pin "4"
-			(uuid "b0742cb5-094c-48de-a76a-3f1451acfafb")
-		)
-		(instances
-			(project "esque"
-				(path "/75c2cdd8-ee1f-425f-ac71-2fd7db363bf4"
-					(reference "J4")
-					(unit 1)
 				)
 			)
 		)
@@ -3820,78 +3228,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x04")
-		(at 144.78 43.18 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "7ffda079-234a-427b-b938-b5441c9e0fb6")
-		(property "Reference" "J2"
-			(at 144.78 31.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "USB2_CABLE_4_WIRES"
-			(at 144.78 57.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Turbimeter:USB_Cable_WireHoles_2x02_P2mm"
-			(at 144.78 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 144.78 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 144.78 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "2f4b0efa-d4cf-44d8-a84d-d8b51c22df9c")
-		)
-		(pin "2"
-			(uuid "121b09ea-8c06-4221-b489-e4f38859c542")
-		)
-		(pin "3"
-			(uuid "6bb25d21-e33c-4f31-b832-1c2339350d1d")
-		)
-		(pin "4"
-			(uuid "69751d94-517f-43cc-810f-546057597e15")
-		)
-		(instances
-			(project "esque"
-				(path "/75c2cdd8-ee1f-425f-ac71-2fd7db363bf4"
-					(reference "J2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 119.38 163.83 0)
 		(unit 1)
@@ -3916,7 +3252,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
+		(property "Footprint" "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm"
 			(at 119.38 163.83 0)
 			(effects
 				(font
@@ -3982,7 +3318,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
+		(property "Footprint" "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm"
 			(at 298.45 110.49 0)
 			(effects
 				(font
@@ -4176,7 +3512,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
+		(property "Footprint" "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm"
 			(at 336.55 110.49 0)
 			(effects
 				(font
@@ -4454,7 +3790,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Turbimeter:StackHeader_1x06_P2mm_Base_SingleFace"
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical"
 			(at 58.42 45.72 0)
 			(effects
 				(font
@@ -4532,7 +3868,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
+		(property "Footprint" "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm"
 			(at 119.38 104.14 0)
 			(effects
 				(font

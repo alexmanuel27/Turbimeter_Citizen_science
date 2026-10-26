@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Check the two-board design. Design: Ing. Alex M. Rivera.
+"""Historical two-board placement checks. Design: Ing. Alex M. Rivera.
 
-Run with KiCad's Python and --unrouted before routing; omit that flag afterwards.
+These assertions describe earlier layouts and predate J1 P2.54, H1 and later
+builder edits. They are not a current release gate. See hardware/README.md.
 """
 import argparse
 from collections import Counter
@@ -17,7 +18,7 @@ import pcbnew
 
 HW = Path(__file__).resolve().parent
 CLI = shutil.which('kicad-cli') or '/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli'
-PROJECTS = {'sensor': HW / 'esque', 'controller': HW / 'controller/controller'}
+PROJECTS = {'sensor': HW / 'esque', 'controller': HW.parent / 'hardware-controller/controller'}
 USB_PINS = ['USB_VBUS', 'GND', 'USB_DM', 'USB_DP']
 CABLE_ARC = 'fc186bd1-ee77-4e34-9eb4-581373b05ef9'
 
@@ -157,7 +158,7 @@ def main():
                 if (name, ref) not in [('sensor', 'J2'), ('controller', 'J5')]:
                     assert len(part.Models()), (name, ref, 'missing 3D model')
                 for model in part.Models():
-                    models_dir = HW/'3dmodels'
+                    models_dir = PROJECTS[name].parent/'3dmodels'
                     filename = model.m_Filename.replace('${TURBIMETER_3DMODEL_DIR}', str(models_dir))
                     filename = filename.replace('${KICAD9_3DMODEL_DIR}', '/Applications/KiCad/KiCad.app/Contents/SharedSupport/3dmodels')
                     assert Path(filename).is_file(), (name, ref, filename)

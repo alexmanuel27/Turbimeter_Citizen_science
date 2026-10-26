@@ -1,0 +1,14 @@
+{
+  "design": "Ing. Alex M. Rivera",
+  "date": "2026-10-26",
+  "setup": "Controller board only, XIAO SAMD21 + ADS1115; analog sensor/base absent; direct GND jumper between modules. ADS VDD 3.3 V reported by builder.",
+  "sensor_serial": "2BACD8B950315943532E3120FF031F21",
+  "firmware": "Production measurement firmware, LED D10, standard Wire clock; no temporary diagnostic left installed.",
+  "commands": 20,
+  "valid_raw_replies": 20,
+  "errors": 0,
+  "response_ms_min": 203,
+  "response_ms_median": 203.0,
+  "response_ms_max": 206,
+  "limits": "Digital communication and acquisition only. Analog inputs are not connected to the sensor circuit; no turbidity, optical stability or calibration conclusion."
+}

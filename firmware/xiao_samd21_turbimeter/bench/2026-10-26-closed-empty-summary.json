@@ -1,0 +1,21 @@
+{
+  "design": "Ing. Alex M. Rivera",
+  "date": "2026-10-26",
+  "setup": "Full controller + analog base; enclosure closed and empty cuvette reported by builder; direct XIAO/ADS GND jumper fitted during preceding recovery.",
+  "sensor_serial": "2BACD8B950315943532E3120FF031F21",
+  "firmware": "Production measurement firmware, LED D10, default Wire clock.",
+  "requested_readings": 20,
+  "valid_ratios": 20,
+  "errors": 0,
+  "limits": "Empty-cuvette short-run optical-ratio repeatability only; not a water blank, FNU/NTU calibration, turbidity accuracy or validation of the measurement range.",
+  "mean_ratio": 6.902305,
+  "min_ratio": 6.8945,
+  "max_ratio": 6.9115,
+  "sample_sd": 0.00524880688196956,
+  "cv_percent": 0.0760442617642883,
+  "response_ms_median": 203.0,
+  "response_ms_max": 203,
+  "final_raw": [
+    "TURB1,RAW,13263,19649,13225,14151"
+  ]
+}

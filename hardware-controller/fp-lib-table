@@ -1,0 +1,1 @@
+(fp_lib_table (lib (name "Turbimeter") (type "KiCad") (uri "${KIPRJMOD}/Turbimeter.pretty") (options "") (descr "Controller footprints - Design: Ing. Alex M. Rivera")))

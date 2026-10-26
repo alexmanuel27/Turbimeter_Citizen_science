@@ -2,8 +2,9 @@ package org.citizenscience.turbimeter;
 
 import java.util.Locale;
 
+/** Real sensor frames only. Design: Ing. Alex M. Rivera. */
 final class MeasurementFrame {
-    enum Kind { DEMO, RATIO, RESULT }
+    enum Kind { RATIO, RESULT }
 
     final Kind kind;
     final double value;
@@ -24,8 +25,6 @@ final class MeasurementFrame {
         try {
             double value = Double.parseDouble(fields[2]);
             if (!Double.isFinite(value) || value < 0 || value > 10000) return null;
-            if (fields.length == 3 && "DEMO".equals(fields[1]))
-                return new MeasurementFrame(Kind.DEMO, value, "ratio", "");
             if (fields.length == 3 && "RATIO".equals(fields[1]))
                 return new MeasurementFrame(Kind.RATIO, value, "ratio", "");
             if (fields.length == 6 && "RESULT".equals(fields[1]) && "OK".equals(fields[5])
@@ -39,6 +38,8 @@ final class MeasurementFrame {
     }
 
     static String errorMessage(String line) {
+        if (line.trim().startsWith("TURB1,DEMO,"))
+            return "Unsupported sensor firmware. Install the optical measurement firmware.";
         switch (line.trim()) {
             case "TURB1,ERROR,ADC_MISSING": return "ADS1115 not found at 0x48. Check its 3.3 V power and I²C wiring.";
             case "TURB1,ERROR,ADC_IO": return "ADS1115 read failed. Check D4/D5 and the I²C connections.";
@@ -52,6 +53,13 @@ final class MeasurementFrame {
             case "TURB1,ERROR,BAD_COMMAND": return "The sensor did not recognize the command.";
             default: return null;
         }
+    }
+
+    static MeasurementFrame calibrated(double value, String unit, String calibrationId) {
+        if (!Double.isFinite(value) || (!"FNU".equals(unit) && !"NTU".equals(unit))
+                || calibrationId == null || !calibrationId.matches("[A-Za-z0-9._-]{1,32}"))
+            throw new IllegalArgumentException("Invalid calibrated reading.");
+        return new MeasurementFrame(Kind.RESULT, value, unit, calibrationId);
     }
 
     String displayValue() {

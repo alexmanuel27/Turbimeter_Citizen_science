@@ -1,20 +1,59 @@
-# Two-floor electronics — upper revision 0.10
+# Sensor/base electronics and two-board assembly
 
-Design: **Ing. Alex M. Rivera**. Updated **13 October 2026**.
+Design: **Ing. Alex M. Rivera**. Updated **26 October 2026**.
 
-The upper PCB is aligned to the user's routed base. **The base PCB, schematic,
-project settings and fabrication exports were not edited during this alignment.**
-The upper board has no tracks; its existing F.Cu ground zone was retained and
-refilled after moving components.
-
-| Floor | KiCad 9 project | State |
+| Board | Active KiCad 9 project | Current source |
 | --- | --- | --- |
-| Base — optics and cable entry | [esque.kicad_pro](esque.kicad_pro) | User routing retained as supplied |
-| Upper — controller and ADC | [controller/controller.kicad_pro](controller/controller.kicad_pro) | Revision 0.10; placement checked; route manually |
+| Sensor/base | [esque.kicad_pro](esque.kicad_pro) | Builder's saved schematic and routed PCB |
+| Controller + ADS1115 | [../hardware-controller/controller.kicad_pro](../hardware-controller/controller.kicad_pro) | Independent project; builder's saved routing and subsequent edits |
 
-![Current placement and renders](pcb-top-preview.svg)
+Open these as separate projects. Their saved PCB files take precedence over
+older placement tables, title-block notes, renders and manufacturing exports.
+The 26 October repository organization preserves the PCB/schematic/project
+files byte for byte; it does not reroute or approve either board.
 
-[Connected-board drawing](stack-assembly.svg) · [Validation](validation.md)
+## Current electrical and bench notes
+
+- J1 is now **1×6 at 2.54 mm pitch**. Base: through-hole female socket;
+  controller: SMD male header on F. See the
+  [controller revision notes](../hardware-controller/README.md).
+- J1 nets, in pin order: **GND, 3V3, LED_DRIVE, SCATTER_OUT,
+  REFERENCE_OUT, GND**. Check the saved pad geometry and actual connector
+  engagement; earlier 2.00 mm placement tables below are obsolete.
+- **LED_DRIVE uses XIAO D10 (KiCad A1 pin 11)**. D4/D5 carry I²C.
+  ADS1115 and MCP6002 use 3.3 V and a common ground.
+- The builder fitted **100 kΩ R1/R2** during bench tests; the original
+  schematic assumption was 1 MΩ. Nominal VREF is 1.65 V; approximately
+  1.6 V was reported after repair.
+- Standalone controller testing needs a direct **XIAO GND ↔ ADS GND** jumper:
+  the controller's two ground islands otherwise rely on the base connection.
+  See the [firmware wiring notes](../firmware/xiao_samd21_turbimeter/README.md).
+- The saved boards have subsequent user edits, including removal of the
+  earlier USB connector footprints. The J2/J4/J5 cable chain below is a
+  **historical layout**, not the current board inventory. USB data enters
+  the XIAO through its USB socket; verify the actual cable termination.
+
+The assembled closed instrument produced real uncalibrated optical ratios on
+the Mac. [Bench records](../firmware/xiao_samd21_turbimeter/bench/README.md)
+document the setups and limits. This does not certify the saved design or its
+exports as ready for replication or quantitative measurement.
+
+## Drawings, manufacturing and checks
+
+- [Base export notes](gerber/README.md) and
+  [controller export notes](../hardware-controller/gerber/README.md).
+- [Assembly renders](renders/README.md), [board preview](pcb-top-preview.svg)
+  and [connected drawing](stack-assembly.svg) predate later placement edits.
+- [Revision 0.10 validation report](validation.md) records the 13 October
+  design, not the latest saved files. `check_stack.py` contains those earlier
+  layout assumptions and is not a current release gate.
+- [BOM notes](../docs/BOM.md) identify purchasing and as-built differences.
+
+## Historical placement notes — revision 0.10, 13 October 2026
+
+Everything below describes that earlier alignment. In particular, connector
+pitch, inventory, coordinates, routing counts and validation claims are
+historical. Use the active projects above for the present design.
 
 ## Mounting faces
 

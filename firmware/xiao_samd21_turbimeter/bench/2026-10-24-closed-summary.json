@@ -1,0 +1,16 @@
+{
+  "condition": "Closed enclosure, alcohol-filled cuvette, no movement requested; R1/R2=100k and VREF approx 1.6V reported by builder",
+  "n": 20,
+  "mean": 0.646405,
+  "min": 0.6453,
+  "max": 0.6479,
+  "sample_sd": 0.0005433570116463692,
+  "cv_percent": 0.08405829343002748,
+  "median_response_ms": 203.0,
+  "max_response_ms": 213,
+  "design": "Ing. Alex M. Rivera",
+  "date": "2026-10-24",
+  "unit": "dimensionless optical ratio; not FNU/NTU",
+  "firmware_sha256": "ba480dc646202309d49f4bac670deced576ff17c970bbc6c192d9a3806956f36",
+  "interpretation": "Short-run optical ratio repeatability only; not a calibration, accuracy assessment or between-sample validation."
+}

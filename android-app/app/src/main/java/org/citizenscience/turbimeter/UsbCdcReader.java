@@ -6,10 +6,12 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.SystemClock;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/** Design: Ing. Alex M. Rivera. */
 final class UsbCdcReader {
     interface Listener {
         void onReady();
@@ -108,10 +110,15 @@ final class UsbCdcReader {
                 throw new IOException("USB-CDC DTR setup failed");
 
             UsbEndpoint input = endpoint(data, UsbConstants.USB_DIR_IN);
+            // Discard a late reply from a cancelled previous connection before accepting new requests.
+            long drainUntil = SystemClock.elapsedRealtime() + 1000;
+            byte[] buffer = new byte[256];
+            while (running && SystemClock.elapsedRealtime() < drainUntil)
+                current.bulkTransfer(input, buffer, buffer.length, 50);
+            if (!running) return;
             writeEndpoint = endpoint(data, UsbConstants.USB_DIR_OUT);
             listener.onReady();
 
-            byte[] buffer = new byte[256];
             LineFramer lines = new LineFramer();
             while (running) {
                 int count = current.bulkTransfer(input, buffer, buffer.length, 500);

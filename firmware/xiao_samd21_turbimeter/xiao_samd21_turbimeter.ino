@@ -1,7 +1,8 @@
 #include <Wire.h>
 
-// XIAO SAMD21: D4=SDA, D5=SCL, D7=LED control. All logic is 3.3 V.
-constexpr uint8_t LED_PIN = 7;
+// Design: Ing. Alex M. Rivera.
+// XIAO SAMD21: D4=SDA, D5=SCL, D10=LED control (KiCad A1 pin 11). All logic is 3.3 V.
+constexpr uint8_t LED_PIN = 10;
 constexpr uint8_t ADS_ADDRESS = 0x48; // ADS1115 ADDR tied to GND
 constexpr uint8_t SAMPLES = 4;
 constexpr uint8_t LED_SETTLE_MS = 5;
@@ -77,7 +78,7 @@ bool readPair(int16_t &scatter, int16_t &reference) {
   return readChannel(0, scatter) && readChannel(1, reference);
 }
 
-bool measure(OpticalReading &reading, const char *&error) {
+bool measure(OpticalReading &reading, const char *&error, bool rawOnly) {
   uint16_t adcConfig = 0;
   if (!readRegister(0x01, adcConfig)) {
     error = "ADC_MISSING";
@@ -94,7 +95,7 @@ bool measure(OpticalReading &reading, const char *&error) {
       error = adcError;
       break;
     }
-    if (scatter >= SATURATION_COUNTS || reference >= SATURATION_COUNTS) {
+    if (!rawOnly && (scatter >= SATURATION_COUNTS || reference >= SATURATION_COUNTS)) {
       error = "SATURATED";
       break;
     }
@@ -107,7 +108,7 @@ bool measure(OpticalReading &reading, const char *&error) {
       error = adcError;
       break;
     }
-    if (scatter >= SATURATION_COUNTS || reference >= SATURATION_COUNTS) {
+    if (!rawOnly && (scatter >= SATURATION_COUNTS || reference >= SATURATION_COUNTS)) {
       error = "SATURATED";
       break;
     }
@@ -123,6 +124,8 @@ bool measure(OpticalReading &reading, const char *&error) {
   reading.litScatter = litScatter / SAMPLES;
   reading.darkReference = darkReference / SAMPLES;
   reading.litReference = litReference / SAMPLES;
+  // RAW exposes invalid optical signals for diagnosis, without reporting a ratio.
+  if (rawOnly) return true;
   const int32_t scatterSignal = SCATTER_POLARITY * (reading.litScatter - reading.darkScatter);
   const int32_t referenceSignal = REFERENCE_POLARITY * (reading.litReference - reading.darkReference);
   if (referenceSignal < MIN_REFERENCE_COUNTS) {
@@ -146,14 +149,15 @@ void respond(const char *input) {
     Serial.println("TURB1,PONG");
     return;
   }
-  if (strcmp(input, "MEASURE") != 0 && strcmp(input, "DIAG") != 0) {
+  const bool rawOnly = strcmp(input, "RAW") == 0;
+  if (!rawOnly && strcmp(input, "MEASURE") != 0 && strcmp(input, "DIAG") != 0) {
     Serial.println("TURB1,ERROR,BAD_COMMAND");
     return;
   }
 
-  OpticalReading reading;
+  OpticalReading reading = {};
   const char *error = nullptr;
-  if (!measure(reading, error)) {
+  if (!measure(reading, error, rawOnly)) {
     Serial.print("TURB1,ERROR,");
     Serial.println(error);
     return;
@@ -162,7 +166,7 @@ void respond(const char *input) {
     Serial.print("TURB1,RATIO,");
     Serial.println(reading.ratio, 4);
   } else {
-    Serial.print("TURB1,DIAG,");
+    Serial.print(rawOnly ? "TURB1,RAW," : "TURB1,DIAG,");
     Serial.print(reading.darkScatter);
     Serial.print(',');
     Serial.print(reading.litScatter);
@@ -170,8 +174,12 @@ void respond(const char *input) {
     Serial.print(reading.darkReference);
     Serial.print(',');
     Serial.print(reading.litReference);
-    Serial.print(',');
-    Serial.println(reading.ratio, 4);
+    if (rawOnly) {
+      Serial.println();
+    } else {
+      Serial.print(',');
+      Serial.println(reading.ratio, 4);
+    }
   }
 }
 

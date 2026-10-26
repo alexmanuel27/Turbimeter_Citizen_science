@@ -12,7 +12,9 @@ must resolve the 61 unconnected items. No rule exclusions were introduced.
 Local footprint variants provide mounting marks and models. Conventional PTH
 annuli are retained in KiCad; export B.Cu only for single-face manufacture.
 
-The runnable [check_stack.py](check_stack.py), with `--unrouted`, confirms:
+The then-current `check_stack.py`, with `--unrouted`, checked the following.
+That script revision is not included in this archived folder; this is a
+historical result, not a runnable current validation:
 
 - All 18 original electronic components occur once across the two floors.
 - Their connected pins retain the reviewed monolithic circuit's nets.

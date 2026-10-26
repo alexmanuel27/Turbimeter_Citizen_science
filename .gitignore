@@ -29,6 +29,12 @@ fp-info-cache
 # Data / secrets
 *.env
 .env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.pfx
 android-app/play-store/testers.csv
 
 # Local generated drafts; the approved purchase workbook lives in docs/

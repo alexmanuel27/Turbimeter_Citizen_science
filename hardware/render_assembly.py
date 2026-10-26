@@ -11,6 +11,7 @@ import tempfile
 import pcbnew
 
 HW = Path(__file__).resolve().parent
+CONTROLLER = HW.parent/'hardware-controller/controller.kicad_pcb'
 CLI = '/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli'
 MODEL_LIB = Path('/Applications/KiCad/KiCad.app/Contents/SharedSupport/3dmodels')
 
@@ -20,10 +21,10 @@ def command(*args):
     assert result.returncode == 0, result.stdout+result.stderr
 
 
-def resolve_models(part):
+def resolve_models(part, models_dir=HW/'3dmodels'):
     for index in range(len(part.Models())):
         model = part.Models()[index]
-        model.m_Filename = model.m_Filename.replace('${TURBIMETER_3DMODEL_DIR}', str(HW/'3dmodels')).replace('${KICAD9_3DMODEL_DIR}', str(MODEL_LIB))
+        model.m_Filename = model.m_Filename.replace('${TURBIMETER_3DMODEL_DIR}', str(models_dir)).replace('${KICAD9_3DMODEL_DIR}', str(MODEL_LIB))
         assert Path(model.m_Filename).exists(), model.m_Filename
 
 
@@ -45,7 +46,7 @@ def compose_preview():
             '<text x="40" y="72" font-size="17">Common KiCad coordinates · same scale · dashed circle: 44 mm enclosure</text>']
     with tempfile.TemporaryDirectory(prefix='turbimeter-preview-') as tmp:
         for i, (path, title) in enumerate([(HW/'esque.kicad_pcb', '1 · Sensor / cable entry'),
-                                         (HW/'controller/controller.kicad_pcb', '2 · XIAO + upright ADS1115')]):
+                                         (CONTROLLER, '2 · XIAO + upright ADS1115')]):
             exported = Path(tmp)/(str(i)+'.svg')
             command('pcb', 'export', 'svg', path, '-o', exported, '--layers', 'F.Cu,B.Cu,F.SilkS,B.SilkS,Edge.Cuts', '--mode-single', '--page-size-mode', '0', '--exclude-drawing-sheet')
             svg = exported.read_text(); svg = svg[svg.index('<g '):svg.rindex('</svg>')]
@@ -97,15 +98,15 @@ def main(names=None):
     with tempfile.TemporaryDirectory(prefix='turbimeter-render-') as tmp:
         tmp = Path(tmp)
         upper_carrier = tmp/'upper-carrier.step'
-        command('pcb', 'export', 'step', HW/'controller/controller.kicad_pcb', '-o', upper_carrier, '--no-components', '--include-pads', '--include-silkscreen', '--include-soldermask', '--user-origin', '0x0mm')
+        command('pcb', 'export', 'step', CONTROLLER, '-o', upper_carrier, '--no-components', '--include-pads', '--include-silkscreen', '--include-soldermask', '--user-origin', '0x0mm')
         base = pcbnew.LoadBoard(str(HW/'esque.kicad_pcb'))
-        upper = pcbnew.LoadBoard(str(HW/'controller/controller.kicad_pcb'))
+        upper = pcbnew.LoadBoard(str(CONTROLLER))
         direction = -1 if base.FindFootprintByReference('J1').IsFlipped() else 1
         for part in base.GetFootprints():
             resolve_models(part)
         base_render = tmp/'base.kicad_pcb'; pcbnew.SaveBoard(str(base_render), base)
         for part in upper.GetFootprints():
-            resolve_models(part)
+            resolve_models(part, CONTROLLER.parent/'3dmodels')
         upper_render = tmp/'upper.kicad_pcb'; pcbnew.SaveBoard(str(upper_render), upper)
         for part in upper.GetFootprints():
             # A model-only anchor avoids drilling the upper module holes into the base.
@@ -116,7 +117,7 @@ def main(names=None):
             for model in part.Models():
                 clone.Add3DModel(model)
             assert not len(clone.Pads()), 'upper model must not add holes to base'
-            resolve_models(clone)
+            resolve_models(clone, CONTROLLER.parent/'3dmodels')
             for index in range(len(clone.Models())):
                 model = clone.Models()[index]
                 model.m_Offset.z += direction*(-14 if clone.IsFlipped() else 14)

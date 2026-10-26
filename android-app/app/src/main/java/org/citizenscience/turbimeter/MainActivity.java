@@ -18,6 +18,9 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.AtomicFile;
 import android.view.View;
 import android.view.Gravity;
 import android.view.WindowInsets;
@@ -30,17 +33,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 
+/** Design: Ing. Alex M. Rivera. */
 public final class MainActivity extends Activity {
     private static final String USB_PERMISSION = "com.Turbidimeter.main.USB_PERMISSION";
     private static final String CSV_NAME = "measurements.csv";
     private static final String PREFS_NAME = "contributor";
+    private static final int IMPORT_CALIBRATION = 10;
+    private static final int EXPORT_CALIBRATION = 11;
     private static final int INK = 0xff18343c;
     private static final int MUTED = 0xff63777f;
     private static final int TEAL = 0xff087f83;
@@ -69,6 +79,19 @@ public final class MainActivity extends Activity {
     private TextView pageTitle;
     private View drawerScrim;
     private View drawer;
+    private CalibrationScreen calibrationPage;
+    private CalibrationStore calibrationStore;
+    private CalibrationCurve calibration;
+    private String sensorId;
+    private boolean readerReady;
+    private boolean waitingForReading;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable readingTimeout;
+    private double[] calibrationReadings;
+    private int calibrationCount;
+    private String captureSensorId;
+    private boolean csvReady;
+    private String pendingCalibrationExport;
 
     private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
@@ -89,7 +112,13 @@ public final class MainActivity extends Activity {
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
+        calibrationStore = new CalibrationStore(this);
+        if (state != null) pendingCalibrationExport = state.getString("calibration_export");
         buildScreen();
+        if (state != null) {
+            calibrationPage.restoreDraft(state.getBundle("calibration_draft"));
+            selectPage(state.getInt("page", 0));
+        }
         IntentFilter filter = new IntentFilter(USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         if (Build.VERSION.SDK_INT >= 33) registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED);
@@ -141,9 +170,11 @@ public final class MainActivity extends Activity {
         homePage = buildHome();
         historyPage = buildHistory();
         privacyPage = buildPrivacy();
+        calibrationPage = new CalibrationScreen(this, calibrationStore);
         pages.addView(homePage, new FrameLayout.LayoutParams(-1, -1));
         pages.addView(historyPage, new FrameLayout.LayoutParams(-1, -1));
         pages.addView(privacyPage, new FrameLayout.LayoutParams(-1, -1));
+        pages.addView(calibrationPage, new FrameLayout.LayoutParams(-1, -1));
 
         drawerScrim = new View(this);
         drawerScrim.setBackgroundColor(0x88000000);
@@ -167,6 +198,7 @@ public final class MainActivity extends Activity {
         menuSubtitle.setTextColor(MUTED);
         menuPanel.addView(menuSubtitle);
         button("Home", menuPanel, false, () -> selectPage(0));
+        button("Calibration", menuPanel, false, () -> selectPage(3));
         button("History", menuPanel, false, () -> selectPage(1));
         button("Privacy", menuPanel, false, () -> selectPage(2));
         showDrawer(false);
@@ -181,7 +213,7 @@ public final class MainActivity extends Activity {
         return scroll;
     }
 
-    private LinearLayout pageContent() {
+    LinearLayout pageContent() {
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(22), dp(26), dp(22), dp(32));
@@ -239,13 +271,13 @@ public final class MainActivity extends Activity {
         reading.addView(detail, spaced(12));
 
         measureButton = button("Measure now", content, true, () -> {
-            if (reader != null) {
+            if (readerReady && !measurementBusy()) {
                 value.setText("—");
                 unit.setText("Waiting for sensor");
                 setQuality("MEASURING", 0xffe7f4f1, TEAL);
                 detail.setText("Requesting a new reading from the sensor.");
                 status.setText("Measuring…");
-                reader.measure();
+                requestReading();
             }
         });
         enabled(measureButton, false);
@@ -264,6 +296,10 @@ public final class MainActivity extends Activity {
         subtitle.setTextColor(MUTED);
         content.addView(subtitle, spaced(6));
         shareButton = button("Share readings (CSV)", content, false, this::shareReadings);
+        button("Export calibration records (JSON)", content, false, () -> {
+            try { exportCalibration("Turbimeter-calibration-records.json", calibrationStore.archive()); }
+            catch (Exception error) { Toast.makeText(this, "Could not share calibration records", Toast.LENGTH_LONG).show(); }
+        });
         enabled(shareButton, getFileStreamPath(CSV_NAME).exists());
         historyList = new LinearLayout(this);
         historyList.setOrientation(LinearLayout.VERTICAL);
@@ -276,7 +312,7 @@ public final class MainActivity extends Activity {
         TextView title = label("Privacy", 30);
         title.setTypeface(null, Typeface.BOLD);
         content.addView(title);
-        TextView policy = label("WaterLab Turbidimeter uses USB only to communicate with your sensor. It saves real readings on this phone. It has no account, analytics, advertising, location access, or data upload.\n\nReadings remain here until you delete them or uninstall the app. Sharing a CSV is your choice; the app you choose to share with handles that copy. If you used an earlier version, deleting local data also removes any saved contributor details.\n\nPrivacy contact: cubanwaterlab@gmail.com", 15);
+        TextView policy = label("WaterLab Turbidimeter uses USB only to communicate with your sensor. It saves readings, calibration samples, reference instrument details and the sensor's USB identity on this phone. It has no account, analytics, advertising, location access, or data upload.\n\nReadings and calibrations remain here until you delete them or uninstall the app. Sharing CSV or calibration JSON is your choice; the app you choose to share with handles that copy. If you used an earlier version, deleting local data also removes any saved contributor details.\n\nPrivacy contact: cubanwaterlab@gmail.com", 15);
         policy.setTextColor(MUTED);
         content.addView(policy, spaced(14));
         button("Full privacy policy", content, false, () -> {
@@ -294,11 +330,14 @@ public final class MainActivity extends Activity {
     }
 
     private void selectPage(int index) {
+        if (index != 3 && calibrationReadings != null) cancelCalibrationCapture();
         homePage.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
         historyPage.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
         privacyPage.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
-        pageTitle.setText(index == 0 ? "Home" : index == 1 ? "History" : "Privacy");
+        calibrationPage.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
+        pageTitle.setText(index == 0 ? "Home" : index == 1 ? "History" : index == 2 ? "Privacy" : "Calibration");
         if (index == 1) refreshHistory();
+        if (index == 3) calibrationPage.refresh();
         showDrawer(false);
     }
 
@@ -307,7 +346,7 @@ public final class MainActivity extends Activity {
         drawer.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    private TextView label(String text, int size) {
+    TextView label(String text, int size) {
         TextView view = new TextView(this);
         view.setText(text);
         view.setTextSize(size);
@@ -315,7 +354,7 @@ public final class MainActivity extends Activity {
         return view;
     }
 
-    private LinearLayout card(LinearLayout parent) {
+    LinearLayout card(LinearLayout parent) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(20), dp(20), dp(20), dp(20));
@@ -338,7 +377,7 @@ public final class MainActivity extends Activity {
         quality.setBackground(background(fill, 0, 8));
     }
 
-    private Button button(String text, LinearLayout parent, boolean primary, Runnable action) {
+    Button button(String text, LinearLayout parent, boolean primary, Runnable action) {
         Button button = new Button(this);
         button.setText(text);
         button.setAllCaps(false);
@@ -352,12 +391,12 @@ public final class MainActivity extends Activity {
         return button;
     }
 
-    private void enabled(Button button, boolean value) {
+    void enabled(Button button, boolean value) {
         button.setEnabled(value);
         button.setAlpha(value ? 1f : 0.45f);
     }
 
-    private LinearLayout.LayoutParams spaced(int margin) {
+    LinearLayout.LayoutParams spaced(int margin) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.topMargin = dp(margin);
@@ -398,14 +437,28 @@ public final class MainActivity extends Activity {
 
     private void open(UsbDevice device) {
         activeDevice = device;
+        readerReady = false;
+        sensorId = null;
+        try {
+            String serial = device.getSerialNumber();
+            if (serial != null && !serial.isEmpty()) {
+                String candidate = String.format(Locale.US, "%04x:%04x:%s", device.getVendorId(), device.getProductId(), serial);
+                if (candidate.matches("[A-Za-z0-9._:-]{1,160}")) sensorId = candidate;
+            }
+        } catch (SecurityException ignored) {
+            // Unidentified sensors may be read, but must not inherit another sensor's curve.
+        }
+        reloadCalibration();
+        calibrationPage.sensorChanged();
         lastError = null;
         int generation = ++readerGeneration;
         reader = new UsbCdcReader(usbManager, device, new UsbCdcReader.Listener() {
             @Override public void onReady() {
                 runOnUiThread(() -> {
                     if (generation != readerGeneration) return;
+                    readerReady = true;
                     status.setText("Sensor connected");
-                    enabled(measureButton, true);
+                    syncControls();
                 });
             }
 
@@ -420,6 +473,8 @@ public final class MainActivity extends Activity {
                 runOnUiThread(() -> {
                     if (generation != readerGeneration) return;
                     lastError = message;
+                    failReading(message);
+                    disconnect(message);
                     status.setText(message);
                     detail.setText("Check the USB connection and try again.");
                 });
@@ -429,9 +484,18 @@ public final class MainActivity extends Activity {
                 runOnUiThread(() -> {
                     if (generation != readerGeneration) return;
                     reader = null;
+                    readerReady = false;
                     activeDevice = null;
+                    sensorId = null;
+                    calibration = null;
+                    clearPending();
+                    if (calibrationReadings != null) {
+                        calibrationReadings = null;
+                        calibrationPage.captureFailed("Sensor disconnected.");
+                    }
                     connectButton.setText("Connect sensor");
                     enabled(measureButton, false);
+                    calibrationPage.sensorChanged();
                     status.setText(lastError == null ? "Sensor disconnected" : lastError);
                 });
             }
@@ -445,10 +509,7 @@ public final class MainActivity extends Activity {
     private void showFrame(MeasurementFrame frame) {
         value.setText(frame.displayValue());
         unit.setText(frame.kind == MeasurementFrame.Kind.RESULT ? frame.unit : "Optical ratio");
-        if (frame.kind == MeasurementFrame.Kind.DEMO) {
-            setQuality("DEMO SIGNAL", 0xfffff2da, AMBER);
-            detail.setText("USB communication works. This is synthetic data, not a water measurement.");
-        } else if (frame.kind == MeasurementFrame.Kind.RATIO) {
+        if (frame.kind == MeasurementFrame.Kind.RATIO) {
             setQuality("UNCALIBRATED", 0xfffff2da, AMBER);
             detail.setText("Optical ratio saved in History. Calibration is needed for a turbidity value.");
         } else {
@@ -458,13 +519,60 @@ public final class MainActivity extends Activity {
     }
 
     private boolean showLine(String line) {
+        if (!waitingForReading) return false;
         MeasurementFrame frame = MeasurementFrame.parse(line);
         String fault = MeasurementFrame.errorMessage(line);
         if (frame == null && fault == null) return false;
+        clearPending();
+        if (calibrationReadings != null) {
+            if (fault != null || frame.kind != MeasurementFrame.Kind.RATIO) {
+                failReading(fault != null ? fault : "Calibration requires optical ratios from the measurement firmware.");
+                return true;
+            }
+            if (sensorId == null || !sensorId.equals(captureSensorId)) {
+                failReading("Sensor identity changed during capture.");
+                return true;
+            }
+            calibrationReadings[calibrationCount++] = frame.value;
+            calibrationPage.captureProgress(calibrationCount);
+            if (calibrationCount == CalibrationCurve.REPEATS) {
+                double[] captured = calibrationReadings;
+                calibrationReadings = null;
+                calibrationPage.captureComplete(captured, captureSensorId);
+                syncControls();
+            } else {
+                int generation = readerGeneration;
+                handler.postDelayed(() -> {
+                    if (generation == readerGeneration && calibrationReadings != null) requestReading();
+                }, 200);
+            }
+            return true;
+        }
         if (fault == null) {
+            Double rawRatio = frame.kind == MeasurementFrame.Kind.RATIO ? frame.value : null;
+            String qualityCode = frame.kind == MeasurementFrame.Kind.RESULT ? "OK" : "UNCALIBRATED";
+            String usedCalibration = frame.calibrationId;
+            if (rawRatio != null && calibration != null && calibration.sensorId.equals(sensorId)) {
+                usedCalibration = calibration.id;
+                double converted = calibration.convert(rawRatio);
+                if (Double.isFinite(converted)) {
+                    qualityCode = calibration.isExtrapolated(rawRatio) ? "EXTRAPOLATED" : "OK";
+                    frame = MeasurementFrame.calibrated(converted, calibration.unit, calibration.id);
+                } else qualityCode = "CONVERSION_ERROR";
+            }
             showFrame(frame);
-            if (frame.kind != MeasurementFrame.Kind.DEMO && !saveReading(frame)) {
+            if ("EXTRAPOLATED".equals(qualityCode)) {
+                setQuality("EXTRAPOLATED", 0xfffff2da, AMBER);
+                detail.setText("Estimate beyond the measured reference range, using the nearest end segment. Calibration "
+                        + usedCalibration + " · optical ratio " + rawRatio + " · saved in History."
+                        + (frame.value < 0 ? " A negative estimate is not a physical turbidity value." : ""));
+            } else if ("CONVERSION_ERROR".equals(qualityCode)) {
+                setQuality("CONVERSION ERROR", 0xfffff2da, AMBER);
+                detail.setText("Could not calculate a finite estimate. The raw optical ratio was saved.");
+            }
+            if (!saveReading(frame, qualityCode, usedCalibration, rawRatio)) {
                 detail.setText("Reading received, but could not be saved in History.");
+                syncControls();
                 return false;
             }
         }
@@ -474,28 +582,57 @@ public final class MainActivity extends Activity {
             setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
             detail.setText(fault);
         }
+        syncControls();
+        if (historyPage.getVisibility() == View.VISIBLE) refreshHistory();
         return true;
     }
 
     private void disconnect(String message) {
         ++readerGeneration;
+        readerReady = false;
+        clearPending();
         if (reader != null) reader.stop();
         reader = null;
         activeDevice = null;
+        sensorId = null;
+        calibration = null;
         pendingDevice = null;
+        if (calibrationReadings != null) {
+            calibrationReadings = null;
+            calibrationPage.captureFailed(message);
+        }
         connectButton.setText("Connect sensor");
         enabled(measureButton, false);
         status.setText(message);
+        if (calibrationPage != null) calibrationPage.sensorChanged();
     }
 
-    private boolean saveReading(MeasurementFrame frame) {
+    private boolean saveReading(MeasurementFrame frame, String qualityCode, String usedCalibration, Double rawRatio) {
         File file = getFileStreamPath(CSV_NAME);
-        String qualityCode = frame.kind == MeasurementFrame.Kind.RESULT ? "OK" : "UNCALIBRATED";
         String row = Instant.now() + "," + Double.toString(frame.value) + ","
-                + frame.unit + "," + qualityCode + "," + frame.calibrationId + "\n";
+                + frame.unit + "," + qualityCode + "," + usedCalibration + ","
+                + (rawRatio == null ? "" : Double.toString(rawRatio)) + ","
+                + (sensorId == null ? "" : sensorId) + "\n";
+        if (!csvReady || !file.exists()) try {
+            String original = file.exists() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : "";
+            String upgraded = ReadingLog.upgrade(original);
+            if (!original.equals(upgraded)) {
+                AtomicFile atomic = new AtomicFile(file);
+                FileOutputStream output = atomic.startWrite();
+                try {
+                    output.write(upgraded.getBytes(StandardCharsets.UTF_8));
+                    atomic.finishWrite(output);
+                } catch (IOException error) {
+                    atomic.failWrite(output);
+                    throw error;
+                }
+            }
+            csvReady = true;
+        } catch (IOException error) {
+            status.setText("Could not update history; existing data kept");
+            return false;
+        }
         try (FileOutputStream output = openFileOutput(CSV_NAME, MODE_APPEND)) {
-            if (file.length() == 0) output.write("timestamp_utc,value,unit,quality,calibration_id\n"
-                    .getBytes(StandardCharsets.UTF_8));
             output.write(row.getBytes(StandardCharsets.UTF_8));
             enabled(shareButton, true);
             return true;
@@ -515,11 +652,10 @@ public final class MainActivity extends Activity {
             return;
         }
         try {
-            List<String> rows = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+            List<String[]> rows = ReadingLog.rows(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
             int shown = 0;
-            for (int i = rows.size() - 1; i > 0 && shown < 50; i--) {
-                String[] fields = rows.get(i).split(",", -1);
-                if (fields.length != 5) continue;
+            for (int i = rows.size() - 1; i >= 0 && shown < 50; i--) {
+                String[] fields = rows.get(i);
                 LinearLayout item = card(historyList);
                 TextView amount = label(fields[1] + " " + fields[2], 24);
                 amount.setTypeface(null, Typeface.BOLD);
@@ -528,10 +664,12 @@ public final class MainActivity extends Activity {
                 meta.setTextColor(MUTED);
                 item.addView(meta, spaced(6));
                 if (!fields[4].isEmpty()) item.addView(label("Calibration: " + fields[4], 13), spaced(4));
+                if (fields.length == 7 && !fields[5].isEmpty()) item.addView(label("Optical ratio: " + fields[5], 13), spaced(4));
+                if (fields.length == 7 && !fields[6].isEmpty()) item.addView(label("Sensor: " + fields[6], 12), spaced(4));
                 shown++;
             }
             if (shown == 0) historyList.addView(label("No real readings yet.", 15), spaced(24));
-            else if (rows.size() - 1 > shown) {
+            else if (rows.size() > shown) {
                 TextView note = label("Showing the 50 newest readings. Share CSV for the complete record.", 13);
                 note.setTextColor(MUTED);
                 historyList.addView(note, spaced(16));
@@ -544,17 +682,24 @@ public final class MainActivity extends Activity {
     private void confirmDeleteData() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete local data?")
-                .setMessage("This permanently removes saved readings and any contributor details from earlier versions of this app.")
+                .setMessage("This permanently removes saved readings, calibration profiles, calibration drafts and any contributor details from earlier versions of this app.")
                 .setPositiveButton("Delete", (dialog, which) -> {
+                    disconnect("Disconnected");
                     File file = getFileStreamPath(CSV_NAME);
                     if (file.exists() && !deleteFile(CSV_NAME)) {
                         Toast.makeText(this, "Could not delete readings", Toast.LENGTH_LONG).show();
                         return;
                     }
+                    csvReady = false;
                     if (!getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().commit()) {
                         Toast.makeText(this, "Could not delete previous contributor details", Toast.LENGTH_LONG).show();
                         return;
                     }
+                    if (!calibrationStore.clear()) {
+                        Toast.makeText(this, "Could not delete saved calibrations", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    calibrationPage.clearDraft();
                     value.setText("—");
                     unit.setText("No measurement");
                     setQuality("WAITING FOR SENSOR", 0xffe9f0f1, MUTED);
@@ -570,14 +715,152 @@ public final class MainActivity extends Activity {
     private void shareReadings() {
         try {
             byte[] csv = Files.readAllBytes(getFileStreamPath(CSV_NAME).toPath());
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("text/plain");
-            share.putExtra(Intent.EXTRA_SUBJECT, "Turbimeter readings.csv");
-            share.putExtra(Intent.EXTRA_TEXT, new String(csv, StandardCharsets.UTF_8));
-            startActivity(Intent.createChooser(share, "Share readings"));
+            shareText("Turbimeter readings.csv", "text/plain", new String(csv, StandardCharsets.UTF_8));
         } catch (IOException error) {
             status.setText("Could not share saved readings");
         }
+    }
+
+    String sensorId() { return sensorId; }
+    boolean sensorReady() { return readerReady; }
+    boolean measurementBusy() { return waitingForReading || calibrationReadings != null; }
+    CalibrationCurve activeCalibration() { return calibration; }
+
+    void reloadCalibration() {
+        calibration = null;
+        try { calibration = calibrationStore.active(sensorId); }
+        catch (Exception error) {
+            Toast.makeText(this, "Saved calibration could not be loaded. Using optical ratios.", Toast.LENGTH_LONG).show();
+        }
+        value.setText("—");
+        unit.setText("No measurement");
+        setQuality("WAITING FOR READING", 0xffe9f0f1, MUTED);
+        detail.setText(calibration == null ? "No active sensor calibration. Readings will be optical ratios."
+                : "Calibration " + calibration.id + " is active for this sensor.");
+        if (calibrationPage != null) calibrationPage.refresh();
+    }
+
+    private void syncControls() {
+        enabled(measureButton, readerReady && !measurementBusy());
+        if (calibrationPage != null) calibrationPage.refresh();
+    }
+
+    void startCalibrationCapture() {
+        if (!readerReady || reader == null || sensorId == null || measurementBusy()) {
+            calibrationPage.message("Connect an identified sensor and wait for the current reading.");
+            return;
+        }
+        captureSensorId = sensorId;
+        calibrationReadings = new double[CalibrationCurve.REPEATS];
+        calibrationCount = 0;
+        calibrationPage.captureStarted();
+        requestReading();
+    }
+
+    void cancelCalibrationCapture() {
+        if (calibrationReadings != null) disconnect("Capture cancelled. Reconnect the sensor to continue.");
+    }
+
+    private void requestReading() {
+        if (!readerReady || reader == null || waitingForReading) return;
+        waitingForReading = true;
+        int generation = readerGeneration;
+        readingTimeout = () -> {
+            if (generation != readerGeneration || !waitingForReading) return;
+            disconnect("Sensor did not reply. Reconnect and try again.");
+            value.setText("—");
+            unit.setText("No measurement");
+            setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
+            detail.setText("The measurement timed out. No reading or calibration point was saved.");
+        };
+        handler.postDelayed(readingTimeout, 5000);
+        syncControls();
+        reader.measure();
+    }
+
+    private void clearPending() {
+        waitingForReading = false;
+        if (readingTimeout != null) handler.removeCallbacks(readingTimeout);
+        readingTimeout = null;
+    }
+
+    private void failReading(String message) {
+        clearPending();
+        if (calibrationReadings != null) {
+            calibrationReadings = null;
+            calibrationPage.captureFailed(message);
+        }
+        value.setText("—");
+        unit.setText("No measurement");
+        setQuality("CHECK SENSOR", 0xfffff2da, AMBER);
+        detail.setText(message);
+        syncControls();
+    }
+
+    void shareText(String title, String mime, String text) {
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType(mime);
+        share.putExtra(Intent.EXTRA_SUBJECT, title);
+        share.putExtra(Intent.EXTRA_TEXT, text);
+        startActivity(Intent.createChooser(share, "Share"));
+    }
+
+    void importCalibration() {
+        if (!readerReady || sensorId == null || measurementBusy()) {
+            calibrationPage.message("Connect the sensor before importing its calibration.");
+            return;
+        }
+        Intent select = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        select.addCategory(Intent.CATEGORY_OPENABLE);
+        select.setType("*/*");
+        select.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/json", "text/plain", "application/octet-stream"});
+        startActivityForResult(select, IMPORT_CALIBRATION);
+    }
+
+    void exportCalibration(String filename, String json) {
+        pendingCalibrationExport = json;
+        Intent save = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        save.addCategory(Intent.CATEGORY_OPENABLE);
+        save.setType("application/json");
+        save.putExtra(Intent.EXTRA_TITLE, filename);
+        startActivityForResult(save, EXPORT_CALIBRATION);
+    }
+
+    @Override protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        if (pendingCalibrationExport != null) state.putString("calibration_export", pendingCalibrationExport);
+        state.putBundle("calibration_draft", calibrationPage.saveDraft());
+        state.putInt("page", calibrationPage.getVisibility() == View.VISIBLE ? 3
+                : historyPage.getVisibility() == View.VISIBLE ? 1
+                : privacyPage.getVisibility() == View.VISIBLE ? 2 : 0);
+    }
+
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EXPORT_CALIBRATION) {
+            String text = pendingCalibrationExport;
+            pendingCalibrationExport = null;
+            if (resultCode != RESULT_OK || data == null || data.getData() == null) return;
+            try (OutputStream output = getContentResolver().openOutputStream(data.getData(), "wt")) {
+                if (output == null || text == null) throw new IOException("Export was interrupted. Try again.");
+                output.write(text.getBytes(StandardCharsets.UTF_8));
+                Toast.makeText(this, "Calibration file exported", Toast.LENGTH_SHORT).show();
+            } catch (Exception error) { Toast.makeText(this, "Export failed: " + error.getMessage(), Toast.LENGTH_LONG).show(); }
+            return;
+        }
+        if (requestCode != IMPORT_CALIBRATION || resultCode != RESULT_OK || data == null || data.getData() == null) return;
+        selectPage(3);
+        try (InputStream input = getContentResolver().openInputStream(data.getData());
+             ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            if (input == null) throw new IOException("Could not open calibration file.");
+            byte[] buffer = new byte[4096];
+            int count;
+            while ((count = input.read(buffer)) != -1) {
+                if (output.size() + count > 65536) throw new IOException("Calibration file exceeds 64 KB.");
+                output.write(buffer, 0, count);
+            }
+            calibrationPage.importCurve(new String(output.toByteArray(), StandardCharsets.UTF_8));
+        } catch (Exception error) { calibrationPage.message("Import failed: " + error.getMessage()); }
     }
 
     @Override protected void onDestroy() {
