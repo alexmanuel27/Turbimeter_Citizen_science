@@ -2,6 +2,8 @@
 
 Design: **Ing. Alex M. Rivera**. Current release: **0.5 / code 5**.
 
+For a field-friendly walkthrough, see the [app user guide](../docs/app-user-guide.md).
+
 The Android phone is the turbidimeter's screen and controller. This version
 connects to a USB-CDC XIAO SAMD21 and requests real readings. The side menu has
 Home, Calibration, History, and Privacy. Readings stay on the phone and can be

@@ -76,18 +76,18 @@ outputs a relative index and controls LEDs. The current USB bench sketch is
 
 ## Enclosure and USB cable
 
-The current enclosure is supplied as [cuerpo.stl](../3D/cuerpo.stl) and
-[tapa.stl](../3D/tapa.stl). These replace the earlier four separate exports.
-The [enclosure notes and preview](../3D/README.md) record the overall mesh
-dimensions; they do not verify the internal 44 mm envelope or complete PCB fit.
-
+The current Fusion enclosure exports are [body_tur.stl](../3D/fusion-export/body_tur.stl)
+and [Tapa_tur.stl](../3D/fusion-export/Tapa_tur.stl). The
+[enclosure notes](../3D/README.md) record mesh dimensions and pending unit,
+fit and sealing checks.
 The earlier purchase workbook specifies Goobay 66508 (USB-C to USB-C,
 5.5 ± 0.15 mm outer diameter) and a 3–6.5 mm M12 gland. The user's actual
 four-wire cable has not been identified. Check its diameter against the gland.
-The current carriers use only VBUS/GND/D−/D+ through THT J2/J5. A phone-side
-OTG/Rd plug or adapter and a compatible micro-side legacy USB-C plug are
-required; a normal C-to-C cable needs its CC path and cannot be converted
-by simply dropping that wire. See the [assembly instructions](../hardware/README.md).
+The saved boards no longer contain the earlier J2/J4/J5 USB carrier path.
+Connect through the XIAO USB socket using the verified physical cable assembly.
+A suitable USB-C host/device connection is required; a normal C-to-C cable
+needs its CC path and cannot be converted by simply dropping that wire.
+See the [assembly instructions](assembly.md).
 Verify host operation, both plug orientations, mechanical strain relief and
 sealing before closing the enclosure. The left-facing XIAO socket needs a
 compact plug; the provisional 5.5 mm plug-tail allowance needs a dry fit.

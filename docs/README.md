@@ -4,6 +4,8 @@ Design: **Ing. Alex M. Rivera**. Updated **26 October 2026**.
 
 | Document | Purpose |
 | --- | --- |
+| [Assembly guide](assembly.md) | Step-by-step build, firmware, tests and calibration for the Havana team |
+| [App user guide](app-user-guide.md) | Phone connection, measurements, history and reference calibration |
 | [Optical design](optical-design.md) | Measurement principle, circuit assumptions and validation plan |
 | [BOM notes](BOM.md) | Purchasing changes and differences between the schematic and assembled prototype |
 | [Current purchase workbook](shopping-list-prototype-usb-c.xlsx) | Latest user-edited list for one prototype; supplier URLs and existing prices |

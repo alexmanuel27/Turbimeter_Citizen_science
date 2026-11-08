@@ -5,6 +5,12 @@ phone**, with no battery or built-in display.
 
 Design: **Ing. Alex M. Rivera**. Updated **26 October 2026**.
 
+**Building an instrument?** Start with the [step-by-step assembly and test
+guide](docs/assembly.md). Fusion exports are in
+[`3D/fusion-export/`](3D/fusion-export/).
+For taking readings and calibrating the instrument, use the
+[app user guide](docs/app-user-guide.md).
+
 The prototype combines two stacked PCBs, an 850 nm infrared LED, two BPW34
 photodiodes, an MCP6002, an ADS1115 and a XIAO SAMD21. The firmware measures
 a dark-corrected scatter/reference **optical ratio**. Android version **0.5**
@@ -38,7 +44,7 @@ independent validation are still required before community deployment.
 | --- | --- |
 | [hardware/](hardware/README.md) | Sensor/base KiCad project: `esque.kicad_pro`; custom libraries and base manufacturing exports |
 | [hardware-controller/](hardware-controller/README.md) | Independent controller/ADC KiCad project: `controller.kicad_pro`; local libraries, models and exports |
-| [3D/](3D/README.md) | Current enclosure: `cuerpo.stl`, `tapa.stl` |
+| [3D/](3D/README.md) | Current enclosure: `fusion-export/body_tur.stl`, `Tapa_tur.stl` |
 | [firmware/xiao_samd21_turbimeter/](firmware/xiao_samd21_turbimeter/README.md) | Active XIAO firmware, wiring, upload instructions and recorded bench sessions |
 | [android-app/](android-app/README.md) | Android app, calibration, tests and Google Play preparation |
 | [docs/](docs/README.md) | Optical design, purchase list, BOM notes and privacy policy |

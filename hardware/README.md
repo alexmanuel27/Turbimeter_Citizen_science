@@ -172,8 +172,8 @@ approve base DRC findings. The older all-board check describes the earlier
 unrouted, B.Cu fabrication stage and is not the current alignment check.
 
 [3D model notes](3dmodels/README.md) describe the supplied assets and their
-limits. [Current enclosure meshes](../3D/README.md) are `cuerpo.stl` and
-`tapa.stl`. The renders show individual boards and the connected stack, with
+limits. The enclosure meshes named in this historical section have been superseded;
+see the [current Fusion exports](../3D/README.md). The renders show individual boards and the connected stack, with
 the B component faces physically upwards. They do not include the enclosure
 or prove sealing, module dimensions or a complete cable fit.
 
